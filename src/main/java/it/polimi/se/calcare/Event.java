@@ -92,14 +92,14 @@ public class Event implements Serializable {
         @JoinColumn(name = "forecasts_city", referencedColumnName = "city"),
         @JoinColumn(name = "forecasts_dt", referencedColumnName = "dt")})
     @ManyToMany
-    private Collection<Forecast> forecastCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event1")
-    private Collection<Participation> participationCollection;
+    private Collection<Forecast> forecasts;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+    private Collection<Participation> participations;
     @JoinColumn(name = "creator", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User creator;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "eventsId")
-    private Collection<Notification> notificationCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+    private Collection<Notification> notifications;
 
     public Event() {
     }
@@ -184,21 +184,21 @@ public class Event implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Forecast> getForecastCollection() {
-        return forecastCollection;
+    public Collection<Forecast> getForecasts() {
+        return forecasts;
     }
 
-    public void setForecastCollection(Collection<Forecast> forecastCollection) {
-        this.forecastCollection = forecastCollection;
+    public void setForecasts(Collection<Forecast> forecasts) {
+        this.forecasts = forecasts;
     }
 
     @XmlTransient
-    public Collection<Participation> getParticipationCollection() {
-        return participationCollection;
+    public Collection<Participation> getParticipations() {
+        return participations;
     }
 
-    public void setParticipationCollection(Collection<Participation> participationCollection) {
-        this.participationCollection = participationCollection;
+    public void setParticipations(Collection<Participation> participations) {
+        this.participations = participations;
     }
 
     public User getCreator() {
@@ -210,12 +210,12 @@ public class Event implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Notification> getNotificationCollection() {
-        return notificationCollection;
+    public Collection<Notification> getNotifications() {
+        return notifications;
     }
 
-    public void setNotificationCollection(Collection<Notification> notificationCollection) {
-        this.notificationCollection = notificationCollection;
+    public void setNotifications(Collection<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     @Override

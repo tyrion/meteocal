@@ -69,9 +69,9 @@ public class User implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
     private Calendar calendar;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
-    private Collection<Event> eventCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usersId")
-    private Collection<Notification> notificationCollection;
+    private Collection<Event> createdEvents;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private Collection<Notification> notifications;
 
     public User() {
     }
@@ -137,21 +137,21 @@ public class User implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Event> getEventCollection() {
-        return eventCollection;
+    public Collection<Event> getCreatedEvents() {
+        return createdEvents;
     }
 
-    public void setEventCollection(Collection<Event> eventCollection) {
-        this.eventCollection = eventCollection;
+    public void setCreatedEvents(Collection<Event> createdEvents) {
+        this.createdEvents = createdEvents;
     }
 
     @XmlTransient
-    public Collection<Notification> getNotificationCollection() {
-        return notificationCollection;
+    public Collection<Notification> getNotifications() {
+        return notifications;
     }
 
-    public void setNotificationCollection(Collection<Notification> notificationCollection) {
-        this.notificationCollection = notificationCollection;
+    public void setNotifications(Collection<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     @Override

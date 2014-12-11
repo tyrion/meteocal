@@ -38,13 +38,13 @@ public class Notification implements Serializable {
     private Integer id;
     @JoinColumn(name = "events_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Event eventsId;
+    private Event event;
     @JoinColumn(name = "notifications_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private NotificationType notificationsType;
+    private NotificationType notificationType;
     @JoinColumn(name = "users_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private User usersId;
+    private User user;
 
     public Notification() {
     }
@@ -61,28 +61,28 @@ public class Notification implements Serializable {
         this.id = id;
     }
 
-    public Event getEventsId() {
-        return eventsId;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setEventsId(Event eventsId) {
-        this.eventsId = eventsId;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
-    public NotificationType getNotificationsType() {
-        return notificationsType;
+    public NotificationType getNotificationType() {
+        return notificationType;
     }
 
-    public void setNotificationsType(NotificationType notificationsType) {
-        this.notificationsType = notificationsType;
+    public void setNotificationType(NotificationType notificationType) {
+        this.notificationType = notificationType;
     }
 
-    public User getUsersId() {
-        return usersId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsersId(User usersId) {
-        this.usersId = usersId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

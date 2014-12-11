@@ -41,7 +41,7 @@ public class Calendar implements Serializable {
     @Column(name = "id")
     private Integer id;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "calendar")
-    private Collection<Participation> participationCollection;
+    private Collection<Participation> participations;
     @JoinColumn(name = "owner", referencedColumnName = "id")
     @OneToOne(optional = false)
     private User owner;
@@ -62,12 +62,12 @@ public class Calendar implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Participation> getParticipationCollection() {
-        return participationCollection;
+    public Collection<Participation> getParticipations() {
+        return participations;
     }
 
-    public void setParticipationCollection(Collection<Participation> participationCollection) {
-        this.participationCollection = participationCollection;
+    public void setParticipations(Collection<Participation> participations) {
+        this.participations = participations;
     }
 
     public User getOwner() {

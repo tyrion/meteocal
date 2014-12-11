@@ -61,7 +61,7 @@ public class City implements Serializable {
     @Column(name = "lon")
     private double lon;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "city1")
-    private Collection<Forecast> forecastCollection;
+    private Collection<Forecast> forecasts;
 
     public City() {
     }
@@ -119,12 +119,12 @@ public class City implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Forecast> getForecastCollection() {
-        return forecastCollection;
+    public Collection<Forecast> getForecasts() {
+        return forecasts;
     }
 
-    public void setForecastCollection(Collection<Forecast> forecastCollection) {
-        this.forecastCollection = forecastCollection;
+    public void setForecasts(Collection<Forecast> forecasts) {
+        this.forecasts = forecasts;
     }
 
     @Override

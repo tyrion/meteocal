@@ -52,7 +52,7 @@ public class NotificationType implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "notificationsType")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "notificationType")
     private Collection<Notification> notificationCollection;
 
     public NotificationType() {

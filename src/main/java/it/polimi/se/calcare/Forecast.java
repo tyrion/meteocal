@@ -57,8 +57,8 @@ public class Forecast implements Serializable {
     @NotNull
     @Column(name = "humidity")
     private double humidity;
-    @ManyToMany(mappedBy = "forecastCollection")
-    private Collection<Event> eventCollection;
+    @ManyToMany(mappedBy = "forecasts")
+    private Collection<Event> events;
     @JoinColumn(name = "city", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private City city1;
@@ -126,12 +126,12 @@ public class Forecast implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Event> getEventCollection() {
-        return eventCollection;
+    public Collection<Event> getEvents() {
+        return events;
     }
 
-    public void setEventCollection(Collection<Event> eventCollection) {
-        this.eventCollection = eventCollection;
+    public void setEvents(Collection<Event> events) {
+        this.events = events;
     }
 
     public City getCity1() {
