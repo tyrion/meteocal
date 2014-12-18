@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.polimi.se.calcare;
+package it.polimi.se.calcare.entities;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
@@ -38,13 +38,13 @@ public class Notification implements Serializable {
     private Integer id;
     @JoinColumn(name = "events_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Event event;
+    private Event eventsId;
     @JoinColumn(name = "notifications_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private NotificationType notificationType;
+    private NotificationType notificationsType;
     @JoinColumn(name = "users_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private User user;
+    private User usersId;
 
     public Notification() {
     }
@@ -61,28 +61,28 @@ public class Notification implements Serializable {
         this.id = id;
     }
 
-    public Event getEvent() {
-        return event;
+    public Event getEventsId() {
+        return eventsId;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
+    public void setEventsId(Event eventsId) {
+        this.eventsId = eventsId;
     }
 
-    public NotificationType getNotificationType() {
-        return notificationType;
+    public NotificationType getNotificationsType() {
+        return notificationsType;
     }
 
-    public void setNotificationType(NotificationType notificationType) {
-        this.notificationType = notificationType;
+    public void setNotificationsType(NotificationType notificationsType) {
+        this.notificationsType = notificationsType;
     }
 
-    public User getUser() {
-        return user;
+    public User getUsersId() {
+        return usersId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsersId(User usersId) {
+        this.usersId = usersId;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class Notification implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.Notification[ id=" + id + " ]";
+        return "it.polimi.se.calcare.entities.Notification[ id=" + id + " ]";
     }
     
 }

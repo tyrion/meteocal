@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.polimi.se.calcare;
+package it.polimi.se.calcare.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -92,14 +92,14 @@ public class Event implements Serializable {
         @JoinColumn(name = "forecasts_city", referencedColumnName = "city"),
         @JoinColumn(name = "forecasts_dt", referencedColumnName = "dt")})
     @ManyToMany
-    private Collection<Forecast> forecasts;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-    private Collection<Participation> participations;
+    private Collection<Forecast> forecastCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event1")
+    private Collection<Participation> participationCollection;
     @JoinColumn(name = "creator", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User creator;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
-    private Collection<Notification> notifications;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "eventsId")
+    private Collection<Notification> notificationCollection;
 
     public Event() {
     }
@@ -184,21 +184,21 @@ public class Event implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Forecast> getForecasts() {
-        return forecasts;
+    public Collection<Forecast> getForecastCollection() {
+        return forecastCollection;
     }
 
-    public void setForecasts(Collection<Forecast> forecasts) {
-        this.forecasts = forecasts;
+    public void setForecastCollection(Collection<Forecast> forecastCollection) {
+        this.forecastCollection = forecastCollection;
     }
 
     @XmlTransient
-    public Collection<Participation> getParticipations() {
-        return participations;
+    public Collection<Participation> getParticipationCollection() {
+        return participationCollection;
     }
 
-    public void setParticipations(Collection<Participation> participations) {
-        this.participations = participations;
+    public void setParticipationCollection(Collection<Participation> participationCollection) {
+        this.participationCollection = participationCollection;
     }
 
     public User getCreator() {
@@ -210,12 +210,12 @@ public class Event implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Notification> getNotifications() {
-        return notifications;
+    public Collection<Notification> getNotificationCollection() {
+        return notificationCollection;
     }
 
-    public void setNotifications(Collection<Notification> notifications) {
-        this.notifications = notifications;
+    public void setNotificationCollection(Collection<Notification> notificationCollection) {
+        this.notificationCollection = notificationCollection;
     }
 
     @Override
@@ -240,7 +240,7 @@ public class Event implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.Event[ id=" + id + " ]";
+        return "it.polimi.se.calcare.entities.Event[ id=" + id + " ]";
     }
     
 }

@@ -5,8 +5,8 @@
  */
 package it.polimi.se.calcare.service;
 
-import it.polimi.se.calcare.Forecast;
-import it.polimi.se.calcare.ForecastPK;
+import it.polimi.se.calcare.entities.Forecast;
+import it.polimi.se.calcare.entities.ForecastPK;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -26,7 +26,7 @@ import javax.ws.rs.core.PathSegment;
  * @author tyrion
  */
 @Stateless
-@Path("it.polimi.se.calcare.forecast")
+@Path("it.polimi.se.calcare.entities.forecast")
 public class ForecastFacadeREST extends AbstractFacade<Forecast> {
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
@@ -39,7 +39,7 @@ public class ForecastFacadeREST extends AbstractFacade<Forecast> {
          * it is ignored in the following code.
          * Matrix parameters are used as field names to build a primary key instance.
          */
-        it.polimi.se.calcare.ForecastPK key = new it.polimi.se.calcare.ForecastPK();
+        it.polimi.se.calcare.entities.ForecastPK key = new it.polimi.se.calcare.entities.ForecastPK();
         javax.ws.rs.core.MultivaluedMap<String, String> map = pathSegment.getMatrixParameters();
         java.util.List<String> dt = map.get("dt");
         if (dt != null && !dt.isEmpty()) {
@@ -73,7 +73,7 @@ public class ForecastFacadeREST extends AbstractFacade<Forecast> {
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") PathSegment id) {
-        it.polimi.se.calcare.ForecastPK key = getPrimaryKey(id);
+        it.polimi.se.calcare.entities.ForecastPK key = getPrimaryKey(id);
         super.remove(super.find(key));
     }
 
@@ -81,7 +81,7 @@ public class ForecastFacadeREST extends AbstractFacade<Forecast> {
     @Path("{id}")
     @Produces({"application/xml", "application/json"})
     public Forecast find(@PathParam("id") PathSegment id) {
-        it.polimi.se.calcare.ForecastPK key = getPrimaryKey(id);
+        it.polimi.se.calcare.entities.ForecastPK key = getPrimaryKey(id);
         return super.find(key);
     }
 

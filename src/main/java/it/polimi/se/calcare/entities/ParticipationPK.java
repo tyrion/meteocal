@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.polimi.se.calcare;
+package it.polimi.se.calcare.entities;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
@@ -76,7 +76,7 @@ public class ParticipationPK implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.ParticipationPK[ event=" + event + ", calendarsId=" + calendarsId + " ]";
+        return "it.polimi.se.calcare.entities.ParticipationPK[ event=" + event + ", calendarsId=" + calendarsId + " ]";
     }
     
 }

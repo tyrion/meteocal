@@ -5,7 +5,7 @@
  */
 package it.polimi.se.calcare.service;
 
-import it.polimi.se.calcare.Notification;
+import it.polimi.se.calcare.entities.Notification;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -24,7 +24,7 @@ import javax.ws.rs.Produces;
  * @author tyrion
  */
 @Stateless
-@Path("it.polimi.se.calcare.notification")
+@Path("it.polimi.se.calcare.entities.notification")
 public class NotificationFacadeREST extends AbstractFacade<Notification> {
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;

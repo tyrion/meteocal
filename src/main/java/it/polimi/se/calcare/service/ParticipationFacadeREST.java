@@ -5,8 +5,8 @@
  */
 package it.polimi.se.calcare.service;
 
-import it.polimi.se.calcare.Participation;
-import it.polimi.se.calcare.ParticipationPK;
+import it.polimi.se.calcare.entities.Participation;
+import it.polimi.se.calcare.entities.ParticipationPK;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -26,7 +26,7 @@ import javax.ws.rs.core.PathSegment;
  * @author tyrion
  */
 @Stateless
-@Path("it.polimi.se.calcare.participation")
+@Path("it.polimi.se.calcare.entities.participation")
 public class ParticipationFacadeREST extends AbstractFacade<Participation> {
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
@@ -39,7 +39,7 @@ public class ParticipationFacadeREST extends AbstractFacade<Participation> {
          * it is ignored in the following code.
          * Matrix parameters are used as field names to build a primary key instance.
          */
-        it.polimi.se.calcare.ParticipationPK key = new it.polimi.se.calcare.ParticipationPK();
+        it.polimi.se.calcare.entities.ParticipationPK key = new it.polimi.se.calcare.entities.ParticipationPK();
         javax.ws.rs.core.MultivaluedMap<String, String> map = pathSegment.getMatrixParameters();
         java.util.List<String> event = map.get("event");
         if (event != null && !event.isEmpty()) {
@@ -73,7 +73,7 @@ public class ParticipationFacadeREST extends AbstractFacade<Participation> {
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") PathSegment id) {
-        it.polimi.se.calcare.ParticipationPK key = getPrimaryKey(id);
+        it.polimi.se.calcare.entities.ParticipationPK key = getPrimaryKey(id);
         super.remove(super.find(key));
     }
 
@@ -81,7 +81,7 @@ public class ParticipationFacadeREST extends AbstractFacade<Participation> {
     @Path("{id}")
     @Produces({"application/xml", "application/json"})
     public Participation find(@PathParam("id") PathSegment id) {
-        it.polimi.se.calcare.ParticipationPK key = getPrimaryKey(id);
+        it.polimi.se.calcare.entities.ParticipationPK key = getPrimaryKey(id);
         return super.find(key);
     }
 

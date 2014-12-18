@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.polimi.se.calcare;
+package it.polimi.se.calcare.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -11,6 +11,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -26,19 +28,18 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author tyrion
  */
 @Entity
-@Table(name = "weather_conditions")
+@Table(name = "notifications_types")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "WeatherCondition.findAll", query = "SELECT w FROM WeatherCondition w"),
-    @NamedQuery(name = "WeatherCondition.findById", query = "SELECT w FROM WeatherCondition w WHERE w.id = :id"),
-    @NamedQuery(name = "WeatherCondition.findByName", query = "SELECT w FROM WeatherCondition w WHERE w.name = :name"),
-    @NamedQuery(name = "WeatherCondition.findByDescription", query = "SELECT w FROM WeatherCondition w WHERE w.description = :description"),
-    @NamedQuery(name = "WeatherCondition.findByIcon", query = "SELECT w FROM WeatherCondition w WHERE w.icon = :icon")})
-public class WeatherCondition implements Serializable {
+    @NamedQuery(name = "NotificationType.findAll", query = "SELECT n FROM NotificationType n"),
+    @NamedQuery(name = "NotificationType.findById", query = "SELECT n FROM NotificationType n WHERE n.id = :id"),
+    @NamedQuery(name = "NotificationType.findByName", query = "SELECT n FROM NotificationType n WHERE n.name = :name"),
+    @NamedQuery(name = "NotificationType.findByDescription", query = "SELECT n FROM NotificationType n WHERE n.description = :description")})
+public class NotificationType implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
@@ -51,26 +52,20 @@ public class WeatherCondition implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "icon")
-    private String icon;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "weatherCondition")
-    private Collection<Forecast> forecasts;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "notificationsType")
+    private Collection<Notification> notificationCollection;
 
-    public WeatherCondition() {
+    public NotificationType() {
     }
 
-    public WeatherCondition(Integer id) {
+    public NotificationType(Integer id) {
         this.id = id;
     }
 
-    public WeatherCondition(Integer id, String name, String description, String icon) {
+    public NotificationType(Integer id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.icon = icon;
     }
 
     public Integer getId() {
@@ -97,21 +92,13 @@ public class WeatherCondition implements Serializable {
         this.description = description;
     }
 
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     @XmlTransient
-    public Collection<Forecast> getForecasts() {
-        return forecasts;
+    public Collection<Notification> getNotificationCollection() {
+        return notificationCollection;
     }
 
-    public void setForecasts(Collection<Forecast> forecasts) {
-        this.forecasts = forecasts;
+    public void setNotificationCollection(Collection<Notification> notificationCollection) {
+        this.notificationCollection = notificationCollection;
     }
 
     @Override
@@ -124,10 +111,10 @@ public class WeatherCondition implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof WeatherCondition)) {
+        if (!(object instanceof NotificationType)) {
             return false;
         }
-        WeatherCondition other = (WeatherCondition) object;
+        NotificationType other = (NotificationType) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -136,7 +123,7 @@ public class WeatherCondition implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.WeatherCondition[ id=" + id + " ]";
+        return "it.polimi.se.calcare.entities.NotificationType[ id=" + id + " ]";
     }
     
 }

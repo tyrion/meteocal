@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.polimi.se.calcare;
+package it.polimi.se.calcare.entities;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -80,7 +80,7 @@ public class ForecastPK implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.ForecastPK[ dt=" + dt + ", city=" + city + " ]";
+        return "it.polimi.se.calcare.entities.ForecastPK[ dt=" + dt + ", city=" + city + " ]";
     }
     
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.polimi.se.calcare;
+package it.polimi.se.calcare.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -41,7 +41,7 @@ public class Calendar implements Serializable {
     @Column(name = "id")
     private Integer id;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "calendar")
-    private Collection<Participation> participations;
+    private Collection<Participation> participationCollection;
     @JoinColumn(name = "owner", referencedColumnName = "id")
     @OneToOne(optional = false)
     private User owner;
@@ -62,12 +62,12 @@ public class Calendar implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Participation> getParticipations() {
-        return participations;
+    public Collection<Participation> getParticipationCollection() {
+        return participationCollection;
     }
 
-    public void setParticipations(Collection<Participation> participations) {
-        this.participations = participations;
+    public void setParticipationCollection(Collection<Participation> participationCollection) {
+        this.participationCollection = participationCollection;
     }
 
     public User getOwner() {
@@ -100,7 +100,7 @@ public class Calendar implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.Calendar[ id=" + id + " ]";
+        return "it.polimi.se.calcare.entities.Calendar[ id=" + id + " ]";
     }
     
 }

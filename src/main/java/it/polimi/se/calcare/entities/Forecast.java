@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.polimi.se.calcare;
+package it.polimi.se.calcare.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -57,8 +57,8 @@ public class Forecast implements Serializable {
     @NotNull
     @Column(name = "humidity")
     private double humidity;
-    @ManyToMany(mappedBy = "forecasts")
-    private Collection<Event> events;
+    @ManyToMany(mappedBy = "forecastCollection")
+    private Collection<Event> eventCollection;
     @JoinColumn(name = "city", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private City city1;
@@ -126,12 +126,12 @@ public class Forecast implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Event> getEvents() {
-        return events;
+    public Collection<Event> getEventCollection() {
+        return eventCollection;
     }
 
-    public void setEvents(Collection<Event> events) {
-        this.events = events;
+    public void setEventCollection(Collection<Event> eventCollection) {
+        this.eventCollection = eventCollection;
     }
 
     public City getCity1() {
@@ -172,7 +172,7 @@ public class Forecast implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.Forecast[ forecastPK=" + forecastPK + " ]";
+        return "it.polimi.se.calcare.entities.Forecast[ forecastPK=" + forecastPK + " ]";
     }
     
 }

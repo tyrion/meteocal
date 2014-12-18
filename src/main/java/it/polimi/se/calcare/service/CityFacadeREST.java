@@ -5,7 +5,7 @@
  */
 package it.polimi.se.calcare.service;
 
-import it.polimi.se.calcare.City;
+import it.polimi.se.calcare.entities.City;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -24,7 +24,7 @@ import javax.ws.rs.Produces;
  * @author tyrion
  */
 @Stateless
-@Path("it.polimi.se.calcare.city")
+@Path("it.polimi.se.calcare.entities.city")
 public class CityFacadeREST extends AbstractFacade<City> {
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;

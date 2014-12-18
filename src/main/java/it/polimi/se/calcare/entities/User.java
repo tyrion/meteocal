@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.polimi.se.calcare;
+package it.polimi.se.calcare.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -69,9 +69,9 @@ public class User implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
     private Calendar calendar;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
-    private Collection<Event> createdEvents;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private Collection<Notification> notifications;
+    private Collection<Event> eventCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usersId")
+    private Collection<Notification> notificationCollection;
 
     public User() {
     }
@@ -137,21 +137,21 @@ public class User implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Event> getCreatedEvents() {
-        return createdEvents;
+    public Collection<Event> getEventCollection() {
+        return eventCollection;
     }
 
-    public void setCreatedEvents(Collection<Event> createdEvents) {
-        this.createdEvents = createdEvents;
+    public void setEventCollection(Collection<Event> eventCollection) {
+        this.eventCollection = eventCollection;
     }
 
     @XmlTransient
-    public Collection<Notification> getNotifications() {
-        return notifications;
+    public Collection<Notification> getNotificationCollection() {
+        return notificationCollection;
     }
 
-    public void setNotifications(Collection<Notification> notifications) {
-        this.notifications = notifications;
+    public void setNotificationCollection(Collection<Notification> notificationCollection) {
+        this.notificationCollection = notificationCollection;
     }
 
     @Override
@@ -176,7 +176,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.User[ id=" + id + " ]";
+        return "it.polimi.se.calcare.entities.User[ id=" + id + " ]";
     }
     
 }
