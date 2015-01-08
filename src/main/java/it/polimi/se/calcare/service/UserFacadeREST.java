@@ -18,13 +18,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 /**
  *
  * @author tyrion
  */
 @Stateless
-@Path("users")
+@Path("/users") @Produces("application/json")
 public class UserFacadeREST extends AbstractFacade<User> {
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
@@ -34,10 +35,12 @@ public class UserFacadeREST extends AbstractFacade<User> {
     }
 
     @POST
-    @Override
-    @Consumes({"application/xml", "application/json"})
-    public void create(User entity) {
+    public Response add(User entity) {
         super.create(entity);
+        return Response
+            .status(201)
+            .entity(entity)
+            .build();
     }
 
     @PUT

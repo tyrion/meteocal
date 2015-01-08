@@ -1,10 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="CalCAREApp">
     <head>
-        <title>Start Page</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>CalCARE - Online Weather Calendar</title>
+        <meta charset="utf-8"/>
+        <script src="js/libs/angular.js/angular.js"></script>
+        <script src="js/calendar.js"></script>
     </head>
-    <body>
-        <h1>Hello World!</h1>
+    <body ng-controller="CalendarController">
+        <div ng-switch on="loginData">
+            <div ng-switch-when="true" ng-include="'userPage'"></div>
+            <div ng-switch-when="false" ng-include="'guestPage'"></div>
+        </div>
+        <div ng-bind="bodyText"></div>
+        
+        <script type="text/ng-template" id="guestPage">
+            <form ng-submit="signup(email, password, givenName, familyName)" class="modal-content" role="form">
+                <h1 class="modal-title">Register</h1>
+                <input type="text" placeholder="Email" ng-model="email"/>
+                <br/>
+                <input type="password" placeholder="Password" ng-model="password"/>
+                <br/>
+                <input type="text" placeholder="Given Name" ng-model="givenName"/>
+                <br/>
+                <input type="text" placeholder="Family Name" ng-model="familyName"/>
+                <br/>
+                <input type="submit" value="Signup!"/>
+            </form>
+        </script>
+
+        <script type="text/ng-template" id="userPage">
+            <h1>Calendar</h1>
+            <button ng-click="logout()">Logout</button>
+        </script>
     </body>
 </html>
