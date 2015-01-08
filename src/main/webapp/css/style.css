@@ -1,0 +1,49 @@
+html, body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    overflow: hidden;
+    -webkit-transition: opacity 400ms;
+    -moz-transition: opacity 400ms;
+    transition: opacity 400ms;
+    display: block;
+    position: static;
+}
+
+#main , #landing .ng-scope{
+    height: 100%;
+}
+
+#landing{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+}
+
+
+.jumbotron {
+    margin-top: 50px;
+    background-color: transparent;
+    color: white;
+    text-shadow: 0px 2px 12px rgba(0, 0, 0, 0.6);
+    text-align: center;
+}
+
+.jumbotron p {
+    margin: 1em 20%;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.navbar-inverse {
+    background-color:rgba(0,0,0,0.2);
+    border: 0px;
+}
+
+#submitButton {
+    margin-top: 1em;    
+}
