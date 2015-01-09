@@ -25,7 +25,6 @@ package it.polimi.se.calcare.service;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Scanner;
 import javax.ejb.Stateless;
 import org.json.JSONException;
