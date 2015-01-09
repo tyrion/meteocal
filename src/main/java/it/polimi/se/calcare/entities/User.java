@@ -10,8 +10,6 @@ import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -61,7 +59,10 @@ public class User implements Serializable, java.security.Principal {
     
     @Basic(optional = false) @NotNull @Size(min = 1, max = 45) @Column(name = "family_name")
     private String familyName;
-    
+
+    @Basic(optional = true) @NotNull @Column(name = "active")
+    private boolean active;
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
     private Calendar calendar;
     
@@ -130,6 +131,14 @@ public class User implements Serializable, java.security.Principal {
         this.familyName = familyName;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public Calendar getCalendar() {
         return calendar;
     }
@@ -185,5 +194,4 @@ public class User implements Serializable, java.security.Principal {
     public String getName() {
         return null;
     }
-    
 }

@@ -45,9 +45,9 @@ public class AuthFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        /* Map<String, Object> map = new HashMap<String, Object>();
-        map.put("user", 1);
-        System.out.println((new JWTSigner("SECR3T")).sign(map)); */
+        Map<String, Object> map = new java.util.HashMap<String, Object>();
+        map.put("activate", 12);
+        System.out.println((new com.auth0.jwt.JWTSigner(SECRET)).sign(map));
         
         String header = requestContext.getHeaderString("Authorization");
         if (header == null) {
@@ -84,7 +84,7 @@ public class AuthFilter implements ContainerRequestFilter {
     private void unauthorized(ContainerRequestContext requestContext) {
         requestContext.abortWith(Response
                     .status(Response.Status.UNAUTHORIZED)
-                    .entity("Unauthorized")
+                    .entity("Unauthorized\n")
                     .build());
     }
     
