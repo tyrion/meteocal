@@ -28,7 +28,6 @@ import java.util.Date;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import org.json.JSONException;
-import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -39,7 +38,7 @@ public class CronJob {
 
     @Schedule(dayOfWeek = "Mon-Fri", month = "*", hour = "*", dayOfMonth = "*", year = "*", minute = "*/1", second = "0", persistent = false)
     
-    public void WeatherFetcher() throws IOException, ParseException, JSONException, Exception {
+    public void WeatherFetcher() throws IOException, JSONException, Exception {
         System.out.println("Timer event: " + new Date());
         System.out.println(GetWeather.getWeather("4+Via+Vittorio+Barzoni,+Milan,+IT", 16, "json"));
         }

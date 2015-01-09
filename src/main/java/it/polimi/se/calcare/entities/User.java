@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password"),
     @NamedQuery(name = "User.findByGivenName", query = "SELECT u FROM User u WHERE u.givenName = :givenName"),
     @NamedQuery(name = "User.findByFamilyName", query = "SELECT u FROM User u WHERE u.familyName = :familyName")})
-public class User implements Serializable {
+public class User implements Serializable, java.security.Principal {
     private static final long serialVersionUID = 1L;
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Basic(optional = false) @Column(name = "id")
     private Integer id;
@@ -169,7 +169,12 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.entities.User[ id=" + id + " ]";
+        return "User[ id=" + id + " ]";
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
     
 }
