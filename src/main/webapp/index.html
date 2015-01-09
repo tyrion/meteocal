@@ -1,10 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="CalCAREApp">
     <head>
-        <title>Start Page</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>CalCARE - Online Weather Calendar</title>
+        <meta charset="utf-8"/>
+        <script src="js/libs/angular.js/angular.js"></script>
+        <script src="js/libs/angular.js/angular-sanitize.js"></script>
+        <script src="js/libs/jquery/jquery.js"></script>
+        <script src="js/libs/twitter-bootstrap/js/bootstrap.js"></script>
+        <script src="js/calendar.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="js/libs/twitter-bootstrap/css/bootstrap.css"/>
+        <link href="css/style.css" media="screen" rel="stylesheet" type="text/css">
     </head>
-    <body>
-        <h1>Hello World!</h1>
+    <body ng-controller="CalendarController">
+        <div ng-switch on="loginData" id="main">
+            <div ng-switch-when="true">
+                <div ng-include="'userPage'"></div>
+            </div>
+            <div ng-switch-when="false">
+                <div ng-include="'guestPage'"></div>
+            </div>
+        </div>
+        
+        <script type="text/ng-template" id="guestPage">
+            <div id="landing">
+                <nav class="navbar navbar-inverse navbar-fixed-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                        <div id="navbar" class="navbar-collapse collapse">
+                            <form class="navbar-form navbar-right">
+                                <div class="form-group">
+                                    <input type="text" placeholder="Email" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" placeholder="Password" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-success">Sign in</button>
+                            </form>
+                        </div><!--/.navbar-collapse -->
+                    </div>
+                </nav>
+        
+                <div class="jumbotron">
+                    <div class="container">
+                        <h1>CalCARE</h1>
+                        <p>With CalCARE you can keep track of your indoor and outdoor events, and be notified if suddenly comes the rain.</p>
+                        <h2>Try our Online Weather Calendar. </h2>
+                        <div id="errorNotifications" ng-bind-html="$parent.errorText"></div>
+                        <p>
+                            <form ng-submit="signup(email, password, givenName, familyName)" class="navbar-form" role="form">
+                                <div class="form-group">
+                                    <input type="email" placeholder="Email" class="form-control input-lg" ng-model="email" />
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" placeholder="Password" class="form-control input-lg" ng-model="password" />
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" placeholder="Given Name" class="form-control input-lg" ng-model="givenName" />
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" placeholder="Family Name" class="form-control input-lg" ng-model="familyName" />
+                                </div>
+                                <br>
+                                <input type="submit" id="submitButton" class="btn btn-primary btn-lg" value="Signup &raquo;" />
+                            </form>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/ng-template" id="userPage">
+            <h1>Calendar</h1>
+            <button ng-click="logout()">Logout</button>
+        </script>
     </body>
 </html>
