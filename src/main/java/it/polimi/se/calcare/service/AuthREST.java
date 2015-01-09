@@ -23,11 +23,18 @@
  */
 package it.polimi.se.calcare.service;
 
+import com.auth0.jwt.JWTExpiredException;
 import com.auth0.jwt.JWTSigner;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.JWTVerifyException;
 import it.polimi.se.calcare.auth.AuthFilter;
 import it.polimi.se.calcare.auth.Password;
 import it.polimi.se.calcare.entities.User;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +52,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -67,8 +75,7 @@ public class AuthREST {
             user = em.createNamedQuery("User.findByEmail", User.class)
                 .setParameter("email", email)
                 .getSingleResult();
-            
-            if (Password.check(password, user.getPassword())) {
+            if (user.isActive() && Password.check(password, user.getPassword())) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("user", user.getId());
                 String token = (new JWTSigner(AuthFilter.SECRET)).sign(map);
@@ -76,5 +83,28 @@ public class AuthREST {
             }
         } catch (javax.persistence.NoResultException ex) {}
         throw new WebApplicationException(401);
+    }
+
+    @GET
+    @Path("activate")
+    public Response activate(@QueryParam("token") String token) throws URISyntaxException {
+        JWTVerifier verifier = new JWTVerifier(AuthFilter.SECRET);
+        Map<String, Object> payload;
+
+        try {
+            payload = verifier.verify(token);
+        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalStateException | IOException | SignatureException | JWTVerifyException ex) {
+            Logger.getLogger(AuthREST.class.getName()).log(Level.SEVERE, null, ex);
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
+        Integer id  = (Integer)payload.get("activate");
+        User user = em.createNamedQuery("User.findById", User.class)
+            .setParameter("id", id)
+            .getSingleResult();
+        user.setActive(true);
+        em.persist(user);
+
+        return Response.seeOther(new java.net.URI("..?activated")).build();
     }
 }
