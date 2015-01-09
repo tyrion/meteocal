@@ -42,10 +42,8 @@ public class City implements Serializable {
     @NotNull
     @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "name")
+    
+    @Basic(optional = false) @NotNull @Size(min = 1, max = 45) @Column(name = "name")
     private String name;
     @Basic(optional = false)
     @NotNull

@@ -5,8 +5,15 @@
  */
 package it.polimi.se.calcare.service;
 
+import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Event;
+import it.polimi.se.calcare.entities.Forecast;
+import it.polimi.se.calcare.entities.ForecastPK;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,6 +44,18 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @Override
     @Consumes({"application/xml", "application/json"})
     public void create(Event entity) {
+        String coords;
+        HashMap<String, String> data = null;
+        try {
+            coords=GetWeather.getLocation(entity.getLocation());
+            data=(GetWeather.getWeatherandCityInfo(16, "json", coords));
+        } catch (Exception ex) {
+            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        em.persist(new City(Integer.parseInt(data.get("ID_c")), data.get("Name"), data.get("Country"), Double.parseDouble(data.get("lat")), Double.parseDouble(data.get("lon"))));
+        ForecastPK dt_city= new ForecastPK(Date(data.get("dt")), Integer.parseInt(data.get("ID_c")));
+        em.persist(dt_city);
+        em.persist(new Forecast(dt_city, Double.parseDouble(data.get("TemperatureMin")), Double.parseDouble(data.get("TemperatureMax")), Double.parseDouble(data.get("Pressure")), Double.parseDouble(data.get("Humidity"))));
         super.create(entity);
     }
 
@@ -85,5 +104,9 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
+    private Date Date(String get) {
+        java.util.Date date = new java.util.Date(get);
+        return date;
+    }
 }

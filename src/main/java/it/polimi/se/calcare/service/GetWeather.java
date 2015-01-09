@@ -25,6 +25,7 @@ package it.polimi.se.calcare.service;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Scanner;
 import javax.ejb.Stateless;
 import org.json.JSONException;
@@ -45,19 +46,22 @@ public class GetWeather{
     return new URL(s);
 }
     
-    public static String getWeather(String addr) throws IOException, JSONException, Exception {
-        String str,loc;
+    public static String getLocation(String addr) throws Exception {
+        String location;
         try ( // read from the URL
             Scanner scan = new Scanner(googleUrlBuilder(addr).openStream())) {
-             str= new String();
+             location= new String();
             while (scan.hasNext())
-                str += scan.nextLine();
+                location += scan.nextLine();
         }
-        loc=(googleJsonDecoder(new JSONObject(str)));
+        return (googleJsonDecoder(new JSONObject(location)));
+    }
+    
+    public static HashMap<String, String> getWeatherandCityInfo(Integer cnt, String mode, String loc) throws IOException, JSONException, Exception {
+        String str = new String();
         try ( // read from the URL
-            Scanner scan = new Scanner(openWeatherUrlBuilder(loc).openStream())) 
+            Scanner scan = new Scanner(openWeatherUrlBuilder(loc, cnt, mode).openStream())) 
         {
-            str = new String();
             while (scan.hasNext())
                 str += scan.nextLine();
         }
@@ -75,24 +79,41 @@ public class GetWeather{
                         "&lon=" + loc.getDouble("lng"));
     }
     
-    public static URL openWeatherUrlBuilder(String addr) throws Exception
+    public static URL openWeatherUrlBuilder(String addr, Integer cnt, String mode) throws Exception
     {
         // build a URL
         String s = "http://api.openweathermap.org/data/2.5/forecast/daily?";
         s += addr;
-        s += "&cnt=1&mode=json";
+        s += "&cnt=" + cnt.toString();
+        s += "&mode=" + mode;
         return new URL(s);
     }
     
-    public static String openweatherJsonDecoder(JSONObject obj) throws JSONException {
-    JSONObject list= obj.getJSONArray("list").getJSONObject(0);
+    public static HashMap<String, String> openweatherJsonDecoder(JSONObject obj) throws JSONException {
+    for (int i=0; i<15; i++){   
+    JSONObject list= obj.getJSONArray("list").getJSONObject(i);
     JSONObject weather = list.getJSONArray("weather").getJSONObject(0);
+    JSONObject city = obj.getJSONObject("city");
+    JSONObject coords = city.getJSONObject("coord");
     //Return formatted (?) Object
     //TODO: Corectly Format Object
-    return ("date=" + list.getInt("dt") +
-                        "\nMain:" + weather.getString("main") +
-                        "\nDescription:" + weather.getString("description") +
-                        "\nIcon:" + weather.getString("icon")
-                                );
+    HashMap<String, String> cache = new HashMap<>();
+    cache.put("Name", city.getString("name"));
+    cache.put("ID_c", city.getString("id"));
+    cache.put("Country", city.getString("country"));
+    cache.put("Lat", coords.getString("lat"));
+    cache.put("Lon", coords.getString("lon"));
+    cache.put("Date", list.getString("dt"));
+    cache.put("TemperatureMax", list.getJSONObject("temp").getString("max"));
+    cache.put("TemperatureMin", list.getJSONObject("temp").getString("min"));
+    cache.put("Humidity", list.getString("humidity"));
+    cache.put("Pressure", list.getString("pressure"));
+    cache.put("ID_w", weather.getString("id"));
+    cache.put("Main", weather.getString("main"));
+    cache.put("Description", weather.getString("description"));
+    cache.put("Icon", weather.getString("icon"));
+    return cache;
+        }
+        return null;
     }
 }
