@@ -59,4 +59,45 @@ html, body{
 
 #calendarWrapper {
     margin-top: 50px;
+    margin-left: 15px;
+    margin-right: -15px;
+}
+
+#calendarContainer {
+    margin-right: 30px;
+}
+
+#calendarContainer .controls{
+    margin: 30px;
+}
+
+#calendarContainer .controls h3 {
+    display: inline;
+}
+
+#notificationsContainer:after {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #959595;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    content: "Notifications";
+}
+
+#notificationsContainer {
+    margin-right: 0px;
+    margin-left: 0px;
+    background-color: #FFF;
+    border-color: #DDD;
+    border-width: 1px;
+    border-radius: 4px 4px 0px 0px;
+    box-shadow: none;
+    position: relative;
+    padding: 45px 15px 15px;
+    margin: 0px -15px 15px;
+    border-style: solid;
+    height: 100%;
 }

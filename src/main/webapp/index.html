@@ -113,31 +113,51 @@
         </script>
 
         <script type="text/ng-template" id="userPage">
-            <div id="calendarWrapper">
-                <h1>Calendar</h1>
-                <button id="nextMonthButton">Next</button>
-                <button id="prevMonthButton">Prev</button>
-                <!-- Responsive calendar - START -->
-                <div class="responsive-calendar">
-                    <div class="controls">
-                        <a class="pull-left" data-go="prev"><div class="btn"><i class="icon-chevron-left"></i></div></a>
-                        <h4><span data-head-year></span> <span data-head-month></span></h4>
-                        <a class="pull-right" data-go="next"><div class="btn"><i class="icon-chevron-right"></i></div></a>
-                    </div><hr/>
-                    <div class="day-headers">
-                        <div class="day header">Mon</div>
-                        <div class="day header">Tue</div>
-                        <div class="day header">Wed</div>
-                        <div class="day header">Thu</div>
-                        <div class="day header">Fri</div>
-                        <div class="day header">Sat</div>
-                        <div class="day header">Sun</div>
+            <div id="calendarWrapper" class="row">
+                <div id="calendarContainer" class="container col-md-9">
+                    <!-- Responsive calendar - START -->
+                    <div class="responsive-calendar">
+                        <div class="controls">
+                            <a class="pull-left" data-go="prev"><div class="btn btn-primary">
+                                <i class="glyphicon glyphicon-chevron-left glyphicon-align-left" aria-hidden="true"></i>
+                                 Prev
+                            </div></a>
+                            <h3><span data-head-year></span> <span data-head-month></span></h3>
+                            <a class="pull-right" data-go="next"><div class="btn btn-primary">
+                                Next 
+                                <i class="glyphicon glyphicon-chevron-right glyphicon-align-right" aria-hidden="true"></i>
+                            </div></a>
+                        </div><hr/>
+                        <div class="day-headers">
+                            <div class="day header">Mon</div>
+                            <div class="day header">Tue</div>
+                            <div class="day header">Wed</div>
+                            <div class="day header">Thu</div>
+                            <div class="day header">Fri</div>
+                            <div class="day header">Sat</div>
+                            <div class="day header">Sun</div>
+                        </div>
+                        <div class="days" data-group="days">
+                            <!-- the place where days will be generated -->
+                        </div>
                     </div>
-                    <div class="days" data-group="days">
-                        <!-- the place where days will be generated -->
+                    <!-- Responsive calendar - END -->
+                </div>
+                
+                <div id="notificationsContainer" class="container col-md-3">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading">Unread Notification</h4>
+                            <p class="list-group-item-text">This event has something to say.</p>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading">Some Other Notification</h4>
+                            <p class="list-group-item-text">This is a test.</p>
+                        </a>
                     </div>
                 </div>
-                <!-- Responsive calendar - END -->
+                
+                
             </div>
             </div>
         </script>

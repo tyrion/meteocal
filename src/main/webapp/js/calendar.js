@@ -8,12 +8,18 @@ function positionBG(){
     }
 }
 
+function generateNotif(title, body, type, $sce){
+    return $sce.trustAsHtml('<div class="alert alert-' + type + ' alert-dismissible fade in" role="alert">' +
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + 
+        '<span aria-hidden="true">&times;</span></button> <b>' + title + '</b> ' + body +'</div>');
+}
+
 (function() {
 
 var calApp = angular.module("CalCAREApp", ['ngSanitize']);
 
-calApp.controller("CalendarController", function ($scope, $http, $log) {
-    $scope.errorText = '<div class="alert alert-danger" role="alert">There was an error while validating your request. Please retry.</div>';
+calApp.controller("CalendarController", function ($scope, $http, $sce) {
+    $scope.errorText = '';
     $scope.loginData = true;
     
     $scope.login = function(data) {
@@ -37,7 +43,7 @@ calApp.controller("CalendarController", function ($scope, $http, $log) {
             //$scope.token = res.data.token;
         })
         .error(function(data) {
-            $scope.errorText = '<div class="alert alert-danger" role="alert">There was an error while validating your request. Please retry.</div>';
+            $scope.errorText = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
     };
 });
