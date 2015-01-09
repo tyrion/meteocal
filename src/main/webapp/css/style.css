@@ -3,7 +3,7 @@ html, body{
     padding: 0;
     height: 100%;
     width: 100%;
-    font-family: 'Open Sans', sans-serif;
+    /* font-family: 'Open Sans', sans-serif; */
     font-weight: 300;
     font-size: 16px;
     overflow: hidden;
@@ -23,6 +23,7 @@ html, body{
     width: 100%;
     position: absolute;
     top: 0px;
+    background: url('../img/background.jpg') no-repeat center;
 }
 
 
@@ -39,11 +40,23 @@ html, body{
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
 }
 
-.navbar-inverse {
+.jumbotron .alert{
+    margin-top: 1em;
+}
+
+#landing .navbar-inverse {
     background-color:rgba(0,0,0,0.2);
     border: 0px;
 }
 
+.navbar-inverse .container {
+    margin-top: 0px;
+}
+
 #submitButton {
     margin-top: 1em;    
+}
+
+#calendarWrapper {
+    margin-top: 50px;
 }
