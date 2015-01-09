@@ -25,7 +25,6 @@ package it.polimi.se.calcare.service;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Scanner;
 import javax.ejb.Stateless;
 import org.json.JSONException;
@@ -46,7 +45,7 @@ public class GetWeather{
     return new URL(s);
 }
     
-    public static String getWeather(String addr) throws IOException, JSONException, Exception {
+    public static String getWeather(String addr, Integer cnt, String mode) throws IOException, JSONException, Exception {
         String str,loc;
         try ( // read from the URL
             Scanner scan = new Scanner(googleUrlBuilder(addr).openStream())) {
@@ -56,7 +55,7 @@ public class GetWeather{
         }
         loc=(googleJsonDecoder(new JSONObject(str)));
         try ( // read from the URL
-            Scanner scan = new Scanner(openWeatherUrlBuilder(loc).openStream())) 
+            Scanner scan = new Scanner(openWeatherUrlBuilder(loc, cnt, mode).openStream())) 
         {
             str = new String();
             while (scan.hasNext())
@@ -76,24 +75,29 @@ public class GetWeather{
                         "&lon=" + loc.getDouble("lng"));
     }
     
-    public static URL openWeatherUrlBuilder(String addr) throws Exception
+    public static URL openWeatherUrlBuilder(String addr, Integer cnt, String mode) throws Exception
     {
         // build a URL
         String s = "http://api.openweathermap.org/data/2.5/forecast/daily?";
         s += addr;
-        s += "&cnt=1&mode=json";
+        s += "&cnt=" + cnt.toString();
+        s += "&mode=" + mode;
         return new URL(s);
     }
     
     public static String openweatherJsonDecoder(JSONObject obj) throws JSONException {
-    JSONObject list= obj.getJSONArray("list").getJSONObject(0);
+    for (int i=0; i<15; i++){   
+    JSONObject list= obj.getJSONArray("list").getJSONObject(i);
     JSONObject weather = list.getJSONArray("weather").getJSONObject(0);
     //Return formatted (?) Object
     //TODO: Corectly Format Object
     return ("date=" + list.getInt("dt") +
+                        "\nID:" + weather.getString("id") +
                         "\nMain:" + weather.getString("main") +
                         "\nDescription:" + weather.getString("description") +
                         "\nIcon:" + weather.getString("icon")
                                 );
+        }
+        return null;
     }
 }

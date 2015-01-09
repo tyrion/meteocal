@@ -41,6 +41,6 @@ public class CronJob {
     
     public void WeatherFetcher() throws IOException, ParseException, JSONException, Exception {
         System.out.println("Timer event: " + new Date());
-        System.out.println(GetWeather.getWeather("4+Via+Vittorio+Barzoni,+Milan,+IT"));
+        System.out.println(GetWeather.getWeather("4+Via+Vittorio+Barzoni,+Milan,+IT", 16, "json"));
         }
 }
