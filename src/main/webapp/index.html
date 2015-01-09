@@ -5,16 +5,19 @@
         <meta charset="utf-8"/>
         <script src="js/libs/angular.js/angular.js"></script>
         <script src="js/libs/angular.js/angular-sanitize.js"></script>
-        <script src="js/libs/jquery/jquery.js"></script>
-        <script src="js/libs/twitter-bootstrap/js/bootstrap.js"></script>
+        <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="js/libs/jquery/responsive-calendar.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
         <script src="js/calendar.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" type="text/css" href="js/libs/twitter-bootstrap/css/bootstrap.css"/>
+        <link href="css/responsive-calendar.css" rel="stylesheet" media="screen">
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="css/style.css" media="screen" rel="stylesheet" type="text/css">
     </head>
     <body ng-controller="CalendarController">
         <div ng-switch on="loginData" id="main">
             <div ng-switch-when="true">
+                <div ng-include="'userNav'"></div>
                 <div ng-include="'userPage'"></div>
             </div>
             <div ng-switch-when="false">
@@ -76,10 +79,67 @@
                 </div>
             </div>
         </script>
+        
+        <script type="text/ng-template" id="userNav">
+            <div id="userPageWrapper">
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#"><b>Cal</b>CARE</a>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse navbar-right">
+                         <ul class="nav navbar-nav">
+                            <li><button type="button" class="btn btn-primary navbar-btn">New Event</button></li>
+                            <li><a href="#">Settings</a></li>
+                            <li><a ng-click="logout()" href="#">Logout</a></li>
+                            <li>
+                                <form class="navbar-form navbar-right">
+                                    <div class="form-group has-feedback">
+                                        <input type="text" placeholder="Search for user email - TODO" class="form-control">
+                                        <i class="glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></i>
+                                    </div>
+                                </form>
+                            </li>
+                        </ul>
+                    </div><!--/.navbar-collapse -->
+                </div>
+            </nav>
+        </script>
 
         <script type="text/ng-template" id="userPage">
-            <h1>Calendar</h1>
-            <button ng-click="logout()">Logout</button>
+            <div id="calendarWrapper">
+                <h1>Calendar</h1>
+                <button id="nextMonthButton">Next</button>
+                <button id="prevMonthButton">Prev</button>
+                <!-- Responsive calendar - START -->
+                <div class="responsive-calendar">
+                    <div class="controls">
+                        <a class="pull-left" data-go="prev"><div class="btn"><i class="icon-chevron-left"></i></div></a>
+                        <h4><span data-head-year></span> <span data-head-month></span></h4>
+                        <a class="pull-right" data-go="next"><div class="btn"><i class="icon-chevron-right"></i></div></a>
+                    </div><hr/>
+                    <div class="day-headers">
+                        <div class="day header">Mon</div>
+                        <div class="day header">Tue</div>
+                        <div class="day header">Wed</div>
+                        <div class="day header">Thu</div>
+                        <div class="day header">Fri</div>
+                        <div class="day header">Sat</div>
+                        <div class="day header">Sun</div>
+                    </div>
+                    <div class="days" data-group="days">
+                        <!-- the place where days will be generated -->
+                    </div>
+                </div>
+                <!-- Responsive calendar - END -->
+            </div>
+            </div>
         </script>
     </body>
 </html>
