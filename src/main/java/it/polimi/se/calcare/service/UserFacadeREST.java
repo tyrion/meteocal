@@ -5,6 +5,7 @@
  */
 package it.polimi.se.calcare.service;
 
+import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.User;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -63,6 +64,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
         return super.find(id);
     }
 
+    @AuthRequired
     @GET
     @Override
     @Produces({"application/xml", "application/json"})

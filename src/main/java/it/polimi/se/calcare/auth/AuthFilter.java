@@ -5,7 +5,6 @@
  */
 package it.polimi.se.calcare.auth;
 
-import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
 import it.polimi.se.calcare.entities.User;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,8 +39,9 @@ public class AuthFilter implements ContainerRequestFilter {
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
     
+    public static final String SECRET = "4553414d4544494d455244414a4156414d4d45524441";
     private static final Pattern HEADER_PATTERN = Pattern.compile("Bearer (.+)");
-    private static final JWTVerifier jwtVerifier = new JWTVerifier("SECR3T");
+    private static final JWTVerifier jwtVerifier = new JWTVerifier(SECRET);
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {

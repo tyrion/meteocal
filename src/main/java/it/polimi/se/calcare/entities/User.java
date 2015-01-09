@@ -5,8 +5,13 @@
  */
 package it.polimi.se.calcare.entities;
 
+import it.polimi.se.calcare.auth.Password;
 import java.io.Serializable;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -73,6 +78,10 @@ public class User implements Serializable, java.security.Principal {
         this.id = id;
     }
 
+    public User(String email, String password) {
+        this(email, password, "", "");
+    }
+
     public User(String email, String password, String givenName, String familyName) {
         this.id = null;
         this.email = email;
@@ -101,8 +110,8 @@ public class User implements Serializable, java.security.Principal {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        this.password = Password.getSaltedHash(password);
     }
 
     public String getGivenName() {
