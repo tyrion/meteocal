@@ -40,22 +40,19 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         super(Event.class);
     }
 
+    // Forecast[] getWeather(start, end, coords)
     @POST
     @Override
     @Consumes({"application/xml", "application/json"})
     public void create(Event entity) {
-        String coords;
-        HashMap<String, String> data = null;
+
+        //Create the City in the DB
         try {
-            coords=GetWeather.getLocation(entity.getLocation());
-            data=(GetWeather.getWeatherandCityInfo(16, "json", coords));
+            new GetWeather().createCity(entity.getLocation());
         } catch (Exception ex) {
             Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
         }
-        em.persist(new City(Integer.parseInt(data.get("ID_c")), data.get("Name"), data.get("Country"), Double.parseDouble(data.get("lat")), Double.parseDouble(data.get("lon"))));
-        ForecastPK dt_city= new ForecastPK(Date(data.get("dt")), Integer.parseInt(data.get("ID_c")));
-        em.persist(dt_city);
-        em.persist(new Forecast(dt_city, Double.parseDouble(data.get("TemperatureMin")), Double.parseDouble(data.get("TemperatureMax")), Double.parseDouble(data.get("Pressure")), Double.parseDouble(data.get("Humidity"))));
+        //Create the forecast(s) associated with the event
         super.create(entity);
     }
 

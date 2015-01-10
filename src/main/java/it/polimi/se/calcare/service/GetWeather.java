@@ -23,14 +23,27 @@
  */
 package it.polimi.se.calcare.service;
 
+import it.polimi.se.calcare.entities.City;
+import it.polimi.se.calcare.entities.Forecast;
+import it.polimi.se.calcare.entities.WeatherCondition;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 import javax.ejb.Stateless;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import java.util.Date;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
+import org.joda.time.Days;
 /**
  *
  * @author nopesled
@@ -38,6 +51,9 @@ import org.json.JSONObject;
 @Stateless
 public class GetWeather{
 
+    @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
+    private EntityManager em;
+    
     public static URL googleUrlBuilder(String addr) throws Exception
 {
     // build a URL
@@ -46,26 +62,83 @@ public class GetWeather{
     return new URL(s);
 }
     
-    public static String getLocation(String addr) throws Exception {
-        String location;
-        try ( // read from the URL
-            Scanner scan = new Scanner(googleUrlBuilder(addr).openStream())) {
-             location= new String();
-            while (scan.hasNext())
-                location += scan.nextLine();
-        }
-        return (googleJsonDecoder(new JSONObject(location)));
+    public void createCity(String addr) throws Exception {
+        //set the address of the city for the input stream for the google URL Builder 
+        InputStream google=googleUrlBuilder(addr).openStream();
+        
+        //varibable to call the generic json builder
+        JSONObject googleJSON = new JSONObject(jsonBuilder(google));
+        
+        //Call the Decoder for the google JSON
+        String location = googleJsonDecoder(googleJSON);
+        
+        //Build the Openeather URL
+        InputStream openWeather = openWeatherUrlBuilder(location).openStream();
+        
+        //Create the JSON for Openweather parsing
+        JSONObject owJSON = new JSONObject(jsonBuilder(openWeather));
+        
+        //Decode the JSON and create the City into the DB
+        openweatherJsonDecoderCity(owJSON);
     }
     
-    public static HashMap<String, String> getWeatherandCityInfo(Integer cnt, String mode, String loc) throws IOException, JSONException, Exception {
+    public void updateForecast() throws Exception{
+        /*
+                this method is responsible for the update of the forecast
+                it takes nothing as input but grab from the DB the list of cities
+                from which derive all the event that have place in that city and 
+                update the relative forecast object
+        */
+        List<Forecast> forecasts = em.createNamedQuery("Forecast.findAll", Forecast.class).getResultList();
+        List<City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
+
+        for (Forecast item : forecasts) {
+            Date tmp=(item.getForecastPK().getDt());
+            DateTime date= new DateTime(tmp);
+            int cnt= Days.daysBetween(date, new DateTime()).getDays();
+            if ((cnt) > 16) continue; 
+                else{        
+            Double lat=item.getCity1().getLat();
+            Double lon=item.getCity1().getLon();
+            
+            //Format lat & lon for the URLBuilder
+            String coords=openWeatherUrlPreBuilder(lat, lon);
+            
+            //Build the Openeather URL
+            InputStream openWeather = openWeatherUrlBuilder(coords).openStream();
+        
+            //Create the JSON for Openweather parsing
+            JSONObject owJSON = new JSONObject(jsonBuilder(openWeather));
+        
+            //Decode the JSON and update the forecast information
+            openweatherJsonDecoderWeather(owJSON, item, cnt);
+            }
+            }
+    } 
+    
+    public String jsonBuilder(InputStream urlBuilder){
         String str = new String();
         try ( // read from the URL
-            Scanner scan = new Scanner(openWeatherUrlBuilder(loc, cnt, mode).openStream())) 
+            Scanner scan = new Scanner(urlBuilder)) 
         {
             while (scan.hasNext())
                 str += scan.nextLine();
         }
-            return openweatherJsonDecoder(new JSONObject(str));
+        return str;
+    }
+    
+    public void getWeatherAndCityInfo(Date start, Date end, String loc) throws IOException, JSONException, Exception {
+        String str = new String();
+        int duration = Days.daysBetween(new DateTime(start), new DateTime(end)).getDays();
+        int between = Days.daysBetween(new DateTime(), new DateTime(start)).getDays();
+        
+        try ( // read from the URL
+            Scanner scan = new Scanner(openWeatherUrlBuilder(loc).openStream())) 
+        {
+            while (scan.hasNext())
+                str += scan.nextLine();
+        }
+            openweatherJsonDecoderCity(new JSONObject(str));
     }
 
     public static String googleJsonDecoder(JSONObject obj) throws JSONException 
@@ -75,45 +148,45 @@ public class GetWeather{
     JSONObject loc =
         res.getJSONObject("geometry").getJSONObject("location");
     // nicely format the return value to insert it directly into openweatherUrlDecoder
-    return ("lat=" + loc.getDouble("lat") +
-                        "&lon=" + loc.getDouble("lng"));
+        return openWeatherUrlPreBuilder(loc.getDouble("lat"), loc.getDouble("lng"));
     }
     
-    public static URL openWeatherUrlBuilder(String addr, Integer cnt, String mode) throws Exception
+    public static String openWeatherUrlPreBuilder(Double lat, Double lon){
+        return ("lat=" + lat.toString() +
+                        "&lon=" + lon.toString());
+    }
+    
+    public static URL openWeatherUrlBuilder(String addr) throws Exception
     {
         // build a URL
         String s = "http://api.openweathermap.org/data/2.5/forecast/daily?";
         s += addr;
-        s += "&cnt=" + cnt.toString();
-        s += "&mode=" + mode;
+        s += "&cnt=16";
+        s += "&mode=json";
         return new URL(s);
     }
     
-    public static HashMap<String, String> openweatherJsonDecoder(JSONObject obj) throws JSONException {
-    for (int i=0; i<15; i++){   
-    JSONObject list= obj.getJSONArray("list").getJSONObject(i);
-    JSONObject weather = list.getJSONArray("weather").getJSONObject(0);
+    
+    public void openweatherJsonDecoderCity(JSONObject obj) throws JSONException {
     JSONObject city = obj.getJSONObject("city");
     JSONObject coords = city.getJSONObject("coord");
-    //Return formatted (?) Object
-    //TODO: Corectly Format Object
-    HashMap<String, String> cache = new HashMap<>();
-    cache.put("Name", city.getString("name"));
-    cache.put("ID_c", city.getString("id"));
-    cache.put("Country", city.getString("country"));
-    cache.put("Lat", coords.getString("lat"));
-    cache.put("Lon", coords.getString("lon"));
-    cache.put("Date", list.getString("dt"));
-    cache.put("TemperatureMax", list.getJSONObject("temp").getString("max"));
-    cache.put("TemperatureMin", list.getJSONObject("temp").getString("min"));
-    cache.put("Humidity", list.getString("humidity"));
-    cache.put("Pressure", list.getString("pressure"));
-    cache.put("ID_w", weather.getString("id"));
-    cache.put("Main", weather.getString("main"));
-    cache.put("Description", weather.getString("description"));
-    cache.put("Icon", weather.getString("icon"));
-    return cache;
-        }
-        return null;
+    em.persist(new City(
+            city.getInt("id"), 
+            city.getString("name"), 
+            city.getString("country"), 
+            Double.parseDouble(coords.getString("lat")), 
+            Double.parseDouble(coords.getString("lon"))));
     }
+    
+    public void openweatherJsonDecoderWeather(JSONObject obj, Forecast forecast, int day) throws JSONException {
+        
+    JSONObject list= obj.getJSONArray("list").getJSONObject(day-1);
+    JSONObject weather = list.getJSONArray("weather").getJSONObject(0);
+    
+    forecast.setHumidity(list.getDouble("humidity"));
+    forecast.setPressure(list.getDouble("pressure"));
+    forecast.setTempMax(list.getJSONObject("temp").getDouble("max"));
+    forecast.setTempMin(list.getJSONObject("temp").getDouble("min"));
+    forecast.setWeatherCondition(new WeatherCondition(weather.getInt("id")));
+            }
 }
