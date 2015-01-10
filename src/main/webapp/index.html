@@ -19,6 +19,7 @@
             <div ng-switch-when="true">
                 <div ng-include="'userNav'"></div>
                 <div ng-include="'userPage'"></div>
+                <div ng-include="'userModals'"></div>
             </div>
             <div ng-switch-when="false">
                 <div ng-include="'guestPage'" id="landing"></div>
@@ -93,7 +94,7 @@
                     </div>
                     <div id="navbar" class="navbar-collapse collapse navbar-right">
                          <ul class="nav navbar-nav">
-                            <li><button type="button" class="btn btn-primary navbar-btn">New Event</button></li>
+                            <li><button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventCreateModal">New Event</button></li>
                             <li><a href="#">Settings</a></li>
                             <li><a ng-click="logout()" href="#">Logout</a></li>
                             <li>
@@ -108,6 +109,26 @@
                     </div><!--/.navbar-collapse -->
                 </div>
             </nav>
+        </script>
+        
+        <script type="text/ng-template" id="userModals">
+            <div class="modal fade" id="eventCreateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                        </div>
+                        <div class="modal-body">
+                            ...
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </script>
 
         <script type="text/ng-template" id="userPage">

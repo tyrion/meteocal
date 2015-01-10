@@ -89,7 +89,7 @@ html, body{
 
 #notificationsContainer {
     margin-right: 0px;
-    margin-left: 0px;
+    margin-left: -15px;
     background-color: #FFF;
     border-color: #DDD;
     border-width: 1px;
@@ -100,4 +100,10 @@ html, body{
     margin: 0px -15px 15px;
     border-style: solid;
     height: 100%;
+}
+
+/* REALLY BAD BOOTSTRAP HACK */
+body, body.modal {
+    padding-right: 0 !important;
+    overflow-y: hidden;
 }
