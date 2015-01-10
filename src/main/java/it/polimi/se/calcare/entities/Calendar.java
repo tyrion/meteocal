@@ -35,17 +35,22 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Calendar.findById", query = "SELECT c FROM Calendar c WHERE c.id = :id")})
 public class Calendar implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "calendar")
     private Collection<Participation> participationCollection;
+
     @JoinColumn(name = "owner", referencedColumnName = "id")
     @OneToOne(optional = false)
     private User owner;
 
+    
+    
     public Calendar() {
     }
 
