@@ -22,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.ParseConversionEvent;
 
 /**
  *
@@ -42,7 +43,8 @@ public class UserFacadeREST extends AbstractFacade<User> {
         super.create(entity);
         Map<String, Object> map = new java.util.HashMap<>();
         map.put("activate", entity.getId());
-        System.out.println((new com.auth0.jwt.JWTSigner(SECRET)).sign(map));
+        String[] to = new String[] { entity.getEmail() };
+        SendMail.Mail(to,"Registration to CalCARE", (new com.auth0.jwt.JWTSigner(SECRET)).sign(map));
         return Response
             .status(201)
             .entity(entity)
