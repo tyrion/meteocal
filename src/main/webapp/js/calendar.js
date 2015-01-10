@@ -66,6 +66,7 @@ var calApp = angular.module("CalCAREApp", ['ngSanitize']);
 calApp.controller("CalendarController", function ($scope, $http, $sce) {
     $scope.landingNotif = '';
     $scope.loginData = false;
+    
     //check for user activation
     if (window.location.hash.replace("#/", "") === 'activated'){
         $scope.landingNotif = generateNotif('Yay!', 'You just activated your account. Now just login and enjoy CalCARE!', 'success', $sce);
@@ -75,14 +76,13 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
     $scope.login = function(data) {
         $scope.loginData = true;
         $scope.landingNotif = '';
-        $scope.create = {};
-        $scope.create.invitedPeople = [];
-        $scope.create.searchedPeople = [];
+        $scope.eventCreate = {};
+        $scope.eventCreate.invitedPeople = [];
+        $scope.eventCreate.searchedPeople = [];
         setTimeout(function(){ setupUserPage(); }, 10);
         console.log(data);
-        //TODO: salvare token
         
-        $scope.token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoyNX0.FLQrIKdgdDJwA5Mwar8bsXf1a2-hYVGdosZ7Zht9fXw';
+        $scope.token = data.token;
         $http({
             method: 'GET',
             url: "api/users",
@@ -90,10 +90,11 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
         })
         .success(function(data) {
             console.log(data);
-            $scope.create.searchedPeople = data;
+            $scope.eventCreate.searchedPeople = data;
         })
         .error(function(data) {
-            $("#calendarContainer").html(generateNotif('Oh snap!', 'Incorrect login.', 'danger', $sce));
+            //TODO error in case of server error
+            console.log(data);
         }); 
     };
     //$scope.login([]);
@@ -128,13 +129,26 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
             $scope.landingNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
     };
+    
+    $scope.eventCreateSubmit = function(eventCreate) {
+        $http({
+            method: 'POST',
+            url: "api/events",
+            data: eventCreate,
+            headers: {'Authorization': 'Bearer ' + $scope.token}
+        })
+        .success(function(data) {
+            //TODO: event create success - insert event into events list for calendar
+        })
+        .error(function(data) {
+            //TODO event create error
+        });
+    };
 });
 
 })();
 
 $(document).ready(function() {
-    //load background
-    //$("#landing").css('background', 'url(img/background.jpg) no-repeat center');
     positionBG();
     $(window).resize(function(){
         positionBG();
