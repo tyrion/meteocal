@@ -14,51 +14,7 @@ function generateNotif(title, body, type, $sce){
         '<span aria-hidden="true">&times;</span></button> <b>' + title + '</b> ' + body +'</div>');
 }
 
-(function() {
-
-var calApp = angular.module("CalCAREApp", ['ngSanitize']);
-
-calApp.controller("CalendarController", function ($scope, $http, $sce) {
-    $scope.errorText = '';
-    $scope.loginData = true;
-    
-    $scope.login = function(data) {
-        $scope.loginData = true;
-    };
-    $scope.logout = function() {
-        $scope.loginData = false;
-        setTimeout(function(){ positionBG(); }, 10);
-    };
-
-    $scope.signup = function(email, password, givenName, familyName) {
-        var data = {
-            email: email,
-            password: password,
-            givenName: givenName,
-            familyName: familyName
-        };
-        
-        $http.post("api/users/", data)
-        .success(function(data) {
-            $scope.login(data);
-            //$scope.token = res.data.token;
-        })
-        .error(function(data) {
-            $scope.errorText = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
-        });
-    };
-});
-
-})();
-
-$(document).ready(function() {
-    //load background
-    //$("#landing").css('background', 'url(img/background.jpg) no-repeat center');
-    positionBG();
-    $(window).resize(function(){
-        positionBG();
-    });
-    
+function setupUserPage(){
     $(".responsive-calendar").responsiveCalendar({
         time: '2013-05',
         events: {
@@ -85,14 +41,14 @@ $(document).ready(function() {
             }
         }
     });
-    
+
     $("#nextMonthButton").click(function(){
         $(".responsive-calendar").responsiveCalendar('next');
     });
     $("#prevMonthButton").click(function(){
         $(".responsive-calendar").responsiveCalendar('prev');
     });
-    
+
     $('#createBeginDatetime').datetimepicker();
     $('#createEndDatetime').datetimepicker();
     $("#createBeginDatetime").on("dp.change",function (e) {
@@ -100,5 +56,62 @@ $(document).ready(function() {
     });
     $("#createEndDatetime").on("dp.change",function (e) {
         $('#createBeginDatetime').data("DateTimePicker").setMaxDate(e.date);
+    });
+};
+
+(function() {
+
+var calApp = angular.module("CalCAREApp", ['ngSanitize']);
+
+calApp.controller("CalendarController", function ($scope, $http, $sce) {
+    $scope.landingNotif = '';
+    $scope.loginData = false;
+           
+    $scope.login = function(data) {
+        $scope.loginData = true;
+        $scope.landingNotif = '';
+        setTimeout(function(){ setupUserPage(); }, 10);
+        //TODO: salvare toker
+    };
+    $scope.logout = function() {
+        $scope.loginData = false;
+        setTimeout(function(){ positionBG(); $scope.landingNotif = '';}, 10);
+        //TODO: cancellare il token
+    };
+
+    $scope.loginSubmit = function(loginInfo) {
+        $http({
+            method: 'POST',
+            url: "api/auth/login",
+            data: $.param({email: loginInfo.email, password: loginInfo.password}),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(data) {
+            $scope.login(data);
+        })
+        .error(function(data) {
+            $scope.landingNotif = generateNotif('Oh snap!', 'Incorrect login.', 'danger', $sce);
+        });
+    };
+    
+    $scope.signupSubmit = function(signupData) {
+        $http.post("api/users/", signupData)
+        .success(function(data) {
+            $scope.landingNotif = generateNotif('Welcome aboard!', 'We have sent you an email with a confirmation link, please click on it, and your account will be activated.', 'success', $sce);
+        })
+        .error(function(data) {
+            $scope.landingNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
+        });
+    };
+});
+
+})();
+
+$(document).ready(function() {
+    //load background
+    //$("#landing").css('background', 'url(img/background.jpg) no-repeat center');
+    positionBG();
+    $(window).resize(function(){
+        positionBG();
     });
 });
