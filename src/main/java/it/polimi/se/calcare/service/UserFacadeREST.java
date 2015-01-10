@@ -5,9 +5,11 @@
  */
 package it.polimi.se.calcare.service;
 
+import static it.polimi.se.calcare.auth.AuthFilter.SECRET;
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.User;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -38,6 +40,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @POST
     public Response add(User entity) {
         super.create(entity);
+        Map<String, Object> map = new java.util.HashMap<>();
+        map.put("activate", entity.getId());
+        System.out.println((new com.auth0.jwt.JWTSigner(SECRET)).sign(map));
         return Response
             .status(201)
             .entity(entity)
