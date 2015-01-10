@@ -27,6 +27,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
     };
     $scope.logout = function() {
         $scope.loginData = false;
+        setTimeout(function(){ positionBG(); }, 10);
     };
 
     $scope.signup = function(email, password, givenName, familyName) {
@@ -66,7 +67,7 @@ $(document).ready(function() {
             "2013-05-03": {"number": 1, "badgeClass": "badge-error"}, 
             "2013-06-12": {"class": "active special"},
             "2013-06-23": {},
-            "2013-04-30": {
+            "2013-05-30": {
                 "number": 2, 
                 "badgeClass": 
                 "badge-warning", 
@@ -90,5 +91,14 @@ $(document).ready(function() {
     });
     $("#prevMonthButton").click(function(){
         $(".responsive-calendar").responsiveCalendar('prev');
+    });
+    
+    $('#createBeginDatetime').datetimepicker();
+    $('#createEndDatetime').datetimepicker();
+    $("#createBeginDatetime").on("dp.change",function (e) {
+        $('#createEndDatetime').data("DateTimePicker").setMinDate(e.date);
+    });
+    $("#createEndDatetime").on("dp.change",function (e) {
+        $('#createBeginDatetime').data("DateTimePicker").setMaxDate(e.date);
     });
 });

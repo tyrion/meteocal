@@ -14,13 +14,13 @@ html, body{
     position: static;
 }
 
-#main , #landing .ng-scope{
-    height: 100%;
+#landing, #userPageWrapper {
+    width: calc(100% + 18px);
+    overflow-y: scroll;
 }
 
 #landing{
     height: 100%;
-    width: 100%;
     position: absolute;
     top: 0px;
     background: url('../img/background.jpg') no-repeat center;
@@ -68,7 +68,7 @@ html, body{
 }
 
 #calendarContainer .controls{
-    margin: 30px;
+    margin: 30px 0;
 }
 
 #calendarContainer .controls h3 {
@@ -89,7 +89,7 @@ html, body{
 
 #notificationsContainer {
     margin-right: 0px;
-    margin-left: 0px;
+    margin-left: -15px;
     background-color: #FFF;
     border-color: #DDD;
     border-width: 1px;
@@ -100,4 +100,10 @@ html, body{
     margin: 0px -15px 15px;
     border-style: solid;
     height: 100%;
+}
+
+/* REALLY BAD BOOTSTRAP HACK */
+body, body.modal {
+    padding-right: 0 !important;
+    overflow-y: hidden;
 }
