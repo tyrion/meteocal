@@ -5,6 +5,7 @@
  */
 package it.polimi.se.calcare.service;
 
+import com.auth0.jwt.JWTSigner;
 import static it.polimi.se.calcare.auth.AuthFilter.SECRET;
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.User;
@@ -21,7 +22,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.ParseConversionEvent;
 
 /**
  *
@@ -36,13 +40,25 @@ public class UserFacadeREST extends AbstractFacade<User> {
     public UserFacadeREST() {
         super(User.class);
     }
+    
+    private String getActivationToken(User user) {
+        Map<String, Object> map = new java.util.HashMap<>();
+        map.put("activate", user.getId());
+        return (new JWTSigner(SECRET)).sign(map);
+    }
 
     @POST
-    public Response add(User entity) {
+    public Response add(@Context UriInfo ui, User entity) {
         super.create(entity);
-        Map<String, Object> map = new java.util.HashMap<>();
-        map.put("activate", entity.getId());
-        System.out.println((new com.auth0.jwt.JWTSigner(SECRET)).sign(map));
+        em.flush();
+        
+        String URL = ui.getBaseUri().resolve("auth/activate?token=") +
+            getActivationToken(entity);
+        
+        SendMail.Mail(new String[] { entity.getEmail() },
+            "Registration to CalCARE",
+            "Welcome to CalCARE, click this link to confirm your account: " +
+            String.format("<a href=\"%s\">%s</a>\n", URL, URL));
         return Response
             .status(201)
             .entity(entity)

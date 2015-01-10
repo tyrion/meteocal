@@ -240,7 +240,7 @@ public class Event implements Serializable {
 
     @Override
     public String toString() {
-        return "it.polimi.se.calcare.entities.Event[ id=" + id + " ]";
+        return "Event[ id=" + id + " ]";
     }
     
 }
