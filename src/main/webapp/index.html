@@ -8,10 +8,14 @@
         <script src="//code.jquery.com/jquery.min.js"></script>
         <script src="js/libs/jquery/responsive-calendar.js"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script src="http://momentjs.com/static/js/global.js"></script>
+        <script type="text/javascript" src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/master/src/js/bootstrap-datetimepicker.js"></script>
+        
         <script src="js/calendar.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300' rel='stylesheet' type='text/css'>
         <link href="css/responsive-calendar.css" rel="stylesheet" media="screen">
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/master/build/css/bootstrap-datetimepicker.min.css" />
         <link href="css/style.css" media="screen" rel="stylesheet" type="text/css">
     </head>
     <body ng-controller="CalendarController">
@@ -117,14 +121,69 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                            <h4 class="modal-title" id="myModalLabel">New Event</h4>
                         </div>
                         <div class="modal-body">
-                            ...
+                            <form>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="createName" placeholder="Event name">
+                                </div>
+                                <div class="form-group">
+                                    <textarea class="form-control" rows="3" id="createDesc" placeholder="Description"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="createOutdoorCheck" value="outdoor"> Outdoor
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="createPublicCheck" value="public"> Public
+                                    </label>
+                                </div>
+                        
+                                <div class="row">
+                                    <div class='col-md-6'>
+                                        <div class="form-group">
+                                            <label for="createBeginDatetime">From:</label>
+                                            <div class='input-group date'>
+                                                <input type='text' class="form-control"  placeholder="Choose a begin date and time" id='createBeginDatetime'/>
+                                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                     </div>
+                                     <div class='col-md-6'>
+                                        <div class="form-group">
+                                            <label for="createEndDatetime">To:</label>
+                                            <div class='input-group date'>
+                                                <input type='text' class="form-control"  placeholder="Choose an end date and time" id='createEndDatetime'/>
+                                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="form-group">
+                                    <input type="text" class="form-control" id="createWhere" placeholder="Where?">
+                                </div>
+                        
+                                <div class="form-group row">
+                                    <label class="col-sm-3">Invited people:</label>
+                                    <div class="col-sm-9">
+                                        <button type="button" class="btn btn-sm">lol@asd.com <span aria-hidden="true">&times;</span></button>
+                                        <button type="button" class="btn btn-sm">reallylongemail@longdomain.com <span aria-hidden="true">&times;</span></button>
+                                    </div>
+                                </div>
+                        
+                                <div class="form-group has-feedback">
+                                    <input type="text" placeholder="Search for users to invite!" class="form-control">
+                                    <i class="glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></i>
+                                </div>
+                                <div class="form-group has-feedback"></div>
+                            </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-primary">Create</button>
                         </div>
                     </div>
                 </div>

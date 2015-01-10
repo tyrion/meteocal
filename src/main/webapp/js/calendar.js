@@ -92,4 +92,13 @@ $(document).ready(function() {
     $("#prevMonthButton").click(function(){
         $(".responsive-calendar").responsiveCalendar('prev');
     });
+    
+    $('#createBeginDatetime').datetimepicker();
+    $('#createEndDatetime').datetimepicker();
+    $("#createBeginDatetime").on("dp.change",function (e) {
+        $('#createEndDatetime').data("DateTimePicker").setMinDate(e.date);
+    });
+    $("#createEndDatetime").on("dp.change",function (e) {
+        $('#createBeginDatetime').data("DateTimePicker").setMaxDate(e.date);
+    });
 });
