@@ -61,9 +61,9 @@ function setupUserPage(){
 
 (function() {
 
-var calApp = angular.module("CalCAREApp", ['ngSanitize']);
+var calApp = angular.module("CalCAREApp", ['ngSanitize', 'ngStorage']);
 
-calApp.controller("CalendarController", function ($scope, $http, $sce) {
+calApp.controller("CalendarController", function ($scope, $http, $sce, $localStorage) {
     $scope.landingNotif = '';
     $scope.loginData = false;
     
@@ -82,11 +82,11 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
         setTimeout(function(){ setupUserPage(); }, 10);
         console.log(data);
         
-        $scope.token = data.token;
+        $localStorage.token = data.token;
         $http({
             method: 'GET',
             url: "api/users",
-            headers: {'Authorization': 'Bearer ' + $scope.token}
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
             console.log(data);
@@ -97,13 +97,18 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
             console.log(data);
         }); 
     };
-    //$scope.login([]);
     
     $scope.logout = function() {
         $scope.loginData = false;
         setTimeout(function(){ positionBG(); $scope.landingNotif = '';}, 10);
-        //TODO: cancellare il token
+        delete $localStorage.token;
     };
+    
+    //check for auth token
+    if (typeof $localStorage.token !== 'undefined'){
+        $scope.loginData = true;
+        $scope.login($localStorage);
+    }
 
     $scope.loginSubmit = function(loginInfo) {
         $http({
@@ -135,7 +140,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
             method: 'POST',
             url: "api/events",
             data: eventCreate,
-            headers: {'Authorization': 'Bearer ' + $scope.token}
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
             //TODO: event create success - insert event into events list for calendar
