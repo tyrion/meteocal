@@ -14,13 +14,13 @@ html, body{
     position: static;
 }
 
-#main , #landing .ng-scope{
-    height: 100%;
+#landing, #userPageWrapper {
+    width: calc(100% + 18px);
+    overflow-y: scroll;
 }
 
 #landing{
     height: 100%;
-    width: 100%;
     position: absolute;
     top: 0px;
     background: url('../img/background.jpg') no-repeat center;
@@ -68,7 +68,7 @@ html, body{
 }
 
 #calendarContainer .controls{
-    margin: 30px;
+    margin: 30px 0;
 }
 
 #calendarContainer .controls h3 {
