@@ -36,11 +36,9 @@ import org.json.JSONException;
 @Stateless
 public class CronJob {
 
-    @Schedule(dayOfWeek = "Mon-Fri", month = "*", hour = "*", dayOfMonth = "*", year = "*", minute = "*/1", second = "0", persistent = false)
+    @Schedule(dayOfWeek = "*", month = "*", hour = "*", dayOfMonth = "*", year = "*", minute = "*/1", second = "0", persistent = false)
     
     public void WeatherFetcher() throws IOException, JSONException, Exception {
         System.out.println("Timer event: " + new Date());
-        String loc=GetWeather.getLocation("4+Via+Vittorio+Barzoni,+Milan,+IT");
-        System.out.println(GetWeather.getWeatherandCityInfo(16, "json", loc));
-        }
+    }
 }
