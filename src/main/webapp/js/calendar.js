@@ -66,13 +66,38 @@ var calApp = angular.module("CalCAREApp", ['ngSanitize']);
 calApp.controller("CalendarController", function ($scope, $http, $sce) {
     $scope.landingNotif = '';
     $scope.loginData = false;
+    //check for user activation
+    if (window.location.hash.replace("#/", "") === 'activated'){
+        $scope.landingNotif = generateNotif('Yay!', 'You just activated your account. Now just login and enjoy CalCARE!', 'success', $sce);
+        window.location.hash = '#/';
+    }
            
     $scope.login = function(data) {
         $scope.loginData = true;
         $scope.landingNotif = '';
+        $scope.create = {};
+        $scope.create.invitedPeople = [];
+        $scope.create.searchedPeople = [];
         setTimeout(function(){ setupUserPage(); }, 10);
-        //TODO: salvare toker
+        console.log(data);
+        //TODO: salvare token
+        
+        $scope.token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoyNX0.FLQrIKdgdDJwA5Mwar8bsXf1a2-hYVGdosZ7Zht9fXw';
+        $http({
+            method: 'GET',
+            url: "api/users",
+            headers: {'Authorization': 'Bearer ' + $scope.token}
+        })
+        .success(function(data) {
+            console.log(data);
+            $scope.create.searchedPeople = data;
+        })
+        .error(function(data) {
+            $("#calendarContainer").html(generateNotif('Oh snap!', 'Incorrect login.', 'danger', $sce));
+        }); 
     };
+    //$scope.login([]);
+    
     $scope.logout = function() {
         $scope.loginData = false;
         setTimeout(function(){ positionBG(); $scope.landingNotif = '';}, 10);

@@ -107,3 +107,7 @@ body, body.modal {
     padding-right: 0 !important;
     overflow-y: hidden;
 }
+
+#eventCreateModal .list-group-item button{
+    margin-top: -4px;
+}
