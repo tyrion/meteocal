@@ -25,6 +25,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 
 /**
  *
@@ -47,12 +49,10 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     public void create(Event entity) {
 
         //Create the City in the DB
-        try {
-            new GetWeather().createCity(entity.getLocation());
-        } catch (Exception ex) {
-            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        int id=cityCreator(entity.getLocation());
+        if (id < 0) //Errore nell'inserimento della nuova città
         //Create the forecast(s) associated with the event
+        forecastCreator(entity.getLocation(), entity.getStart(), entity.getEnd(), id);
         super.create(entity);
     }
 
@@ -105,5 +105,25 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     private Date Date(String get) {
         java.util.Date date = new java.util.Date(get);
         return date;
+    }
+
+    private int cityCreator(String location) {
+         //Create the City in the DB
+        try {
+            return (new GetWeather().createCity(location));
+        } catch (Exception ex) {
+            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }    
+            return -1;
+    }
+
+    private void forecastCreator(String city , Date s, Date e, int id) {
+        DateTime start = new DateTime(s);
+        DateTime end = new DateTime(e);
+        int cnt=Days.daysBetween(start, end).getDays();
+        for (int i=0; i<=cnt; i++) {
+            Forecast forecast=new Forecast(new ForecastPK(start.plusDays(i).toDate(), id), 0, 0, 0, 0);
+            em.persist(forecast);
+        }
     }
 }
