@@ -22,6 +22,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 /**
  *
@@ -47,6 +48,7 @@ public class Calendar implements Serializable {
 
     @JoinColumn(name = "owner", referencedColumnName = "id")
     @OneToOne(optional = false)
+    @XmlInverseReference(mappedBy="calendar")
     private User owner;
 
     
