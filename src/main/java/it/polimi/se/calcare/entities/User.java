@@ -139,6 +139,7 @@ public class User implements Serializable, java.security.Principal {
         this.active = active;
     }
 
+    @XmlTransient
     public Calendar getCalendar() {
         return calendar;
     }
