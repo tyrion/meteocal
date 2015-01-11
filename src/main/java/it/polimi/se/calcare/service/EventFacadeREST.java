@@ -9,6 +9,7 @@ import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Forecast;
 import it.polimi.se.calcare.entities.ForecastPK;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Date;
@@ -50,9 +51,12 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
         //Create the City in the DB
         int id=cityCreator(entity.getLocation());
-        if (id < 0) //Errore nell'inserimento della nuova città
-        //Create the forecast(s) associated with the event
-        forecastCreator(entity.getLocation(), entity.getStart(), entity.getEnd(), id);
+                try {
+                    //Create the forecast(s) associated with the event
+                    forecastCreator(entity.getLocation(), entity.getStart(), entity.getEnd(), id);
+        } catch (Exception ex) {
+            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
         super.create(entity);
     }
 
@@ -109,21 +113,25 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
     private int cityCreator(String location) {
          //Create the City in the DB
+        int id = -1;
         try {
-            return (new GetWeather().createCity(location));
+            id= new GetWeather().createCity(location);
         } catch (Exception ex) {
             Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
         }    
-            return -1;
+            return id;
     }
 
-    private void forecastCreator(String city , Date s, Date e, int id) {
+    private void forecastCreator(String city , Date s, Date e, int id) throws Exception {
         DateTime start = new DateTime(s);
         DateTime end = new DateTime(e);
         int cnt=Days.daysBetween(start, end).getDays();
+        ArrayList<Forecast> toUpdate= new ArrayList<Forecast>();
         for (int i=0; i<=cnt; i++) {
             Forecast forecast=new Forecast(new ForecastPK(start.plusDays(i).toDate(), id), 0, 0, 0, 0);
+            toUpdate.add(forecast);
             em.persist(forecast);
         }
+        new GetWeather().updateForecast(toUpdate);
     }
 }
