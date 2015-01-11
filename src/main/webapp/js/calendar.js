@@ -81,6 +81,9 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.eventCreate.public = false;
         $scope.eventCreate.invitedPeople = [];
         $scope.eventCreate.searchedPeople = [];
+        $scope.userSearch = {};
+        $scope.userSearch.searchedPeople = [];
+        $scope.userSearch.searchField = "";
         setTimeout(function(){ setupUserPage(); }, 10);
 
         $http({
@@ -154,6 +157,28 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .error(function(data) {
             //TODO event create error
         });
+    };
+    
+    $scope.searchUsers = function(searchObject) {
+        console.log(searchObject);
+        $http({
+            method: 'GET',
+            url: "api/search/"+searchObject.searchField,
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            searchObject.searchedPeople = data;
+        })
+        .error(function(data) {
+            //TODO error in case of server error
+            console.log(data);
+            searchObject.searchedPeople = [];
+        }); 
+    };
+    
+    $scope.getCalendar = function(id) {
+        //TODO load others calendar
+        console.log(id);
     };
     
     $scope.importCalendar = function(files) {
