@@ -17,13 +17,10 @@ import javax.validation.constraints.NotNull;
  */
 @Embeddable
 public class ParticipationPK implements Serializable {
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "event")
+    @Basic(optional = false) @NotNull @Column(name = "event")
     private int event;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "calendars_id")
+    
+    @Basic(optional = false) @NotNull @Column(name = "calendars_id")
     private int calendarsId;
 
     public ParticipationPK() {
