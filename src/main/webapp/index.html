@@ -11,7 +11,7 @@
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
         <script src="http://momentjs.com/static/js/global.js"></script>
         <script type="text/javascript" src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/master/src/js/bootstrap-datetimepicker.js"></script>
-        
+        <script type="text/javascript" src="http://markusslima.github.io/bootstrap-filestyle/js/bootstrap-filestyle.min.js" charset="utf-8"></script>
         <script src="js/calendar.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300' rel='stylesheet' type='text/css'>
         <link href="css/responsive-calendar.css" rel="stylesheet" media="screen">
@@ -95,12 +95,12 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="#"><b>Cal</b>CARE</a>
+                        <a class="navbar-brand" ng-href="#" ng-click="login()"><b>Cal</b>CARE</a>
                     </div>
                     <div id="navbar" class="navbar-collapse collapse navbar-right">
                          <ul class="nav navbar-nav">
                             <li><button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventCreateModal">New Event</button></li>
-                            <li><a href="#">Settings</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#editSettingsModal">Settings</a></li>
                             <li><a ng-click="logout()" href="#">Logout</a></li>
                             <li>
                                 <form class="navbar-form navbar-right">
@@ -196,6 +196,42 @@
                             </div>
                             <div class="modal-footer">
                                 <input type="submit" class="btn btn-primary" value="Create" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="editSettingsModal" tabindex="-1" role="dialog" aria-labelledby="editSettingsLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="editSettingsLabel">New Event</h4>
+                        </div>
+                        <form name="editSettingsForm" id="editSettingsForm" ng-submit="editSettingsSubmit(editSettings); editSettingsForm.$setPristine(); editSettings={}" role="form">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="editGivenName" placeholder="Given Name" ng-model="editSettings.givenName">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="editFamilyName" placeholder="Family Name" ng-model="editSettings.familyName">
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary" ng-click="exportCalendar();">Export Calendar <i class="glyphicon glyphicon-download" aria-hidden="true"></i></button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="importCalendar">Import a calendar:</label>
+                                    <input type="file" name="importCalendar" class="filestyle" data-buttonName="btn-primary" onchange="angular.element(this).scope().importCalendar(this.files)"/>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="editSettingsPublicCheck" value="public1" ng-model="editSettings.public1"> Public calendar
+                                    </label>
+                                </div>
+                                <div class="form-group"ng-bind-html="$parent.editSettingsNotif"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-primary" value="Save" />
                             </div>
                         </form>
                     </div>

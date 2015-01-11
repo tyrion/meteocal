@@ -73,7 +73,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         window.location.hash = '#/';
     }
            
-    $scope.login = function(data) {
+    $scope.login = function() {
         $scope.loginData = true;
         $scope.landingNotif = '';
         $scope.eventCreate = {};
@@ -82,9 +82,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.eventCreate.invitedPeople = [];
         $scope.eventCreate.searchedPeople = [];
         setTimeout(function(){ setupUserPage(); }, 10);
-        console.log(data);
-        
-        $localStorage.token = data.token;
+
         $http({
             method: 'GET',
             url: "api/users",
@@ -109,7 +107,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     //check for auth token
     if (typeof $localStorage.token !== 'undefined'){
         $scope.loginData = true;
-        $scope.login($localStorage);
+        $scope.login();
     }
 
     $scope.loginSubmit = function(loginInfo) {
@@ -120,7 +118,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         })
         .success(function(data) {
-            $scope.login(data);
+            $localStorage.token = data.token;
+            $scope.login();
         })
         .error(function(data) {
             $scope.landingNotif = generateNotif('Oh snap!', 'Incorrect login.', 'danger', $sce);
@@ -155,6 +154,40 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .error(function(data) {
             //TODO event create error
         });
+    };
+    
+    $scope.importCalendar = function(files) {
+        var fd = new FormData();
+        //Take the first selected file
+        fd.append("file", files[0]);
+
+        $http.post("api/calendars/import", fd, {
+            withCredentials: true,
+            headers: {'Content-Type': undefined, 'Authorization': 'Bearer ' + $localStorage.token },
+            transformRequest: angular.identity
+        })
+        .success(function(data) {
+            //TODO: calendar import success
+        })
+        .error(function(data) {
+            //TODO calendar import failure
+        });
+    };
+    
+    $scope.exportCalendar = function(){
+        $http({
+            method: 'GET',
+            url: "api/calendars/export",
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            console.log(data);
+            //TODO: serve file
+        })
+        .error(function(data) {
+            console.log(data);
+            $scope.editSettingsNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
+        }); 
     };
 });
 
