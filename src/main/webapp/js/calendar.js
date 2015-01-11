@@ -61,9 +61,9 @@ function setupUserPage(){
 
 (function() {
 
-var calApp = angular.module("CalCAREApp", ['ngSanitize']);
+var calApp = angular.module("CalCAREApp", ['ngSanitize', 'ngStorage']);
 
-calApp.controller("CalendarController", function ($scope, $http, $sce) {
+calApp.controller("CalendarController", function ($scope, $http, $sce, $localStorage) {
     $scope.landingNotif = '';
     $scope.loginData = false;
     
@@ -73,20 +73,23 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
         window.location.hash = '#/';
     }
            
-    $scope.login = function(data) {
+    $scope.login = function() {
         $scope.loginData = true;
         $scope.landingNotif = '';
         $scope.eventCreate = {};
+        $scope.eventCreate.outdoor = false;
+        $scope.eventCreate.public = false;
         $scope.eventCreate.invitedPeople = [];
         $scope.eventCreate.searchedPeople = [];
+        $scope.userSearch = {};
+        $scope.userSearch.searchedPeople = [];
+        $scope.userSearch.searchField = "";
         setTimeout(function(){ setupUserPage(); }, 10);
-        console.log(data);
-        
-        $scope.token = data.token;
+
         $http({
             method: 'GET',
             url: "api/users",
-            headers: {'Authorization': 'Bearer ' + $scope.token}
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
             console.log(data);
@@ -97,13 +100,18 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
             console.log(data);
         }); 
     };
-    //$scope.login([]);
     
     $scope.logout = function() {
         $scope.loginData = false;
         setTimeout(function(){ positionBG(); $scope.landingNotif = '';}, 10);
-        //TODO: cancellare il token
+        delete $localStorage.token;
     };
+    
+    //check for auth token
+    if (typeof $localStorage.token !== 'undefined'){
+        $scope.loginData = true;
+        $scope.login();
+    }
 
     $scope.loginSubmit = function(loginInfo) {
         $http({
@@ -113,7 +121,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         })
         .success(function(data) {
-            $scope.login(data);
+            $localStorage.token = data.token;
+            $scope.login();
         })
         .error(function(data) {
             $scope.landingNotif = generateNotif('Oh snap!', 'Incorrect login.', 'danger', $sce);
@@ -131,11 +140,16 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
     };
     
     $scope.eventCreateSubmit = function(eventCreate) {
+        delete eventCreate.searchedPeople;
+        eventCreate.invitedPeople = eventCreate.invitedPeople.map(function(x){return x.id;});
+        eventCreate.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
+        eventCreate.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
+        console.log(eventCreate);
         $http({
             method: 'POST',
             url: "api/events",
             data: eventCreate,
-            headers: {'Authorization': 'Bearer ' + $scope.token}
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
             //TODO: event create success - insert event into events list for calendar
@@ -143,6 +157,62 @@ calApp.controller("CalendarController", function ($scope, $http, $sce) {
         .error(function(data) {
             //TODO event create error
         });
+    };
+    
+    $scope.searchUsers = function(searchObject) {
+        console.log(searchObject);
+        $http({
+            method: 'GET',
+            url: "api/search/"+searchObject.searchField,
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            searchObject.searchedPeople = data;
+        })
+        .error(function(data) {
+            //TODO error in case of server error
+            console.log(data);
+            searchObject.searchedPeople = [];
+        }); 
+    };
+    
+    $scope.getCalendar = function(id) {
+        //TODO load others calendar
+        console.log(id);
+    };
+    
+    $scope.importCalendar = function(files) {
+        var fd = new FormData();
+        //Take the first selected file
+        fd.append("file", files[0]);
+
+        $http.post("api/calendars/import", fd, {
+            withCredentials: true,
+            headers: {'Content-Type': undefined, 'Authorization': 'Bearer ' + $localStorage.token },
+            transformRequest: angular.identity
+        })
+        .success(function(data) {
+            //TODO: calendar import success
+        })
+        .error(function(data) {
+            //TODO calendar import failure
+        });
+    };
+    
+    $scope.exportCalendar = function(){
+        $http({
+            method: 'GET',
+            url: "api/calendars/export",
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            console.log(data);
+            //TODO: serve file
+        })
+        .error(function(data) {
+            console.log(data);
+            $scope.editSettingsNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
+        }); 
     };
 });
 
