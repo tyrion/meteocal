@@ -77,6 +77,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.loginData = true;
         $scope.landingNotif = '';
         $scope.eventCreate = {};
+        $scope.eventCreate.outdoor = false;
+        $scope.eventCreate.public = false;
         $scope.eventCreate.invitedPeople = [];
         $scope.eventCreate.searchedPeople = [];
         setTimeout(function(){ setupUserPage(); }, 10);
@@ -136,6 +138,11 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     };
     
     $scope.eventCreateSubmit = function(eventCreate) {
+        delete eventCreate.searchedPeople;
+        eventCreate.invitedPeople = eventCreate.invitedPeople.map(function(x){return x.id;});
+        eventCreate.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
+        eventCreate.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
+        console.log(eventCreate);
         $http({
             method: 'POST',
             url: "api/events",
