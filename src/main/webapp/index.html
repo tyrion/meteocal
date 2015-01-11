@@ -246,6 +246,7 @@
                         <h2>Search results:</h2>
                         <p ng-if="userSearch.searchedPeople.length === 0">
                             No matches!
+                            <hr/>
                         </p>
                         <ul class="list-group">
                             <li class="list-group-item" ng-repeat="p in userSearch.searchedPeople">
@@ -285,13 +286,13 @@
                 
                 <div id="notificationsContainer" class="container col-md-3">
                     <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading">Unread Notification</h4>
-                            <p class="list-group-item-text">This event has something to say.</p>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading">Some Other Notification</h4>
-                            <p class="list-group-item-text">This is a test.</p>
+                        <p ng-if="notifications.length === 0">
+                            No notifications to show!
+                            <hr/>
+                        </p>
+                        <a href="#" class="list-group-item" ng-repeat="n in $parent.notifications">
+                            <h4 class="list-group-item-heading">{{n.event.name}}</h4>
+                            <p class="list-group-item-text">{{n.type.description}}</p>
                         </a>
                     </div>
                 </div>
