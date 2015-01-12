@@ -17,6 +17,8 @@ html, body{
 #landing, #userPageWrapper {
     width: calc(100% + 18px);
     overflow-y: scroll;
+    height: 100%;
+    position: absolute;
 }
 
 #landing{
@@ -110,4 +112,15 @@ body, body.modal {
 
 #eventCreateModal .list-group-item button, #searchResults .list-group-item button{
     margin-top: -4px;
+}
+
+.badge {
+    background-color: #BF1E1E;
+    border-radius: 0 0 0 10px;
+}
+
+.responsive-calendar .day .badge {
+    top: 0px;
+    right: 0px;
+    z-index: 1000;
 }

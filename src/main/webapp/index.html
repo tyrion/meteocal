@@ -5,13 +5,13 @@
         <meta charset="utf-8"/>
         <script src="js/libs/angular.js/angular.js"></script>
         <script src="js/libs/angular.js/angular-sanitize.js"></script>
-        <script src="https://rawgithub.com/gsklee/ngStorage/master/ngStorage.js"></script>
+        <script src="js/libs/angular.js/ngStorage.js"></script>
         <script src="//code.jquery.com/jquery.min.js"></script>
         <script src="js/libs/jquery/responsive-calendar.js"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-        <script src="http://momentjs.com/static/js/global.js"></script>
-        <script type="text/javascript" src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/master/src/js/bootstrap-datetimepicker.js"></script>
-        <script type="text/javascript" src="http://markusslima.github.io/bootstrap-filestyle/js/bootstrap-filestyle.min.js" charset="utf-8"></script>
+        <script src="js/libs/moment.js"></script>
+        <script src="js/libs/bootstrap-datetimepicker.js"></script>
+        <script src="js/libs/bootstrap-filestyle.min.js" charset="utf-8"></script>
         <script src="js/calendar.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300' rel='stylesheet' type='text/css'>
         <link href="css/responsive-calendar.css" rel="stylesheet" media="screen">
@@ -23,8 +23,8 @@
         <div ng-switch on="loginData" id="main">
             <div ng-switch-when="true">
                 <div ng-include="'userNav'"></div>
-                <div ng-include="'userPage'"></div>
                 <div ng-include="'userModals'"></div>
+                <div ng-include="'userPage'"></div> 
             </div>
             <div ng-switch-when="false">
                 <div ng-include="'guestPage'" id="landing"></div>
@@ -221,7 +221,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="importCalendar">Import a calendar:</label>
-                                    <input type="file" name="importCalendar" class="filestyle" data-buttonName="btn-primary" onchange="angular.element(this).scope().importCalendar(this.files)"/>
+                                    <input type="file" id="importCalendarField" name="importCalendar" class="filestyle" data-buttonName="btn-primary" onchange="angular.element(this).scope().importCalendar(this.files)"/>
                                 </div>
                                 <div class="form-group">
                                     <label class="checkbox-inline">

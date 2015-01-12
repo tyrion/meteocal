@@ -14,8 +14,8 @@ function generateNotif(title, body, type, $sce){
         '<span aria-hidden="true">&times;</span></button> <b>' + title + '</b> ' + body +'</div>');
 }
 
-function setupUserPage(){
-    $(".responsive-calendar").responsiveCalendar({
+function setupUserPage(eventsDataStructure){
+    var eventsDataStructure2 = {
         time: '2013-05',
         events: {
             "2013-04-30": {"number": 5, "badgeClass": "badge-warning", "url": "http://w3widgets.com/responsive-calendar"},
@@ -40,7 +40,8 @@ function setupUserPage(){
                 ]
             }
         }
-    });
+    };
+    $(".responsive-calendar").responsiveCalendar(eventsDataStructure);
 
     $("#nextMonthButton").click(function(){
         $(".responsive-calendar").responsiveCalendar('next');
@@ -57,6 +58,7 @@ function setupUserPage(){
     $("#createEndDatetime").on("dp.change",function (e) {
         $('#createBeginDatetime').data("DateTimePicker").setMaxDate(e.date);
     });
+    $("#importCalendarField").attr("class","filestyle").attr("data-buttonName", "btn-primary");
 };
 
 (function() {
@@ -86,7 +88,11 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.userSearch.searchedPeople = [];
         $scope.userSearch.searchField = "";
         $scope.notifications = [];
-        setTimeout(function(){ setupUserPage(); }, 10);
+        $scope.myEvents = {
+            time: moment().format("YYYY-MM"),
+            events: {}
+        };
+        setTimeout(function(){ setupUserPage($scope.myEvents); }, 10);
         
         $http({
             method: 'GET',
@@ -95,7 +101,25 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         })
         .success(function(data) {
             console.log(data);
-            $scope.myEvents = data;
+            $scope.myCalendar = data;
+            data.participations.forEach(function(p){
+                var start = moment(moment(p.event.start).format("YYYY-MM-DD"));
+                var end = moment(moment(p.event.end).format("YYYY-MM-DD"));
+                do {
+                    var actualDate = end.format("YYYY-MM-DD");
+                    if(!(actualDate in $scope.myEvents.events)){
+                        $scope.myEvents.events[end.format("YYYY-MM-DD")] = {
+                            "number": 1, 
+                            "badgeClass": 
+                            "badge-warning", 
+                            "url": "#/list/"+actualDate
+                        };
+                    } else {
+                        $scope.myEvents.events[actualDate]["number"]++;
+                    }
+                    end = end.subtract(1, 'days');
+                } while(!end.isBefore(start));
+            });
         })
         .error(function(data) {
             //TODO error in case of server error
