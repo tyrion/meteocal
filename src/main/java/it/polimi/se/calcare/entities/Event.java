@@ -27,6 +27,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -93,7 +94,7 @@ public class Event implements Serializable {
         @JoinColumn(name = "forecasts_dt", referencedColumnName = "dt")})
     @ManyToMany
     private Collection<Forecast> forecastCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event1")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Participation> participationCollection;
     @JoinColumn(name = "creator", referencedColumnName = "id")
     @ManyToOne(optional = false)

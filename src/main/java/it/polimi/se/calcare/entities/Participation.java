@@ -15,6 +15,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -41,7 +42,7 @@ public class Participation implements Serializable {
     private Calendar calendar;
     
     @JoinColumn(name = "event", referencedColumnName = "id", insertable = false, updatable = false) @ManyToOne(optional = false)
-    private Event event1;
+    private Event event;
 
     public Participation() {
     }
@@ -70,6 +71,7 @@ public class Participation implements Serializable {
         this.accepted = accepted;
     }
 
+    @XmlTransient
     public Calendar getCalendar() {
         return calendar;
     }
@@ -78,12 +80,12 @@ public class Participation implements Serializable {
         this.calendar = calendar;
     }
 
-    public Event getEvent1() {
-        return event1;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setEvent1(Event event1) {
-        this.event1 = event1;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     @Override
