@@ -177,14 +177,14 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     };
     
     $scope.searchUsers = function(searchObject) {
-        console.log(searchObject);
         $http({
             method: 'GET',
-            url: "api/search/"+searchObject.searchField,
+            url: "api/calendars/?search="+searchObject.searchField,
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
             searchObject.searchedPeople = data;
+            console.log(data);
         })
         .error(function(data) {
             //TODO error in case of server error
