@@ -64,6 +64,15 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     public Calendar find(@PathParam("id") Integer id) {
         return super.find(id);
     }
+    
+    @GET
+    @AuthRequired
+    @Path("me")
+    @Produces({"application/json"})
+    public Calendar myCalendar(@Context SecurityContext sc) {
+        User user = (User) sc.getUserPrincipal();
+        return super.find(user.getCalendar().getId());
+    }
 
     @GET
     @AuthRequired

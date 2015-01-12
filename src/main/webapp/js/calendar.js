@@ -90,6 +90,20 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         
         $http({
             method: 'GET',
+            url: "api/calendars/me",
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            console.log(data);
+            $scope.myEvents = data;
+        })
+        .error(function(data) {
+            //TODO error in case of server error
+            console.log(data);
+        }); 
+        
+        $http({
+            method: 'GET',
             url: "api/notifications",
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
