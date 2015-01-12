@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
 import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 /**
  *
@@ -70,6 +71,7 @@ public class User implements Serializable, java.security.Principal {
     @Basic(optional = true) @NotNull @Column(name = "active")
     private boolean active;
 
+    @XmlInverseReference(mappedBy="owner")
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
     private Calendar calendar;
     

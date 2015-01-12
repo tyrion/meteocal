@@ -23,12 +23,24 @@
  */
 package it.polimi.se.calcare.service;
 
+import it.polimi.se.calcare.entities.City;
+import it.polimi.se.calcare.entities.Event;
+import it.polimi.se.calcare.entities.Forecast;
+import it.polimi.se.calcare.entities.ForecastPK;
+import it.polimi.se.calcare.entities.User;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
+import org.joda.time.Days;
 import org.json.JSONException;
 
 /**
@@ -39,8 +51,8 @@ import org.json.JSONException;
 public class CronJob {
 
     @Schedule(dayOfWeek = "*", month = "*", hour = "*", dayOfMonth = "*", year = "*", minute = "*/1", second = "0", persistent = false)
-    
+
     public void WeatherFetcher() throws IOException, JSONException, Exception {
-        System.out.println("Timer event: " + new Date());
+      
     }
 }
