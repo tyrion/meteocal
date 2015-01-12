@@ -9,6 +9,8 @@ import com.auth0.jwt.JWTSigner;
 import static it.polimi.se.calcare.auth.AuthFilter.SECRET;
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.User;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -48,7 +50,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
     }
 
     @POST
-    public Response add(@Context UriInfo ui, User entity) {
+    public Response add(@Context UriInfo ui, User entity) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        // Because Java.
+        entity.setPassword(entity.getPassword());
         super.create(entity);
         em.flush();
         
