@@ -48,7 +48,7 @@ public class Calendar implements Serializable {
     private Integer id;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "calendar")
-    private Collection<Participation> participationCollection;
+    private Collection<Participation> participations;
 
     @JoinColumn(name = "owner", referencedColumnName = "id")
     @OneToOne(optional = false)
@@ -70,12 +70,12 @@ public class Calendar implements Serializable {
         this.id = id;
     }
 
-    public Collection<Participation> getParticipationCollection() {
-        return participationCollection;
+    public Collection<Participation> getParticipations() {
+        return participations;
     }
 
-    public void setParticipationCollection(Collection<Participation> participationCollection) {
-        this.participationCollection = participationCollection;
+    public void setParticipations(Collection<Participation> participations) {
+        this.participations = participations;
     }
 
     public User getOwner() {

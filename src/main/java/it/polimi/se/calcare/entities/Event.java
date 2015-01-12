@@ -94,7 +94,7 @@ public class Event implements Serializable {
         @JoinColumn(name = "forecasts_dt", referencedColumnName = "dt")})
     @ManyToMany
     private Collection<Forecast> forecastCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event1")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Participation> participationCollection;
     @JoinColumn(name = "creator", referencedColumnName = "id")
     @ManyToOne(optional = false)

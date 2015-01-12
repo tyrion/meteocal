@@ -89,7 +89,7 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
         
         //let's set a null the partecipationsList - we shouldn't return it to other users
         for (Calendar c: cals){
-            c.setParticipationCollection(null);
+            c.setParticipations(null);
         }
         return cals;
     }
