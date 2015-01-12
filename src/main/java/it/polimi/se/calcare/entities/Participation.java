@@ -15,6 +15,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -70,6 +71,7 @@ public class Participation implements Serializable {
         this.accepted = accepted;
     }
 
+    @XmlTransient
     public Calendar getCalendar() {
         return calendar;
     }

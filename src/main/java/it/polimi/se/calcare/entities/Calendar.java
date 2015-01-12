@@ -34,7 +34,6 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @Entity
 @Table(name = "calendars")
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 @NamedQueries({
     @NamedQuery(name = "Calendar.findAll", query = "SELECT c FROM Calendar c"),
     @NamedQuery(name = "Calendar.findById", query = "SELECT c FROM Calendar c WHERE c.id = :id"),
@@ -71,7 +70,6 @@ public class Calendar implements Serializable {
         this.id = id;
     }
 
-    @XmlTransient
     public Collection<Participation> getParticipationCollection() {
         return participationCollection;
     }
