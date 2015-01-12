@@ -69,7 +69,7 @@ public class User implements Serializable, java.security.Principal {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     private Collection<Event> eventCollection;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usersId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Collection<Notification> notificationCollection;
 
     public User() {
@@ -139,6 +139,7 @@ public class User implements Serializable, java.security.Principal {
         this.active = active;
     }
 
+    @XmlTransient
     public Calendar getCalendar() {
         return calendar;
     }

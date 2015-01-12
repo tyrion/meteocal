@@ -77,15 +77,18 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.loginData = true;
         $scope.landingNotif = '';
         $scope.eventCreate = {};
-        $scope.eventCreate.outdoor = false;
-        $scope.eventCreate.public = false;
+        $scope.eventCreate.event = {};
+        $scope.eventCreate.event.outdoor = false;
+        $scope.eventCreate.event.public = false;
         $scope.eventCreate.invitedPeople = [];
         $scope.eventCreate.searchedPeople = [];
         $scope.userSearch = {};
         $scope.userSearch.searchedPeople = [];
         $scope.userSearch.searchField = "";
+        $scope.notifications = [];
         setTimeout(function(){ setupUserPage(); }, 10);
 
+        //TODO: remove this, it is useless
         $http({
             method: 'GET',
             url: "api/users",
@@ -94,6 +97,20 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .success(function(data) {
             console.log(data);
             $scope.eventCreate.searchedPeople = data;
+        })
+        .error(function(data) {
+            //TODO error in case of server error
+            console.log(data);
+        });
+        
+        $http({
+            method: 'GET',
+            url: "api/notifications",
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            console.log(data);
+            $scope.notifications = data;
         })
         .error(function(data) {
             //TODO error in case of server error
@@ -142,8 +159,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     $scope.eventCreateSubmit = function(eventCreate) {
         delete eventCreate.searchedPeople;
         eventCreate.invitedPeople = eventCreate.invitedPeople.map(function(x){return x.id;});
-        eventCreate.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
-        eventCreate.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
+        eventCreate.event.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
+        eventCreate.event.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
         console.log(eventCreate);
         $http({
             method: 'POST',

@@ -31,20 +31,18 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Notification.findById", query = "SELECT n FROM Notification n WHERE n.id = :id")})
 public class Notification implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
+    
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Basic(optional = false) @Column(name = "id")
     private Integer id;
-    @JoinColumn(name = "events_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Event eventsId;
-    @JoinColumn(name = "notifications_type", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private NotificationType notificationsType;
-    @JoinColumn(name = "users_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private User usersId;
+    
+    @JoinColumn(name = "events_id", referencedColumnName = "id") @ManyToOne(optional = false)
+    private Event event;
+    
+    @JoinColumn(name = "notifications_type", referencedColumnName = "id") @ManyToOne(optional = false)
+    private NotificationType type;
+    
+    @JoinColumn(name = "users_id", referencedColumnName = "id") @ManyToOne(optional = false)
+    private User userId;
 
     public Notification() {
     }
@@ -61,28 +59,28 @@ public class Notification implements Serializable {
         this.id = id;
     }
 
-    public Event getEventsId() {
-        return eventsId;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setEventsId(Event eventsId) {
-        this.eventsId = eventsId;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
-    public NotificationType getNotificationsType() {
-        return notificationsType;
+    public NotificationType getType() {
+        return type;
     }
 
-    public void setNotificationsType(NotificationType notificationsType) {
-        this.notificationsType = notificationsType;
+    public void setType(NotificationType type) {
+        this.type = type;
     }
 
-    public User getUsersId() {
-        return usersId;
+    public User getUserId() {
+        return userId;
     }
 
-    public void setUsersId(User usersId) {
-        this.usersId = usersId;
+    public void setUserId(User userId) {
+        this.userId = userId;
     }
 
     @Override

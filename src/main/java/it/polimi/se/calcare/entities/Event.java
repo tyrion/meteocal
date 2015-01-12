@@ -98,7 +98,7 @@ public class Event implements Serializable {
     @JoinColumn(name = "creator", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User creator;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "eventsId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Notification> notificationCollection;
 
     public Event() {

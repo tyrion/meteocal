@@ -30,15 +30,17 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Participation.findByAccepted", query = "SELECT p FROM Participation p WHERE p.accepted = :accepted")})
 public class Participation implements Serializable {
     private static final long serialVersionUID = 1L;
+    
     @EmbeddedId
     protected ParticipationPK participationPK;
+    
     @Column(name = "accepted")
     private Boolean accepted;
-    @JoinColumn(name = "calendars_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
+    
+    @JoinColumn(name = "calendars_id", referencedColumnName = "id", insertable = false, updatable = false) @ManyToOne(optional = false)
     private Calendar calendar;
-    @JoinColumn(name = "event", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
+    
+    @JoinColumn(name = "event", referencedColumnName = "id", insertable = false, updatable = false) @ManyToOne(optional = false)
     private Event event1;
 
     public Participation() {

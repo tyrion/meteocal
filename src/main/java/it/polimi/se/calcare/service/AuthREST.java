@@ -28,6 +28,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
 import it.polimi.se.calcare.auth.AuthFilter;
 import it.polimi.se.calcare.auth.Password;
+import it.polimi.se.calcare.entities.Calendar;
 import it.polimi.se.calcare.entities.User;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -99,9 +100,17 @@ public class AuthREST {
         User user = em.createNamedQuery("User.findById", User.class)
             .setParameter("id", id)
             .getSingleResult();
-        user.setActive(true);
-        em.persist(user);
 
-        return Response.seeOther(new java.net.URI("..?activated")).build();
+        if (!user.isActive()) {
+            user.setActive(true);
+            em.persist(user);
+
+            Calendar calendar = new Calendar();
+            calendar.setOwner(user);
+            em.persist(calendar);
+
+        }
+
+        return Response.seeOther(new java.net.URI("..#/activated")).build();
     }
 }

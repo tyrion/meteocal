@@ -60,11 +60,11 @@ html, body{
 #calendarWrapper {
     margin-top: 50px;
     margin-left: 15px;
-    margin-right: -15px;
+    margin-right: 0;
 }
 
 #calendarContainer {
-    margin-right: 30px;
+    margin-right: 15px;
 }
 
 #calendarContainer .controls{

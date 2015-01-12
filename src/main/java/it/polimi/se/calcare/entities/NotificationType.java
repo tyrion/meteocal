@@ -37,22 +37,17 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "NotificationType.findByDescription", query = "SELECT n FROM NotificationType n WHERE n.description = :description")})
 public class NotificationType implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
+    
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Basic(optional = false) @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "name")
+    
+    @Basic(optional = false) @NotNull @Size(min = 1, max = 45) @Column(name = "name")
     private String name;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "description")
+    
+    @Basic(optional = false) @NotNull @Size(min = 1, max = 255) @Column(name = "description")
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "notificationsType")
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "type")
     private Collection<Notification> notificationCollection;
 
     public NotificationType() {
