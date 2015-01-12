@@ -10,7 +10,6 @@ import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Forecast;
 import it.polimi.se.calcare.entities.ForecastPK;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Date;
 import java.util.logging.Level;
@@ -43,15 +42,15 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         super(Event.class);
     }
 
-    // Forecast[] getWeather(start, end, coords)
     @POST
     @Override
     @Consumes({"application/xml", "application/json"})
     public void create(Event entity) {
 
-        //Create the City in the DB
+        //Create the City in the DB and retreive the id
         int id=cityCreator(entity.getLocation());
-                try {
+                
+        try {
                     //Create the forecast(s) associated with the event
                     forecastCreator(entity.getLocation(), entity.getStart(), entity.getEnd(), id);
         } catch (Exception ex) {
@@ -113,25 +112,36 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
     private int cityCreator(String location) {
          //Create the City in the DB
-        int id = -1;
+        City newCity=new City();
         try {
-            id= new GetWeather().createCity(location);
+            newCity= new GetWeather().createCity(location);
         } catch (Exception ex) {
             Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        }    
-            return id;
+        }
+        List<City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
+        if (cities.contains(newCity)) {}
+        else{
+        em.persist(newCity);
+        em.flush();
+            }
+            return newCity.getId();
     }
 
     private void forecastCreator(String city , Date s, Date e, int id) throws Exception {
         DateTime start = new DateTime(s);
         DateTime end = new DateTime(e);
         int cnt=Days.daysBetween(start, end).getDays();
-        ArrayList<Forecast> toUpdate= new ArrayList<Forecast>();
+        List<Forecast> toUpdate= new ArrayList<>();
         for (int i=0; i<=cnt; i++) {
             Forecast forecast=new Forecast(new ForecastPK(start.plusDays(i).toDate(), id), 0, 0, 0, 0);
             toUpdate.add(forecast);
             em.persist(forecast);
         }
-        new GetWeather().updateForecast(toUpdate);
+        List<Forecast> toPush=new GetWeather().updateForecast(toUpdate);
+        
+        for (Forecast item : toPush) {
+            em.persist(item);
+        }
+        em.flush();
     }
 }

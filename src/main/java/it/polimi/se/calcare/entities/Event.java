@@ -108,8 +108,7 @@ public class Event implements Serializable {
         this.id = id;
     }
 
-    public Event(Integer id, String name, String description, Date start, Date end, String location, boolean public1, boolean outdoor) {
-        this.id = id;
+    public Event(String name, String description, Date start, Date end, String location, boolean public1, boolean outdoor) { 
         this.name = name;
         this.description = description;
         this.start = start;
