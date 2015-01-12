@@ -168,8 +168,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
+            searchObject.searchedPeople = data;
             if(searchObject.invitedPeople){
-                searchObject.searchedPeople = data;
                 data.forEach(function(cal) {
                     searchObject.invitedPeople.forEach(function(inv) {
                         if(cal.owner.email === inv.owner.email){
@@ -178,7 +178,6 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
                     });
                 });
             };
-            console.log(searchObject.invitedPeople);
         })
         .error(function(data) {
             //TODO error in case of server error
