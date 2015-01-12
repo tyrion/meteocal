@@ -5,7 +5,9 @@
  */
 package it.polimi.se.calcare.service;
 
+import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.Calendar;
+import it.polimi.se.calcare.entities.User;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -19,6 +21,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  *
@@ -60,17 +64,23 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     public Calendar find(@PathParam("id") Integer id) {
         return super.find(id);
     }
-    
-    
 
     @GET
+    @AuthRequired
     @Produces({"application/xml", "application/json"})
-    public List<Calendar> search(@QueryParam("search") String search) {
+    public List<Calendar> search(@Context SecurityContext sc, @QueryParam("search") String search) {
+        User user = (User) sc.getUserPrincipal();
         List<Calendar> cals = getEntityManager().createNamedQuery("Calendar.search", Calendar.class)
             .setParameter("search", '%' + search + '%')
+            .setParameter("currentUser", user.getId()) //delete the current user from results
             .getResultList(); 
         if(cals.size() > 10){
-            return cals.subList(0, 10); //let's cut the list to 10 results
+            cals = cals.subList(0, 10); //let's cut the list to 10 results
+        }
+        
+        //let's set a null the partecipationsList - we shouldn't return it to other users
+        for (Calendar c: cals){
+            c.setParticipationCollection(null);
         }
         return cals;
     }
