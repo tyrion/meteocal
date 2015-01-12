@@ -24,7 +24,6 @@
 package it.polimi.se.calcare.dto;
 
 import it.polimi.se.calcare.entities.Event;
-import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -34,13 +33,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class EventCreationDTO {
     
-    public int[] invitedUsers;
+    public int[] invitedPeople;
     public Event event;
     
     public EventCreationDTO() {};
 
     public EventCreationDTO(Event event, int[] invitedUsers) {
-        this.invitedUsers = invitedUsers;
+        this.invitedPeople = invitedUsers;
         this.event = event;
     }
 
@@ -52,12 +51,12 @@ public class EventCreationDTO {
         this.event = event;
     }
 
-    public int[] getInvitedUsers() {
-        return invitedUsers;
+    public int[] getInvitedPeople() {
+        return invitedPeople;
     }
 
-    public void setInvitedUsers(int[] invitations) {
-        this.invitedUsers = invitations;
+    public void setInvitedPeople(int[] invitations) {
+        this.invitedPeople = invitations;
     }
      
 }

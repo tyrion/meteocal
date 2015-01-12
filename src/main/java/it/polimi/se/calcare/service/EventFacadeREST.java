@@ -5,16 +5,23 @@
  */
 package it.polimi.se.calcare.service;
 
+import it.polimi.se.calcare.auth.AuthRequired;
+import it.polimi.se.calcare.dto.EventCreationDTO;
 import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Forecast;
 import it.polimi.se.calcare.entities.ForecastPK;
+import it.polimi.se.calcare.entities.Participation;
+import it.polimi.se.calcare.entities.ParticipationPK;
+import it.polimi.se.calcare.entities.User;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -25,15 +32,18 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.json.JSONException;
 
 /**
  *
  * @author tyrion
  */
 @Stateless
-@Path("it.polimi.se.calcare.entities.event")
+@Path("events")
 public class EventFacadeREST extends AbstractFacade<Event> {
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
@@ -42,21 +52,29 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         super(Event.class);
     }
 
+    @AuthRequired
     @POST
-    @Override
     @Consumes({"application/xml", "application/json"})
-    public void create(Event entity) {
-
-        //Create the City in the DB and retreive the id
-        int id=cityCreator(entity.getLocation());
-                
-        try {
-                    //Create the forecast(s) associated with the event
-                    forecastCreator(entity.getLocation(), entity.getStart(), entity.getEnd(), id);
-        } catch (Exception ex) {
-            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        super.create(entity);
+    public void create(@Context SecurityContext sc, EventCreationDTO dto) {
+        User user = (User) sc.getUserPrincipal();
+        Event event = dto.event;
+        event.setCreator(user);
+        
+        em.persist(event);
+        em.flush();
+        List<Participation> participations = new ArrayList<>();
+        for (int id : dto.invitedPeople)
+            participations.add(new Participation(event.getId(), id));
+        event.setParticipationCollection(participations);
+        
+        
+//        try {
+//            int id = cityCreator(event.getLocation());
+//            forecastCreator(event.getLocation(), event.getStart(), event.getEnd(), id);
+//        } catch (JSONException | IOException ex) {
+//            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        
     }
 
     @PUT
@@ -105,29 +123,18 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         return em;
     }
 
-    private Date Date(String get) {
-        java.util.Date date = new java.util.Date(get);
-        return date;
-    }
-
-    private int cityCreator(String location) {
+    private int cityCreator(String location) throws JSONException, IOException {
          //Create the City in the DB
-        City newCity=new City();
+        City city = new GetWeather().createCity(location);
+        
         try {
-            newCity= new GetWeather().createCity(location);
-        } catch (Exception ex) {
-            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        List<City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
-        if (cities.contains(newCity)) {}
-        else{
-        em.persist(newCity);
-        em.flush();
-            }
-            return newCity.getId();
+            em.persist(city);
+            em.flush();
+        } catch (EntityExistsException ex) {}
+        return city.getId();
     }
 
-    private void forecastCreator(String city , Date s, Date e, int id) throws Exception {
+    private void forecastCreator(String city , Date s, Date e, int id) throws JSONException, IOException {
         DateTime start = new DateTime(s);
         DateTime end = new DateTime(e);
         int cnt=Days.daysBetween(start, end).getDays();
@@ -137,7 +144,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
             toUpdate.add(forecast);
             em.persist(forecast);
         }
-        List<Forecast> toPush=new GetWeather().updateForecast(toUpdate);
+        List<Forecast> toPush = new GetWeather().updateForecast(toUpdate);
         
         for (Forecast item : toPush) {
             em.persist(item);
