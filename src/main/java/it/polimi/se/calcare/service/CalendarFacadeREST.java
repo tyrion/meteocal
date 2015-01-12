@@ -85,7 +85,12 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
             .getResultList(); 
         if(cals.size() > 10){
             cals = cals.subList(0, 10); //let's cut the list to 10 results
-        }   
+        }
+        
+        //let's set a null the partecipationsList - we shouldn't return it to other users
+        for (Calendar c: cals){
+            c.setParticipationCollection(null);
+        }
         return cals;
     }
 
