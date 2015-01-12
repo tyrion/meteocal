@@ -174,7 +174,7 @@
                                         <p ng-if="eventCreate.invitedPeople.length === 0">
                                             No invited people yet...
                                         </p>
-                                        <button type="button" style="margin-right: 10px;" ng-click="eventCreate.invitedPeople.splice($index, 1);" ng-repeat="p in eventCreate.invitedPeople" class="btn btn-sm">{{p.email}} <span aria-hidden="true">&times;</span></button>&nbsp;
+                                        <button type="button" style="margin-right: 10px;" ng-click="eventCreate.invitedPeople.splice($index, 1);" ng-repeat="p in eventCreate.invitedPeople" class="btn btn-sm">{{p.owner.email}} <span aria-hidden="true">&times;</span></button>&nbsp;
                                     </div>
                                 </div>
                         
@@ -182,13 +182,13 @@
                                     <input type="text" placeholder="Search for users to invite!" class="form-control" ng-change="searchUsers($parent.eventCreate)" ng-model="eventCreate.searchField">
                                     <i class="glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></i>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-if="eventCreate.searchField.length > 0">
                                     <p ng-if="eventCreate.searchedPeople.length === 0">
                                         No matches!
                                     </p>
                                     <ul class="list-group">
                                         <li class="list-group-item" ng-repeat="p in eventCreate.searchedPeople">
-                                            <b>{{p.givenName}} {{p.familyName}}</b> {{p.email}}
+                                            <b>{{p.owner.givenName}} {{p.owner.familyName}}</b> {{p.owner.email}}
                                             <button class="btn btn-sm pull-right" ng-click="eventCreate.invitedPeople.push(eventCreate.searchedPeople.splice($index, 1)[0]);"><i class="glyphicon glyphicon-plus" aria-hidden="true"></i></button>
                                         </li>
                                     </ul>

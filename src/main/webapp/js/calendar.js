@@ -87,21 +87,6 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.userSearch.searchField = "";
         $scope.notifications = [];
         setTimeout(function(){ setupUserPage(); }, 10);
-
-        //TODO: remove this, it is useless
-        $http({
-            method: 'GET',
-            url: "api/users",
-            headers: {'Authorization': 'Bearer ' + $localStorage.token}
-        })
-        .success(function(data) {
-            console.log(data);
-            $scope.eventCreate.searchedPeople = data;
-        })
-        .error(function(data) {
-            //TODO error in case of server error
-            console.log(data);
-        });
         
         $http({
             method: 'GET',
@@ -183,8 +168,17 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
-            searchObject.searchedPeople = data;
-            console.log(data);
+            if(searchObject.invitedPeople){
+                searchObject.searchedPeople = data;
+                data.forEach(function(cal) {
+                    searchObject.invitedPeople.forEach(function(inv) {
+                        if(cal.owner.email === inv.owner.email){
+                            searchObject.searchedPeople.pop(cal);
+                        };
+                    });
+                });
+            };
+            console.log(searchObject.invitedPeople);
         })
         .error(function(data) {
             //TODO error in case of server error
