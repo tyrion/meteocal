@@ -25,8 +25,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 /**
  *
@@ -63,6 +67,7 @@ public class User implements Serializable, java.security.Principal {
     @Basic(optional = true) @NotNull @Column(name = "active")
     private boolean active;
 
+    @XmlInverseReference(mappedBy="owner")
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
     private Calendar calendar;
     

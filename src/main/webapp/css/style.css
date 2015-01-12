@@ -108,6 +108,6 @@ body, body.modal {
     overflow-y: hidden;
 }
 
-#eventCreateModal .list-group-item button{
+#eventCreateModal .list-group-item button, #searchResults .list-group-item button{
     margin-top: -4px;
 }

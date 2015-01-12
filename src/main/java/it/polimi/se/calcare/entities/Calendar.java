@@ -20,6 +20,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
@@ -31,10 +34,11 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @Entity
 @Table(name = "calendars")
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 @NamedQueries({
     @NamedQuery(name = "Calendar.findAll", query = "SELECT c FROM Calendar c"),
     @NamedQuery(name = "Calendar.findById", query = "SELECT c FROM Calendar c WHERE c.id = :id"),
-    @NamedQuery(name = "Calendar.search", query = "FROM Calendar as c where c.owner.email like :search")})
+    @NamedQuery(name = "Calendar.search", query = "FROM Calendar AS c WHERE c.owner.id != :currentUser AND c.owner.email LIKE :search")})
 public class Calendar implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -49,10 +53,8 @@ public class Calendar implements Serializable {
 
     @JoinColumn(name = "owner", referencedColumnName = "id")
     @OneToOne(optional = false)
-    @XmlInverseReference(mappedBy="calendar")
+    @XmlElement(name="owner")
     private User owner;
-
-    
     
     public Calendar() {
     }
