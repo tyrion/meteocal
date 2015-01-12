@@ -250,7 +250,7 @@
                         </p>
                         <ul class="list-group">
                             <li class="list-group-item" ng-repeat="p in userSearch.searchedPeople">
-                                <b>{{p.givenName}} {{p.familyName}}</b> {{p.email}}
+                                <b>{{p.owner.givenName}} {{p.owner.familyName}}</b> {{p.email}}
                                 <button class="btn btn-sm pull-right" ng-click="getCalendar(p.id);"><i class="glyphicon glyphicon-chevron-right" aria-hidden="true"></i></button>
                             </li>
                         </ul>

@@ -18,13 +18,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 /**
  *
  * @author tyrion
  */
 @Stateless
-@Path("it.polimi.se.calcare.entities.calendar")
+@Path("calendars")
 public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
@@ -59,12 +60,19 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     public Calendar find(@PathParam("id") Integer id) {
         return super.find(id);
     }
+    
+    
 
     @GET
-    @Override
     @Produces({"application/xml", "application/json"})
-    public List<Calendar> findAll() {
-        return super.findAll();
+    public List<Calendar> search(@QueryParam("search") String search) {
+        List<Calendar> cals = getEntityManager().createNamedQuery("Calendar.search", Calendar.class)
+            .setParameter("search", '%' + search + '%')
+            .getResultList(); 
+        if(cals.size() > 10){
+            return cals.subList(0, 10); //let's cut the list to 10 results
+        }
+        return cals;
     }
 
     @GET

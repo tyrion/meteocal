@@ -33,7 +33,8 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Calendar.findAll", query = "SELECT c FROM Calendar c"),
-    @NamedQuery(name = "Calendar.findById", query = "SELECT c FROM Calendar c WHERE c.id = :id")})
+    @NamedQuery(name = "Calendar.findById", query = "SELECT c FROM Calendar c WHERE c.id = :id"),
+    @NamedQuery(name = "Calendar.search", query = "FROM Calendar as c where c.owner.email like :search")})
 public class Calendar implements Serializable {
     private static final long serialVersionUID = 1L;
 
