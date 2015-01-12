@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
+import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 /**
@@ -55,6 +57,8 @@ public class User implements Serializable, java.security.Principal {
     @Basic(optional = false) @NotNull @Size(min = 1, max = 255) @Column(name = "email")
     private String email;
     
+    @XmlElement
+    @XmlReadOnly
     @Basic(optional = false) @NotNull @Size(min = 1, max = 255) @Column(name = "password")
     private String password;
     

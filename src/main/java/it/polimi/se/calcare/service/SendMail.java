@@ -24,6 +24,8 @@
 package it.polimi.se.calcare.service;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.mail.*;
 import javax.mail.internet.*;
 
@@ -76,11 +78,11 @@ public class SendMail {
             transport.sendMessage(message, message.getAllRecipients());
             transport.close();
         }
-        catch (AddressException ae) {
-            ae.printStackTrace();
+        catch (AddressException ex) {
+            Logger.getLogger(SendMail.class.getName()).log(Level.SEVERE, null, ex);
         }
-        catch (MessagingException me) {
-            me.printStackTrace();
+        catch (MessagingException ex) {
+            Logger.getLogger(SendMail.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
