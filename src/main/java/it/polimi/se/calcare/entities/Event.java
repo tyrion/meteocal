@@ -47,7 +47,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Event.findByEnd", query = "SELECT e FROM Event e WHERE e.end = :end"),
     @NamedQuery(name = "Event.findByLocation", query = "SELECT e FROM Event e WHERE e.location = :location"),
     @NamedQuery(name = "Event.findByPublic1", query = "SELECT e FROM Event e WHERE e.public1 = :public1"),
-    @NamedQuery(name = "Event.findByOutdoor", query = "SELECT e FROM Event e WHERE e.outdoor = :outdoor")})
+    @NamedQuery(name = "Event.findByOutdoor", query = "SELECT e FROM Event e WHERE e.outdoor = :outdoor"),
+    @NamedQuery(name = "Event.calendar", query = "SELECT p.event FROM Participation p WHERE p.calendar = :calendar")
+})
 public class Event implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -196,7 +198,6 @@ public class Event implements Serializable {
         this.forecastCollection = forecastCollection;
     }
 
-    @XmlTransient
     public Collection<Participation> getParticipationCollection() {
         return participationCollection;
     }

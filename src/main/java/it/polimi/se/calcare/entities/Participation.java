@@ -82,6 +82,7 @@ public class Participation implements Serializable {
         this.calendar = calendar;
     }
 
+    @XmlTransient
     public Event getEvent() {
         return event;
     }
