@@ -237,6 +237,41 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="eventListModal" tabindex="-1" role="dialog" aria-labelledby="eventListLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="eventListLabel">Event list for {{eventList.day}}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="list-group">
+                                <a ng-href="#/events/{{e.id}}" class="list-group-item" ng-repeat="e in eventList.events">
+                                    <h4 class="list-group-item-heading">{{e.name}}</h4>
+                                    <p class="list-group-item-text">{{e.description}}</p>
+                                    <p class="list-group-item-text">Where: {{e.location}}</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="currentEventModal" tabindex="-1" role="dialog" aria-labelledby="currentEventLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="currentEventLabel">Event: {{currentEvent.name}}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{currentEvent.description}}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-primary" value="Edit" />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </script>
 
         <script type="text/ng-template" id="userPage">

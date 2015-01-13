@@ -8,6 +8,14 @@ function positionBG(){
     }
 }
 
+function addLeadingZero(num) {
+    if (num < 10) {
+        return "0" + num;
+    } else {
+        return "" + num;
+    }
+}
+
 function generateNotif(title, body, type, $sce){
     return $sce.trustAsHtml('<div class="alert alert-' + type + ' alert-dismissible fade in" role="alert">' +
         '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' + 
@@ -68,6 +76,19 @@ var calApp = angular.module("CalCAREApp", ['ngSanitize', 'ngStorage']);
 calApp.controller("CalendarController", function ($scope, $http, $sce, $localStorage) {
     $scope.landingNotif = '';
     $scope.loginData = false;
+    $scope.myEvents = {
+        onActiveDayClick: function(events) {
+            var thisDayEvent, key;
+            key = $(this).data('year')+'-'+addLeadingZero( $(this).data('month') )+'-'+addLeadingZero( $(this).data('day') );
+            thisDayEvent = events[key];
+
+            $scope.eventList.day = moment(key).format("MMMM Do");
+            $scope.eventList.events = thisDayEvent.dayEvents;
+            console.log($scope.eventList.day);
+
+            $('#eventListModal').modal('show');
+        }
+    };
     
     //check for user activation
     if (window.location.hash.replace("#/", "") === 'activated'){
@@ -88,20 +109,23 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.userSearch.searchedPeople = [];
         $scope.userSearch.searchField = "";
         $scope.notifications = [];
-        $scope.myEvents = {
-            time: moment().format("YYYY-MM"),
-            events: {}
+        $scope.eventList = {
+            events: [],
+            day: ""
         };
+        $scope.myEvents.time = moment().format("YYYY-MM");
+        $scope.myEvents.events = {};
+        
         setTimeout(function(){ setupUserPage($scope.myEvents); }, 10);
         
+        //get the user calendar
         $http({
             method: 'GET',
             url: "api/calendars/me",
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
-            console.log(data);
-            $scope.myCalendar = data;
+            $scope.myEvents.owner = data.owner;
             data.participations.forEach(function(p){
                 var start = moment(moment(p.event.start).format("YYYY-MM-DD"));
                 var end = moment(moment(p.event.end).format("YYYY-MM-DD"));
@@ -112,20 +136,26 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
                             "number": 1, 
                             "badgeClass": 
                             "badge-warning", 
-                            "url": "#/list/"+actualDate
+                            "url": "#/list/"+actualDate,
+                            "ng-click":"robba()",
+                            "dayEvents": [p.event]
                         };
                     } else {
                         $scope.myEvents.events[actualDate]["number"]++;
+                        $scope.myEvents.events[actualDate]["dayEvents"].push(p.event);
                     }
                     end = end.subtract(1, 'days');
                 } while(!end.isBefore(start));
             });
+            
+            console.log($scope.myEvents);
         })
         .error(function(data) {
             //TODO error in case of server error
             console.log(data);
         }); 
         
+        //get the user notifications
         $http({
             method: 'GET',
             url: "api/notifications",
@@ -138,7 +168,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .error(function(data) {
             //TODO error in case of server error
             console.log(data);
-        }); 
+        });
+        
     };
     
     $scope.logout = function() {
@@ -223,6 +254,13 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             searchObject.searchedPeople = [];
         }); 
     };
+    $(window).bind( 'hashchange', function(e) {
+        if (window.location.hash.replace("#/", "").substring(0,7) === 'events/'){
+            //this is for the navigation through #/
+            var eventId = window.location.hash.replace("#/events/", "");   
+            console.log(eventId);
+        };
+    });
     
     $scope.getCalendar = function(id) {
         //TODO load others calendar
