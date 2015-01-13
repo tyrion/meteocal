@@ -56,6 +56,11 @@ public class Participation implements Serializable {
     public Participation(int event, int calendarsId) {
         this.participationPK = new ParticipationPK(event, calendarsId);
     }
+    
+    public Participation(int event, int calendarsId, Boolean accepted) {
+        this(event, calendarsId);
+        this.accepted = accepted;
+    }
 
     public ParticipationPK getParticipationPK() {
         return participationPK;
