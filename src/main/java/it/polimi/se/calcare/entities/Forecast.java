@@ -39,32 +39,41 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Forecast.findByHumidity", query = "SELECT f FROM Forecast f WHERE f.humidity = :humidity")})
 public class Forecast implements Serializable {
     private static final long serialVersionUID = 1L;
+    public static final WeatherCondition NO_WEATHER_CONDITION = new WeatherCondition(1);
+    
     @EmbeddedId
     protected ForecastPK forecastPK;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "temp_min")
     private double tempMin;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "temp_max")
     private double tempMax;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "pressure")
     private double pressure;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "humidity")
     private double humidity;
+    
     @ManyToMany(mappedBy = "forecastCollection")
     private Collection<Event> eventCollection;
+    
     @JoinColumn(name = "city", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private City city1;
+    
     @JoinColumn(name = "weather_condition", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private WeatherCondition weatherCondition;
+    private WeatherCondition weatherCondition = NO_WEATHER_CONDITION;
 
     public Forecast() {
     }

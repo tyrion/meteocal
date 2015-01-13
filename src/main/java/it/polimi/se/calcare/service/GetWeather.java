@@ -75,13 +75,13 @@ public class GetWeather {
         return (openweatherJsonDecoderCity(owJSON));
     }
 
-    public List<Forecast> updateForecast(List<Forecast> forecasts) throws MalformedURLException, JSONException, IOException {
+    public List<Forecast> updateForecast(City city, List<Forecast> forecasts) throws MalformedURLException, JSONException, IOException {
         /*
          this method is responsible for the update of the forecast
          it takes an arraylist of forecasts of THE SAME CITY
          */
-        Double lat = forecasts.get(0).getCity1().getLat();
-        Double lon = forecasts.get(0).getCity1().getLon();
+        Double lat = city.getLat();
+        Double lon = city.getLon();
 
         List<Forecast> newForecasts = new ArrayList<>();
 

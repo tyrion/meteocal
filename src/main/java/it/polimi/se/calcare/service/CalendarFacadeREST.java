@@ -59,6 +59,7 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
         super.remove(super.find(id));
     }
 
+
     @GET
     @Path("{id}")
     @Produces({"application/xml", "application/json"})
@@ -95,13 +96,6 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
             c.setParticipations(null);
         }
         return cals;
-    }
-
-    @GET
-    @Path("{from}/{to}")
-    @Produces({"application/xml", "application/json"})
-    public List<Calendar> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
     }
 
     @GET
