@@ -7,6 +7,7 @@ package it.polimi.se.calcare.service;
 
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.dto.EventCreationDTO;
+import it.polimi.se.calcare.entities.Calendar;
 import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Forecast;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -32,6 +34,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import org.joda.time.DateTime;
@@ -90,11 +93,29 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         super.remove(super.find(id));
     }
 
+    @AuthRequired
     @GET
     @Path("{id}")
     @Produces({"application/xml", "application/json"})
-    public Event find(@PathParam("id") Integer id) {
-        return super.find(id);
+    public Event find(@Context SecurityContext sc, @PathParam("id") Integer id) {
+        User user = (User) sc.getUserPrincipal();
+        Event event = super.find(id);
+        System.out.println(event);
+        System.out.println(user);
+        if (event == null)
+            throw new WebApplicationException(404);
+        
+        if (!event.isPublic()) {
+            try {
+                em.createNamedQuery("Participation.forEvent", Participation.class)
+                    .setParameter("calendar", user.getCalendar())
+                    .setParameter("event", event)
+                    .getSingleResult();
+            } catch (NoResultException ex) {
+                throw new WebApplicationException(401);
+            }             
+        }
+        return event;
     }
 
     @GET

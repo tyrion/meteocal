@@ -170,6 +170,10 @@ public class Event implements Serializable {
     public boolean getPublic1() {
         return public1;
     }
+    
+    public boolean isPublic() {
+        return public1;
+    }
 
     public void setPublic1(boolean public1) {
         this.public1 = public1;

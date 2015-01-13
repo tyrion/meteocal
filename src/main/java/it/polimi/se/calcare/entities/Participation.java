@@ -28,7 +28,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Participation.findAll", query = "SELECT p FROM Participation p"),
     @NamedQuery(name = "Participation.findByEvent", query = "SELECT p FROM Participation p WHERE p.participationPK.event = :event"),
     @NamedQuery(name = "Participation.findByCalendarsId", query = "SELECT p FROM Participation p WHERE p.participationPK.calendarsId = :calendarsId"),
-    @NamedQuery(name = "Participation.findByAccepted", query = "SELECT p FROM Participation p WHERE p.accepted = :accepted")})
+    @NamedQuery(name = "Participation.findByAccepted", query = "SELECT p FROM Participation p WHERE p.accepted = :accepted"),
+    @NamedQuery(name = "Participation.forEvent", query = "FROM Participation p WHERE p.calendar = :calendar AND p.event = :event")
+})
 public class Participation implements Serializable {
     private static final long serialVersionUID = 1L;
     
