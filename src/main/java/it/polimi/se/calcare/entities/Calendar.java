@@ -20,6 +20,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -46,6 +47,11 @@ public class Calendar implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "public")
+    private boolean public1;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "calendar")
     private Collection<Participation> participations;
@@ -84,6 +90,14 @@ public class Calendar implements Serializable {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+    
+    public boolean isPublic1() {
+        return public1;
+    }
+
+    public void setPublic1(boolean public1) {
+        this.public1 = public1;
     }
 
     @Override
