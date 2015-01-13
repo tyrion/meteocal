@@ -7,6 +7,7 @@ package it.polimi.se.calcare.service;
 
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.Calendar;
+import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.User;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -69,9 +70,11 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     @AuthRequired
     @Path("me")
     @Produces({"application/json"})
-    public Calendar myCalendar(@Context SecurityContext sc) {
+    public List<Event> myCalendar(@Context SecurityContext sc) {
         User user = (User) sc.getUserPrincipal();
-        return super.find(user.getCalendar().getId());
+        return em.createNamedQuery("Event.calendar", Event.class)
+                .setParameter("calendar", user.getCalendar())
+                .getResultList();
     }
 
     @GET
