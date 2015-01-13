@@ -115,7 +115,6 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         };
         $scope.myEvents.time = moment().format("YYYY-MM");
         $scope.myEvents.events = {};
-        
         setTimeout(function(){ setupUserPage($scope.myEvents); }, 10);
         
         //get the user calendar
@@ -125,10 +124,27 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
-            $scope.myEvents.owner = data.owner;
-            data.participations.forEach(function(p){
-                var start = moment(moment(p.event.start).format("YYYY-MM-DD"));
-                var end = moment(moment(p.event.end).format("YYYY-MM-DD"));
+            $scope.myEvents.dbEvents = data;
+            
+            //open the modal for the event if we have a path like #/events/{{id}}
+            if (window.location.hash.replace("#/", "").substring(0,7) === 'events/'){
+                //this is for the navigation through #/
+                var eventId = window.location.hash.replace("#/events/", "");   
+                console.log(eventId);
+                $scope.myEvents.dbEvents.forEach( function(e) {
+                    if(String(e.id) === eventId){
+                        $scope.currentEvent = e;
+                        $('#currentEventModal').modal('show');
+                    }
+                });
+            };
+            
+            data.forEach(function(e){
+                e.startFormatted = moment(e.start).format('MMMM Do YYYY, h:mm a');
+                e.endFormatted = moment(e.end).format('MMMM Do YYYY, h:mm a');
+                
+                var start = moment(moment(e.start).format("YYYY-MM-DD"));
+                var end = moment(moment(e.end).format("YYYY-MM-DD"));
                 do {
                     var actualDate = end.format("YYYY-MM-DD");
                     if(!(actualDate in $scope.myEvents.events)){
@@ -137,12 +153,11 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
                             "badgeClass": 
                             "badge-warning", 
                             "url": "#/list/"+actualDate,
-                            "ng-click":"robba()",
-                            "dayEvents": [p.event]
+                            "dayEvents": [e]
                         };
                     } else {
                         $scope.myEvents.events[actualDate]["number"]++;
-                        $scope.myEvents.events[actualDate]["dayEvents"].push(p.event);
+                        $scope.myEvents.events[actualDate]["dayEvents"].push(e);
                     }
                     end = end.subtract(1, 'days');
                 } while(!end.isBefore(start));
@@ -254,13 +269,11 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             searchObject.searchedPeople = [];
         }); 
     };
-    $(window).bind( 'hashchange', function(e) {
-        if (window.location.hash.replace("#/", "").substring(0,7) === 'events/'){
-            //this is for the navigation through #/
-            var eventId = window.location.hash.replace("#/events/", "");   
-            console.log(eventId);
-        };
-    });
+    
+    $scope.openCurrentEventModal = function(e) {
+        $scope.currentEvent = e;
+        $('#currentEventModal').modal('show');
+    };
     
     $scope.getCalendar = function(id) {
         //TODO load others calendar
