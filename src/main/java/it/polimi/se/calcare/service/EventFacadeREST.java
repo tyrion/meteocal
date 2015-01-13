@@ -22,10 +22,13 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -48,6 +51,7 @@ import org.json.JSONException;
 @Stateless
 @Path("events")
 public class EventFacadeREST extends AbstractFacade<Event> {
+
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
@@ -62,35 +66,41 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         User user = (User) sc.getUserPrincipal();
         Event event = dto.event;
         event.setCreator(user);
-        
+
         em.persist(event);
         em.flush();
         List<Participation> participations = new ArrayList<>();
-        for (int id : dto.invitedPeople)
+        for (int id : dto.invitedPeople) {
             participations.add(new Participation(event.getId(), id));
+        }
         event.setParticipationCollection(participations);
-        
-        
-//        try {
-//            int id = cityCreator(event.getLocation());
-//            forecastCreator(event.getLocation(), event.getStart(), event.getEnd(), id);
-//        } catch (JSONException | IOException ex) {
-//            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        
+
+        try {
+            City city = cityCreator(event.getLocation());
+            forecastCreator(event.getLocation(), event.getStart(), event.getEnd(), city);
+        } catch (JSONException | IOException ex) {
+            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     @PUT
     @Path("{id}")
     @Consumes({"application/xml", "application/json"})
-    public void edit(@PathParam("id") Integer id, Event entity) {
+    public void edit(@Context SecurityContext sc, @PathParam("id") Integer id, Event entity) {
         super.edit(entity);
     }
 
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
-        super.remove(super.find(id));
+    public void remove(@Context SecurityContext sc, @PathParam("id") Integer id) {
+        User user = (User) sc.getUserPrincipal();
+        Event event = super.find(id);
+        if (event.getCreator().equals(user)) {
+            super.remove(event);
+        } else {
+            throw new WebApplicationException(403);
+        }
     }
 
     @AuthRequired
@@ -100,43 +110,21 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     public Event find(@Context SecurityContext sc, @PathParam("id") Integer id) {
         User user = (User) sc.getUserPrincipal();
         Event event = super.find(id);
-        System.out.println(event);
-        System.out.println(user);
-        if (event == null)
+        if (event == null) {
             throw new WebApplicationException(404);
-        
+        }
+
         if (!event.isPublic()) {
             try {
                 em.createNamedQuery("Participation.forEvent", Participation.class)
-                    .setParameter("calendar", user.getCalendar())
-                    .setParameter("event", event)
-                    .getSingleResult();
+                        .setParameter("calendar", user.getCalendar())
+                        .setParameter("event", event)
+                        .getSingleResult();
             } catch (NoResultException ex) {
-                throw new WebApplicationException(401);
-            }             
+                throw new WebApplicationException(403);
+            }
         }
         return event;
-    }
-
-    @GET
-    @Override
-    @Produces({"application/xml", "application/json"})
-    public List<Event> findAll() {
-        return super.findAll();
-    }
-
-    @GET
-    @Path("{from}/{to}")
-    @Produces({"application/xml", "application/json"})
-    public List<Event> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-    @GET
-    @Path("count")
-    @Produces("text/plain")
-    public String countREST() {
-        return String.valueOf(super.count());
     }
 
     @Override
@@ -144,29 +132,32 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         return em;
     }
 
-    private int cityCreator(String location) throws JSONException, IOException {
-         //Create the City in the DB
+    private City cityCreator(String location) throws JSONException, IOException {
+        //Create the City in the DB
         City city = new GetWeather().createCity(location);
-        
+
         try {
             em.persist(city);
             em.flush();
-        } catch (EntityExistsException ex) {}
-        return city.getId();
+        } catch (PersistenceException ex) {}
+
+        return city;
     }
 
-    private void forecastCreator(String city , Date s, Date e, int id) throws JSONException, IOException {
+    private void forecastCreator(String location, Date s, Date e, City city) throws JSONException, IOException {
         DateTime start = new DateTime(s);
         DateTime end = new DateTime(e);
-        int cnt=Days.daysBetween(start, end).getDays();
-        List<Forecast> toUpdate= new ArrayList<>();
-        for (int i=0; i<=cnt; i++) {
-            Forecast forecast=new Forecast(new ForecastPK(start.plusDays(i).toDate(), id), 0, 0, 0, 0);
+        int cnt = Days.daysBetween(start, end).getDays();
+        List<Forecast> toUpdate = new ArrayList<>();
+        for (int i = 0; i <= cnt; i++) {
+            Forecast forecast = new Forecast(
+                    new ForecastPK(start.plusDays(i).toDate(), city.getId()),
+                    0, 0, 0, 0);
             toUpdate.add(forecast);
             em.persist(forecast);
         }
-        List<Forecast> toPush = new GetWeather().updateForecast(toUpdate);
-        
+        List<Forecast> toPush = new GetWeather().updateForecast(city, toUpdate);
+
         for (Forecast item : toPush) {
             em.persist(item);
         }
