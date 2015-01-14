@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -94,6 +95,11 @@ public class Participation implements Serializable {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+    
+    @XmlElement
+    public User getUser() {
+        return this.calendar.getOwner();
     }
 
     @Override
