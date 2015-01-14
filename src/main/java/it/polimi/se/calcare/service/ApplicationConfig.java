@@ -32,7 +32,6 @@ public class ApplicationConfig extends Application {
         resources.add(it.polimi.se.calcare.auth.AuthFilter.class);
         resources.add(it.polimi.se.calcare.service.AuthREST.class);
         resources.add(it.polimi.se.calcare.service.CalendarFacadeREST.class);
-        resources.add(it.polimi.se.calcare.service.CityFacadeREST.class);
         resources.add(it.polimi.se.calcare.service.EventFacadeREST.class);
         resources.add(it.polimi.se.calcare.service.ForecastFacadeREST.class);
         resources.add(it.polimi.se.calcare.service.NotificationFacadeREST.class);
