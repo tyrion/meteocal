@@ -95,13 +95,13 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" ng-href="#" ng-click="login()"><b>Cal</b>CARE</a>
+                        <a class="navbar-brand" ng-href="#/" ng-click="login()"><b>Cal</b>CARE</a>
                     </div>
                     <div id="navbar" class="navbar-collapse collapse navbar-right">
                          <ul class="nav navbar-nav">
                             <li><button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventCreateModal">New Event</button></li>
-                            <li><a href="#" data-toggle="modal" data-target="#editSettingsModal">Settings</a></li>
-                            <li><a ng-click="logout()" href="#">Logout</a></li>
+                            <li><a href="#/" data-toggle="modal" data-target="#editSettingsModal">Settings</a></li>
+                            <li><a ng-click="logout()" href="#/">Logout</a></li>
                             <li>
                                 <form class="navbar-form navbar-right">
                                     <div class="form-group has-feedback">
@@ -137,7 +137,7 @@
                                         <input type="checkbox" id="createOutdoorCheck" value="outdoor" ng-model="eventCreate.event.outdoor"> Outdoor
                                     </label>
                                     <label class="checkbox-inline">
-                                        <input type="checkbox" id="createPublicCheck" value="public" ng-model="eventCreate.event.public"> Public
+                                        <input type="checkbox" id="createPublicCheck" value="public" ng-model="eventCreate.event.public1"> Public
                                     </label>
                                 </div>
                         
@@ -246,9 +246,9 @@
                         </div>
                         <div class="modal-body">
                             <div class="list-group">
-                                <a ng-href="#/events/{{e.id}}" class="list-group-item" ng-repeat="e in eventList.events">
+                                <a ng-href="#/events/{{e.id}}" ng-click="$parent.openCurrentEventModal(e)" class="list-group-item" ng-repeat="e in eventList.events">
                                     <h4 class="list-group-item-heading">{{e.name}}</h4>
-                                    <p class="list-group-item-text">{{e.description}}</p>
+                                    <p class="list-group-item-text">{{e.description}}</p><br/>
                                     <p class="list-group-item-text">Where: {{e.location}}</p>
                                 </a>
                             </div>
@@ -261,10 +261,23 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="currentEventLabel">Event: {{currentEvent.name}}</h4>
+                            <h4 class="modal-title" id="currentEventLabel">Event: {{$parent.currentEvent.name}}</h4>
                         </div>
                         <div class="modal-body">
-                            <p>{{currentEvent.description}}</p>
+                            <p><b>Creator:</b> {{currentEvent.creator.givenName}} {{currentEvent.creator.familyName}} ({{currentEvent.creator.email}})</p>
+                            <p><b>Description:</b> {{currentEvent.description}}</p>
+                            <p><b>From:</b> {{currentEvent.startFormatted}}</p>
+                            <p><b>To:</b> {{currentEvent.endFormatted}}</p>
+                            <p><b>Where</b> {{currentEvent.location}}</p>
+                            <div class="form-group">
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" onclick="return false" id="createOutdoorCheck" value="outdoor" ng-checked="currentEvent.outdoor"> Outdoor
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" onclick="return false" id="createPublicCheck" value="public" ng-checked="currentEvent.public1"> Public
+                                </label>
+                            </div>
+                            <p><b>Participations:</b></p>
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-primary" value="Edit" />
