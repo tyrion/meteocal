@@ -140,6 +140,7 @@ public class User implements Serializable, java.security.Principal {
         this.familyName = familyName;
     }
 
+    @XmlTransient
     public boolean isActive() {
         return active;
     }
