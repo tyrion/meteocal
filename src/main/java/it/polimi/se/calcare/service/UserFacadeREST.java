@@ -26,6 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ParseConversionEvent;
 
@@ -69,6 +70,7 @@ public class UserFacadeREST extends AbstractFacade<User> {
             .build();
     }
 
+    @AuthRequired
     @PUT
     @Path("{id}")
     @Consumes({"application/xml", "application/json"})
@@ -76,12 +78,15 @@ public class UserFacadeREST extends AbstractFacade<User> {
         super.edit(entity);
     }
 
+    @AuthRequired
     @DELETE
-    @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
-        super.remove(super.find(id));
+    @Path("me")
+    public void remove(@Context SecurityContext sc) {
+        User user = (User) sc.getUserPrincipal();
+        super.remove(user);
     }
 
+    @AuthRequired
     @GET
     @Path("{id}")
     @Produces({"application/xml", "application/json"})
@@ -95,20 +100,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Produces({"application/xml", "application/json"})
     public List<User> findAll() {
         return super.findAll();
-    }
-
-    @GET
-    @Path("{from}/{to}")
-    @Produces({"application/xml", "application/json"})
-    public List<User> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-    @GET
-    @Path("count")
-    @Produces("text/plain")
-    public String countREST() {
-        return String.valueOf(super.count());
     }
 
     @Override
