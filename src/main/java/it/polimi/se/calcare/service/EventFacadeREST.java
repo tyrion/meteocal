@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -69,18 +71,23 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
         em.persist(event);
         em.flush();
-        List<Participation> participations = new ArrayList<>();
-        for (int id : dto.invitedPeople) {
-            participations.add(new Participation(event.getId(), id));
-        }
-        event.setParticipationCollection(participations);
 
-        try {
-            City city = cityCreator(event.getLocation());
-            forecastCreator(event.getLocation(), event.getStart(), event.getEnd(), city);
-        } catch (JSONException | IOException ex) {
-            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        // We use a Map to avoid duplicated participations.
+        Map<Integer,Participation> participations = new HashMap<>();
+        for (int id : dto.invitedPeople)
+            participations.put(id, new Participation(event.getId(), id));
+        
+        // The event creator always participates to the Event.
+        Participation userP = new Participation(event.getId(), user.getId(), true);
+        participations.put(user.getId(), userP);
+        event.setParticipationCollection(participations.values());
+
+//        try {
+//            City city = cityCreator(event.getLocation());
+//            forecastCreator(event.getLocation(), event.getStart(), event.getEnd(), city);
+//        } catch (JSONException | IOException ex) {
+//            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
     }
 
