@@ -39,24 +39,14 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
         super(Calendar.class);
     }
 
-    @POST
-    @Override
-    @Consumes({"application/xml", "application/json"})
-    public void create(Calendar entity) {
-        super.create(entity);
-    }
-
+    @AuthRequired
     @PUT
-    @Path("{id}")
+    @Path("me")
     @Consumes({"application/xml", "application/json"})
-    public void edit(@PathParam("id") Integer id, Calendar entity) {
+    public void edit(@Context SecurityContext sc, Calendar entity) {
+        User user = (User) sc.getUserPrincipal();
+        entity.setId(user.getCalendar().getId());
         super.edit(entity);
-    }
-
-    @DELETE
-    @Path("{id}")
-    public void remove(@PathParam("id") Integer id) {
-        super.remove(super.find(id));
     }
 
 
@@ -101,13 +91,6 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
             c.setParticipations(null);
         }
         return cals;
-    }
-
-    @GET
-    @Path("count")
-    @Produces("text/plain")
-    public String countREST() {
-        return String.valueOf(super.count());
     }
 
     @Override

@@ -91,6 +91,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
     }
 
+    @AuthRequired
     @PUT
     @Path("{id}")
     @Consumes({"application/xml", "application/json"})
@@ -98,6 +99,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         super.edit(entity);
     }
 
+    @AuthRequired
     @DELETE
     @Path("{id}")
     public void remove(@Context SecurityContext sc, @PathParam("id") Integer id) {
