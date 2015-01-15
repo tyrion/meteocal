@@ -1,219 +1,292 @@
 200
-thunderstorm
+Thunderstorm
+thunderstorm with light rain
 11d
 201
-thunderstorm
+Thunderstorm
+thunderstorm with rain
 11d
 202
-thunderstorm
+Thunderstorm
+thunderstorm with heavy rain
 11d
 210
-light
+Thunderstorm
+light thunderstorm
 11d
 211
+Thunderstorm
 thunderstorm
 11d
 212
-heavy
+Thunderstorm
+heavy thunderstorm
 11d
 221
-ragged
+Thunderstorm
+ragged thunderstorm
 11d
 230
-thunderstorm
+Thunderstorm
+thunderstorm with light drizzle
 11d
 231
-thunderstorm
+Thunderstorm
+thunderstorm with drizzle
 11d
 232
-thunderstorm
+Thunderstorm
+thunderstorm with heavy drizzle
 11d
 300
-light
+Drizzle
+light intensity drizzle
 09d
 301
+Drizzle
 drizzle
 09d
 302
-heavy
+Drizzle
+heavy intensity drizzle
 09d
 310
-light
+Drizzle
+light intensity drizzle rain
 09d
 311
-drizzle
+Drizzle
+drizzle rain
 09d
 312
-heavy
+Drizzle
+heavy intensity drizzle rain
 09d
 313
-shower
+Drizzle
+shower rain and drizzle
 09d
 314
-heavy
+Drizzle
+heavy shower rain and drizzle
 09d
 321
-shower
+Drizzle
+shower drizzle
 09d
 500
-light
+Rain
+light rain
 10d
 501
-moderate
+Rain
+moderate rain
 10d
 502
-heavy
+Rain
+heavy intensity rain
 10d
 503
-very
+Rain
+very heavy rain
 10d
 504
-extreme
+Rain
+extreme rain
 10d
 511
-freezing
+Rain
+freezing rain
 13d
 520
-light
+Rain
+light intensity shower rain
 09d
 521
-shower
+Rain
+shower rain
 09d
 522
-heavy
+Rain
+heavy intensity shower rain
 09d
 531
-ragged
+Rain
+ragged shower rain
 09d
 600
-light
+Snow
+light snow
 13d
 601
+Snow
 snow
 13d
 602
-heavy
+Snow
+heavy snow
 13d
 611
+Snow
 sleet
 13d
 612
-shower
+Snow
+shower sleet
 13d
 615
-light
+Snow
+light rain and snow
 13d
 616
-rain
+Snow
+rain and snow
 13d
 620
-light
+Snow
+light shower snow
 13d
 621
-shower
+Snow
+shower snow
 13d
 622
-heavy
+Snow
+heavy shower snow
 13d
 701
+Atmosphere
 mist
 50d
 711
+Atmosphere
 smoke
 50d
 721
+Atmosphere
 haze
 50d
 731
-sand
+Atmosphere
+sand, dust whirls
 50d
 741
+Atmosphere
 fog
 50d
 751
+Atmosphere
 sand
 50d
 761
+Atmosphere
 dust
 50d
-771
-volcanic
+762
+Atmosphere
+volcanic ash
 50d
-781
+771
+Atmosphere
 squalls
 50d
-791
+781
+Atmosphere
 tornado
 50d
 800
-clear
+Clouds
+clear sky
 01d
 801
-few
+Clouds
+few clouds
 02d
 802
-scattered
+Clouds
+scattered clouds
 03d
 803
-broken
+Clouds
+broken clouds
 04d
 804
-overcast
+Clouds
+overcast clouds
 04d
 900
+Extreme
 tornado
-x
+NULL
 901
-tropical
-x
+Extreme
+tropical storm
+NULL
 902
+Extreme
 hurricane
-x
+NULL
 903
+Extreme
 cold
-x
+NULL
 904
+Extreme
 hot
-x
+NULL
 905
+Extreme
 windy
-x
+NULL
 906
+Extreme
 hail
-x
+NULL
 951
+Additional
 calm
-x
+NULL
 952
-light
-x
+Additional
+light breeze
+NULL
 953
-gentle
-x
+Additional
+gentle breeze
+NULL
 954
-moderate
-x
+Additional
+moderate breeze
+NULL
 955
-fresh
-x
+Additional
+fresh breeze
+NULL
 956
-strong
-x
+Additional
+strong breeze
+NULL
 957
-high
-x
+Additional
+high wind, near gale
+NULL
 958
+Additional
 gale
-x
+NULL
 959
-severe
-x
+Additional
+severe gale
+NULL
 960
+Additional
 storm
-x
+NULL
 961
-violent
-x
+Additional
+violent storm
+NULL
 962
+Additional
 hurricane
-x
+NULL
