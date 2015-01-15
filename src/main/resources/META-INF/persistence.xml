@@ -3,6 +3,8 @@
   <persistence-unit name="it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU" transaction-type="JTA">
     <jta-data-source>jdbc/mysql</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <properties/>
+    <properties>
+        <property name="eclipselink.logging.level" value="FINE"/>
+    </properties>
   </persistence-unit>
 </persistence>
