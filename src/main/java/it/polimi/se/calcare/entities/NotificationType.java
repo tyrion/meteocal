@@ -36,17 +36,39 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "NotificationType.findByName", query = "SELECT n FROM NotificationType n WHERE n.name = :name"),
     @NamedQuery(name = "NotificationType.findByDescription", query = "SELECT n FROM NotificationType n WHERE n.description = :description")})
 public class NotificationType implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Basic(optional = false) @Column(name = "id")
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
-    
-    @Basic(optional = false) @NotNull @Size(min = 1, max = 45) @Column(name = "name")
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "name")
     private String name;
-    
-    @Basic(optional = false) @NotNull @Size(min = 1, max = 255) @Column(name = "description")
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "description")
     private String description;
-    
+
+    public enum Enum {
+
+        INVITATION(1),
+        BAD_WEATHER(2);
+
+        public int id;
+
+        Enum(int id) {
+            this.id = id;
+        }
+    };
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "type")
     private Collection<Notification> notificationCollection;
 
@@ -120,5 +142,5 @@ public class NotificationType implements Serializable {
     public String toString() {
         return "it.polimi.se.calcare.entities.NotificationType[ id=" + id + " ]";
     }
-    
+
 }

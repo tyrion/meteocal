@@ -5,28 +5,24 @@
  */
 package it.polimi.se.calcare.service;
 
+import it.polimi.se.calcare.NotificationHelper;
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.dto.EventCreationDTO;
-import it.polimi.se.calcare.entities.Calendar;
 import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Forecast;
 import it.polimi.se.calcare.entities.ForecastPK;
+import it.polimi.se.calcare.entities.NotificationType;
 import it.polimi.se.calcare.entities.Participation;
-import it.polimi.se.calcare.entities.ParticipationPK;
 import it.polimi.se.calcare.entities.User;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -42,6 +38,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.json.JSONException;
@@ -64,7 +61,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @AuthRequired
     @POST
     @Consumes({"application/xml", "application/json"})
-    public void create(@Context SecurityContext sc, EventCreationDTO dto) {
+    public void create(@Context SecurityContext sc, @Context UriInfo ui, EventCreationDTO dto) {
         User user = (User) sc.getUserPrincipal();
         Event event = dto.event;
         event.setCreator(user);
@@ -72,15 +69,25 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         em.persist(event);
         em.flush();
 
-        // We use a Map to avoid duplicated participations.
-        Map<Integer,Participation> participations = new HashMap<>();
-        for (int id : dto.invitedPeople)
-            participations.put(id, new Participation(event.getId(), id));
-        
+        // Ensure that the creator of the event is not among the invited people.
+        dto.invitedPeople.remove(user.getId());
+
+        Set<User> invitedUsers = new HashSet<>(em.createQuery(
+                "SELECT DISTINCT u FROM User u WHERE u.active = TRUE AND u.calendar.id IN :ids",
+                User.class).setParameter("ids", dto.invitedPeople)
+                .getResultList());
+
+        NotificationHelper helper = new NotificationHelper(em, NotificationType.Enum.INVITATION, event);
+        List<Participation> participations = new ArrayList<>();
+        URI link = ui.getBaseUri().resolve("..#/events/" + event.getId());
+        for (User u : invitedUsers) {
+            participations.add(new Participation(event, u.getCalendar()));
+            helper.sendTo(u, link, event.getName(), user.getGivenName());
+        }
+
         // The event creator always participates to the Event.
-        Participation userP = new Participation(event.getId(), user.getId(), true);
-        participations.put(user.getId(), userP);
-        event.setParticipationCollection(participations.values());
+        participations.add(new Participation(event, user.getCalendar(), true));
+        event.setParticipationCollection(participations);
 
 //        try {
 //            City city = cityCreator(event.getLocation());
@@ -88,7 +95,6 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 //        } catch (JSONException | IOException ex) {
 //            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
 //        }
-
     }
 
     @AuthRequired
@@ -148,7 +154,8 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         try {
             em.persist(city);
             em.flush();
-        } catch (PersistenceException ex) {}
+        } catch (PersistenceException ex) {
+        }
 
         return city;
     }

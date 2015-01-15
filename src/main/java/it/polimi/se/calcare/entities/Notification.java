@@ -30,21 +30,34 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Notification.findAll", query = "SELECT n FROM Notification n"),
     @NamedQuery(name = "Notification.findById", query = "SELECT n FROM Notification n WHERE n.id = :id")})
 public class Notification implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Basic(optional = false) @Column(name = "id")
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
-    
-    @JoinColumn(name = "events_id", referencedColumnName = "id") @ManyToOne(optional = false)
+
+    @JoinColumn(name = "events_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
     private Event event;
-    
-    @JoinColumn(name = "notifications_type", referencedColumnName = "id") @ManyToOne(optional = false)
+
+    @JoinColumn(name = "notifications_type", referencedColumnName = "id")
+    @ManyToOne(optional = false)
     private NotificationType type;
-    
-    @JoinColumn(name = "users_id", referencedColumnName = "id") @ManyToOne(optional = false)
+
+    @JoinColumn(name = "users_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
     private User userId;
 
     public Notification() {
+    }
+
+    public Notification(Event event, NotificationType type, User user) {
+        this.event = event;
+        this.type = type;
+        this.userId = user;
     }
 
     public Notification(Integer id) {
@@ -107,5 +120,5 @@ public class Notification implements Serializable {
     public String toString() {
         return "it.polimi.se.calcare.entities.Notification[ id=" + id + " ]";
     }
-    
+
 }

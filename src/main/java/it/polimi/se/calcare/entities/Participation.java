@@ -33,18 +33,21 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Participation.forEvent", query = "FROM Participation p WHERE p.calendar = :calendar AND p.event = :event")
 })
 public class Participation implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @EmbeddedId
     protected ParticipationPK participationPK;
-    
+
     @Column(name = "accepted")
     private Boolean accepted;
-    
-    @JoinColumn(name = "calendars_id", referencedColumnName = "id", insertable = false, updatable = false) @ManyToOne(optional = false)
+
+    @JoinColumn(name = "calendars_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
     private Calendar calendar;
-    
-    @JoinColumn(name = "event", referencedColumnName = "id", insertable = false, updatable = false) @ManyToOne(optional = false)
+
+    @JoinColumn(name = "event", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
     private Event event;
 
     public Participation() {
@@ -57,10 +60,20 @@ public class Participation implements Serializable {
     public Participation(int event, int calendarsId) {
         this.participationPK = new ParticipationPK(event, calendarsId);
     }
-    
+
     public Participation(int event, int calendarsId, Boolean accepted) {
         this(event, calendarsId);
         this.accepted = accepted;
+    }
+
+    public Participation(Event event, Calendar calendar, Boolean accepted) {
+        this(event.getId(), calendar.getId(), accepted);
+        this.event = event;
+        this.calendar = calendar;
+    }
+
+    public Participation(Event event, Calendar calendar) {
+        this(event, calendar, null);
     }
 
     public ParticipationPK getParticipationPK() {
@@ -96,7 +109,7 @@ public class Participation implements Serializable {
     public void setEvent(Event event) {
         this.event = event;
     }
-    
+
     @XmlElement
     public User getUser() {
         return this.calendar.getOwner();
@@ -126,5 +139,5 @@ public class Participation implements Serializable {
     public String toString() {
         return "it.polimi.se.calcare.entities.Participation[ participationPK=" + participationPK + " ]";
     }
-    
+
 }

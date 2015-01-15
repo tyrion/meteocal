@@ -25,14 +25,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
-import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
 
 /**
  *
@@ -47,37 +44,57 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
     @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
     @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password"),
     @NamedQuery(name = "User.findByGivenName", query = "SELECT u FROM User u WHERE u.givenName = :givenName"),
-    @NamedQuery(name = "User.findByFamilyName", query = "SELECT u FROM User u WHERE u.familyName = :familyName")})
+    @NamedQuery(name = "User.findByFamilyName", query = "SELECT u FROM User u WHERE u.familyName = :familyName"),
+    @NamedQuery(name = "User.findMany", query = "SELECT u FROM User u WHERE u.id IN :ids")
+})
 public class User implements Serializable, java.security.Principal {
+
     private static final long serialVersionUID = 1L;
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Basic(optional = false) @Column(name = "id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
-    
-    @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
-    @Basic(optional = false) @NotNull @Size(min = 1, max = 255) @Column(name = "email")
+
+    @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "Invalid email")//if the field contains email address consider using this annotation to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "email")
     private String email;
-    
+
     @XmlElement
     @XmlReadOnly
-    @Basic(optional = false) @NotNull @Size(min = 1, max = 255) @Column(name = "password")
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "password")
     private String password;
-    
-    @Basic(optional = false) @NotNull @Size(min = 1, max = 45) @Column(name = "given_name")
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "given_name")
     private String givenName;
-    
-    @Basic(optional = false) @NotNull @Size(min = 1, max = 45) @Column(name = "family_name")
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "family_name")
     private String familyName;
 
-    @Basic(optional = true) @NotNull @Column(name = "active")
+    @Basic(optional = true)
+    @NotNull
+    @Column(name = "active")
     private boolean active;
 
-    @XmlInverseReference(mappedBy="owner")
+    @XmlInverseReference(mappedBy = "owner")
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
     private Calendar calendar;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     private Collection<Event> eventCollection;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Collection<Notification> notificationCollection;
 
@@ -138,6 +155,10 @@ public class User implements Serializable, java.security.Principal {
 
     public void setFamilyName(String familyName) {
         this.familyName = familyName;
+    }
+
+    public String getFullName() {
+        return String.format("%s %s", givenName, familyName);
     }
 
     @XmlTransient
