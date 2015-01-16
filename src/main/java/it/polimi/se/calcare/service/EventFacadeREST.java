@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -89,12 +91,12 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         participations.add(new Participation(event, user.getCalendar(), true));
         event.setParticipationCollection(participations);
 
-//        try {
-//            City city = cityCreator(event.getLocation());
-//            forecastCreator(event.getLocation(), event.getStart(), event.getEnd(), city);
-//        } catch (JSONException | IOException ex) {
-//            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        try {
+            City city = cityCreator(event.getLocation());
+            forecastCreator(event.getLocation(), event.getStart(), event.getEnd(), city);
+        } catch (JSONException | IOException ex) {
+            Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @AuthRequired

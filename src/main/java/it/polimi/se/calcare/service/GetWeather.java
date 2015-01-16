@@ -28,8 +28,10 @@ import it.polimi.se.calcare.entities.Forecast;
 import it.polimi.se.calcare.entities.WeatherCondition;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,10 +55,10 @@ import org.joda.time.Days;
  */
 public class GetWeather {
 
-    public static URL googleUrlBuilder(String addr) throws MalformedURLException {
+    public static URL googleUrlBuilder(String addr) throws MalformedURLException, UnsupportedEncodingException {
         // build a URL
         String s = "https://maps.googleapis.com/maps/api/geocode/json?address=";
-        s += addr;
+        s += URLEncoder.encode(addr, "utf-8");
         return new URL(s);
     }
 

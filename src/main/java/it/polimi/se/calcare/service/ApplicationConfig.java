@@ -29,6 +29,7 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(it.polimi.se.calcare.JSONExceptionMapper.class);
         resources.add(it.polimi.se.calcare.auth.AuthFilter.class);
         resources.add(it.polimi.se.calcare.service.AuthREST.class);
         resources.add(it.polimi.se.calcare.service.CalendarFacadeREST.class);
