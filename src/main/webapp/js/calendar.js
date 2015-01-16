@@ -239,9 +239,11 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         })
         .success(function(data) {
             //TODO: event create success - insert event into events list for calendar
+            $('#eventCreateModal').modal('hide');
         })
         .error(function(data) {
             //TODO event create error
+            $scope.eventCreateNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
     };
     
