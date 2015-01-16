@@ -28,8 +28,10 @@ import it.polimi.se.calcare.entities.Forecast;
 import static it.polimi.se.calcare.service.GetWeather.googleUrlBuilder;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,11 +71,11 @@ public class GetWeatherTest {
      * Test of googleUrlBuilder method, of class GetWeather.
      */
     @Test
-    public void testGoogleUrlBuilder() throws MalformedURLException{
+    public void testGoogleUrlBuilder() throws MalformedURLException, UnsupportedEncodingException{
         System.out.println("googleUrlBuilder");
         String addr = "hello,world!";
         String base = "https://maps.googleapis.com/maps/api/geocode/json?address=";
-        URL expResult = new URL(base+addr);
+        URL expResult = new URL(base+URLEncoder.encode(addr, "utf-8"));
         URL result = GetWeather.googleUrlBuilder(addr);
         assertEquals(expResult, result);
     }
