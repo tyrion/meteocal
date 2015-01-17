@@ -123,7 +123,7 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="newEventLabel">New Event</h4>
                         </div>
-                        <form name="eventCreateForm" id="eventCreateForm" ng-submit="eventCreateSubmit(eventCreate); eventCreateForm.$setPristine(); eventCreate={}" role="form">
+                        <form name="eventCreateForm" id="eventCreateForm" ng-submit="eventCreateSubmit(eventCreate); eventCreateForm.$setPristine();" role="form">
                             <div class="modal-body">
                                 <div class="form-group">
                                     <input type="text" class="form-control" id="createName" placeholder="Event name" ng-model="eventCreate.event.name">

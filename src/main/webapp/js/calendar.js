@@ -234,11 +234,12 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     };
     
     $scope.eventCreateSubmit = function(eventCreate) {
-        delete eventCreate.searchedPeople;
+        eventCreate.searchedPeople = [];
         eventCreate.invitedPeople = eventCreate.invitedPeople.map(function(x){return x.id;});
         eventCreate.event.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
         eventCreate.event.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
         console.log(eventCreate);
+        $scope.eventCreateNotif = $sce.trustAsHtml('<div class="form-group"><div class="col-md-12 text-center"> <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></div></div>');
         $http({
             method: 'POST',
             url: "api/events",
@@ -248,11 +249,13 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .success(function(data) {
             //TODO: event create success - insert event into events list for calendar
             $('#eventCreateModal').modal('hide');
-            
+            eventCreate = {};
+            $scope.eventCreateNotif = "";
             $scope.getCalendar("me");
         })
         .error(function(data) {
             //TODO event create error
+            eventCreate.invitedPeople = [];
             $scope.eventCreateNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
     };
