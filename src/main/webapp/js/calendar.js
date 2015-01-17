@@ -79,7 +79,6 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
 
             $scope.eventList.day = moment(key).format("MMMM Do");
             $scope.eventList.events = thisDayEvent.dayEvents;
-            console.log($scope.eventList.day);
 
             $('#eventListModal').modal('show');
         }
@@ -90,44 +89,23 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.landingNotif = generateNotif('Yay!', 'You just activated your account. Now just login and enjoy CalCARE!', 'success', $sce);
         window.location.hash = '#/';
     }
-           
-    $scope.login = function() {
-        $scope.loginData = true;
-        $scope.landingNotif = '';
-        $scope.eventCreate = {};
-        $scope.eventCreate.event = {};
-        $scope.eventCreate.event.outdoor = false;
-        $scope.eventCreate.event.public = false;
-        $scope.eventCreate.invitedPeople = [];
-        $scope.eventCreate.searchedPeople = [];
-        $scope.eventEdit = {};
-        $scope.eventEdit.event = {};
-        $scope.eventEdit.event.outdoor = false;
-        $scope.eventEdit.event.public = false;
-        $scope.eventEdit.invitedPeople = [];
-        $scope.eventEdit.searchedPeople = [];
-        $scope.currentEvent = {};
-        $scope.currentEvent.invitedPeople = [];
-        $scope.userSearch = {};
-        $scope.userSearch.searchedPeople = [];
-        $scope.userSearch.searchField = "";
-        $scope.notifications = [];
-        $scope.eventList = {
-            events: [],
-            day: ""
-        };
-        $scope.myEvents.time = moment().format("YYYY-MM");
-        $scope.myEvents.events = {};
-        setTimeout(function(){ setupUserPage($scope.myEvents); }, 10);
-        
-        //get the user calendar
+    
+    $scope.getCalendar = function(id) {
         $http({
             method: 'GET',
-            url: "api/calendars/me",
+            url: "api/calendars/"+id,
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
+            console.log(data);
+            $scope.eventList = {
+                events: [],
+                day: ""
+            };
+            $scope.myEvents.time = moment().format("YYYY-MM");
+            $scope.myEvents.events = {};
             $scope.myEvents.dbEvents = data;
+            $scope.myEvents.events = [];
             
             data.forEach(function(e){
                 e.startFormatted = moment(e.start).format('MMMM Do YYYY, h:mm A');
@@ -164,12 +142,41 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
                 });
             };
             
-            console.log($scope.myEvents);
+            $(".responsive-calendar").responsiveCalendar('clearAll');
+            $(".responsive-calendar").responsiveCalendar('edit', $scope.myEvents.events);
         })
         .error(function(data) {
             //TODO error in case of server error
             console.log(data);
         }); 
+    };
+           
+    $scope.login = function() {
+        $scope.loginData = true;
+        $scope.landingNotif = '';
+        $scope.eventCreate = {};
+        $scope.eventCreate.event = {};
+        $scope.eventCreate.event.outdoor = false;
+        $scope.eventCreate.event.public = false;
+        $scope.eventCreate.invitedPeople = [];
+        $scope.eventCreate.searchedPeople = [];
+        $scope.eventEdit = {};
+        $scope.eventEdit.event = {};
+        $scope.eventEdit.event.outdoor = false;
+        $scope.eventEdit.event.public = false;
+        $scope.eventEdit.invitedPeople = [];
+        $scope.eventEdit.searchedPeople = [];
+        $scope.currentEvent = {};
+        $scope.currentEvent.invitedPeople = [];
+        $scope.userSearch = {};
+        $scope.userSearch.searchedPeople = [];
+        $scope.userSearch.searchField = "";
+        $scope.notifications = [];
+        
+        //get the user calendar
+        $scope.getCalendar("me");
+        
+        setTimeout(function(){ setupUserPage($scope.myEvents); }, 10);
         
         //get the user notifications
         $http({
@@ -241,6 +248,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .success(function(data) {
             //TODO: event create success - insert event into events list for calendar
             $('#eventCreateModal').modal('hide');
+            
+            $scope.getCalendar("me");
         })
         .error(function(data) {
             //TODO event create error
@@ -281,7 +290,6 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $('#eventListModal').modal('hide');
         $('#currentEventModal').modal('hide');
         $('#eventEditModal').modal('show');
-        console.log($scope.eventEdit.invitedPeople);
     };
     
     $scope.eventEditSubmit = function(eventEdit) {
@@ -291,7 +299,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         eventEdit.event.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
         $http({
             method: 'PUT',
-            url: "api/events"+eventEdit.event.id,
+            url: "api/events/"+eventEdit.event.id,
             data: eventEdit,
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
@@ -306,15 +314,27 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         });
     };
     
+    $scope.deleteEvent = function(currentEvent) {
+        $http({
+            method: 'DELETE',
+            url: "api/events/"+currentEvent.id,
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            $('#currentEventModal').modal('hide');
+            $('#eventListModal').modal('hide');
+            $scope.getCalendar("me");
+        })
+        .error(function(data) {
+            //TODO event create error
+            $scope.currentEventNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
+        });
+    };
+    
     $scope.openCurrentEventModal = function(e) {
         $scope.currentEvent = e;
         $scope.currentEvent.invitedPeople = invitedPeopleFromEvent(e);
         $('#currentEventModal').modal('show');
-    };
-    
-    $scope.getCalendar = function(id) {
-        //TODO load others calendar
-        console.log(id);
     };
     
     $scope.importCalendar = function(files) {

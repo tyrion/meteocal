@@ -13,7 +13,6 @@
         <script src="js/libs/bootstrap-datetimepicker.js"></script>
         <script src="js/libs/bootstrap-filestyle.min.js" charset="utf-8"></script>
         <script src="js/calendar.js"></script>
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300' rel='stylesheet' type='text/css'>
         <link href="css/responsive-calendar.css" rel="stylesheet" media="screen">
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" type="text/css" media="screen" href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/master/build/css/bootstrap-datetimepicker.min.css" />
@@ -374,7 +373,9 @@
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <div class="form-group" ng-bind-html="$parent.currentEventNotif"></div>
                             <input type="submit" class="btn btn-primary" value="Edit" ng-click="editEvent(currentEvent)" />
+                            <input type="submit" class="btn btn-danger" value="Delete" ng-click="deleteEvent(currentEvent)" />
                         </div>
                     </div>
                 </div>
