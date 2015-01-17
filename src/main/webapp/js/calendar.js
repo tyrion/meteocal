@@ -22,33 +22,18 @@ function generateNotif(title, body, type, $sce){
         '<span aria-hidden="true">&times;</span></button> <b>' + title + '</b> ' + body +'</div>');
 }
 
+function invitedPeopleFromEvent(e){
+    var invitedPeople = [];
+    e.participationCollection.forEach(function(p) {
+        if(p.user.email !== e.creator.email){
+            invitedPeople.push(p);
+            p.owner = p.user;
+        };
+    });
+    return invitedPeople;
+}
+
 function setupUserPage(eventsDataStructure){
-    var eventsDataStructure2 = {
-        time: '2013-05',
-        events: {
-            "2013-04-30": {"number": 5, "badgeClass": "badge-warning", "url": "http://w3widgets.com/responsive-calendar"},
-            "2013-04-26": {"number": 1, "badgeClass": "badge-warning", "url": "http://w3widgets.com"}, 
-            "2013-05-03": {"number": 1, "badgeClass": "badge-error"}, 
-            "2013-06-12": {"class": "active special"},
-            "2013-06-23": {},
-            "2013-05-30": {
-                "number": 2, 
-                "badgeClass": 
-                "badge-warning", 
-                "url": "http://w3widgets.com/responsive-calendar",
-                "dayEvents": [
-                    {
-                      "name": "Important meeting",
-                      "hour": "17:30" 
-                    },
-                    {
-                      "name": "Morning meeting at coffee house",
-                      "hour": "08:15" 
-                    }
-                ]
-            }
-        }
-    };
     $(".responsive-calendar").responsiveCalendar(eventsDataStructure);
 
     $("#nextMonthButton").click(function(){
@@ -66,6 +51,16 @@ function setupUserPage(eventsDataStructure){
     $("#createEndDatetime").on("dp.change",function (e) {
         $('#createBeginDatetime').data("DateTimePicker").setMaxDate(e.date);
     });
+    
+    $('#editBeginDatetime').datetimepicker();
+    $('#editEndDatetime').datetimepicker();
+    $("#editBeginDatetime").on("dp.change",function (e) {
+        $('#editEndDatetime').data("DateTimePicker").setMinDate(e.date);
+    });
+    $("#editEndDatetime").on("dp.change",function (e) {
+        $('#editBeginDatetime').data("DateTimePicker").setMaxDate(e.date);
+    });
+    
     $("#importCalendarField").attr("class","filestyle").attr("data-buttonName", "btn-primary");
 };
 
@@ -105,6 +100,14 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.eventCreate.event.public = false;
         $scope.eventCreate.invitedPeople = [];
         $scope.eventCreate.searchedPeople = [];
+        $scope.eventEdit = {};
+        $scope.eventEdit.event = {};
+        $scope.eventEdit.event.outdoor = false;
+        $scope.eventEdit.event.public = false;
+        $scope.eventEdit.invitedPeople = [];
+        $scope.eventEdit.searchedPeople = [];
+        $scope.currentEvent = {};
+        $scope.currentEvent.invitedPeople = [];
         $scope.userSearch = {};
         $scope.userSearch.searchedPeople = [];
         $scope.userSearch.searchField = "";
@@ -126,22 +129,9 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .success(function(data) {
             $scope.myEvents.dbEvents = data;
             
-            //open the modal for the event if we have a path like #/events/{{id}}
-            if (window.location.hash.replace("#/", "").substring(0,7) === 'events/'){
-                //this is for the navigation through #/
-                var eventId = window.location.hash.replace("#/events/", "");   
-                console.log(eventId);
-                $scope.myEvents.dbEvents.forEach( function(e) {
-                    if(String(e.id) === eventId){
-                        $scope.currentEvent = e;
-                        $('#currentEventModal').modal('show');
-                    }
-                });
-            };
-            
             data.forEach(function(e){
-                e.startFormatted = moment(e.start).format('MMMM Do YYYY, h:mm a');
-                e.endFormatted = moment(e.end).format('MMMM Do YYYY, h:mm a');
+                e.startFormatted = moment(e.start).format('MMMM Do YYYY, h:mm A');
+                e.endFormatted = moment(e.end).format('MMMM Do YYYY, h:mm A');
                 
                 var start = moment(moment(e.start).format("YYYY-MM-DD"));
                 var end = moment(moment(e.end).format("YYYY-MM-DD"));
@@ -162,6 +152,17 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
                     end = end.subtract(1, 'days');
                 } while(!end.isBefore(start));
             });
+            
+            //open the modal for the event if we have a path like #/events/{{id}}
+            if (window.location.hash.replace("#/", "").substring(0,7) === 'events/'){
+                //this is for the navigation through #/
+                var eventId = window.location.hash.replace("#/events/", "");   
+                $scope.myEvents.dbEvents.forEach( function(e) {
+                    if(String(e.id) === eventId){
+                        $scope.openCurrentEventModal(e);
+                    }
+                });
+            };
             
             console.log($scope.myEvents);
         })
@@ -272,8 +273,42 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         }); 
     };
     
+    $scope.editEvent = function(e) {
+        $scope.eventEdit.event = e;
+        $scope.eventEdit.invitedPeople = invitedPeopleFromEvent(e);
+        $('#editBeginDatetime').data("DateTimePicker").setDate(moment(e.start).format('MM/DD/YYYY h:mm A'));
+        $('#editEndDatetime').data("DateTimePicker").setDate(moment(e.start).format('MM/DD/YYYY h:mm A'));
+        $('#eventListModal').modal('hide');
+        $('#currentEventModal').modal('hide');
+        $('#eventEditModal').modal('show');
+        console.log($scope.eventEdit.invitedPeople);
+    };
+    
+    $scope.eventEditSubmit = function(eventEdit) {
+        delete eventEdit.searchedPeople;
+        eventEdit.invitedPeople = eventEdit.invitedPeople.map(function(x){return x.participationPK.calendarsId;});
+        eventEdit.event.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
+        eventEdit.event.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
+        $http({
+            method: 'PUT',
+            url: "api/events"+eventEdit.event.id,
+            data: eventEdit,
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            //TODO: event create success - insert event into events list for calendar
+            $('#eventEditModal').modal('hide');
+            $scope.openCurrentEventModal(eventEdit.event);
+        })
+        .error(function(data) {
+            //TODO event create error
+            $scope.eventEditNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
+        });
+    };
+    
     $scope.openCurrentEventModal = function(e) {
         $scope.currentEvent = e;
+        $scope.currentEvent.invitedPeople = invitedPeopleFromEvent(e);
         $('#currentEventModal').modal('show');
     };
     
