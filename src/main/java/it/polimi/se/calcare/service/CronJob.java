@@ -27,6 +27,7 @@ import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Forecast;
 import it.polimi.se.calcare.entities.ForecastPK;
+import it.polimi.se.calcare.entities.Participation;
 import it.polimi.se.calcare.entities.User;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,9 +51,17 @@ import org.json.JSONException;
 @Stateless
 public class CronJob {
 
-    @Schedule(dayOfWeek = "*", month = "*", hour = "*", dayOfMonth = "*", year = "*", minute = "*/1", second = "0", persistent = false)
+    @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
+    private EntityManager em;
+    @Schedule(dayOfWeek = "*", month = "*", hour = "*/3", dayOfMonth = "*", year = "*", minute = "*", second = "0", persistent = false)
 
     public void WeatherFetcher() throws IOException, JSONException, Exception {
-      
+            List <City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
+            for (City item: cities){
+               List <Forecast> toUpdate = (List) item.getForecastCollection();
+               List <Forecast> newForecasts=new GetWeather().updateForecast(item, toUpdate);
+            for (Forecast update: newForecasts) em.merge(update);
+            }
+            em.flush();
     }
 }

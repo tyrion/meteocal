@@ -100,7 +100,7 @@ public class GetWeather {
             Date tmp = (item.getForecastPK().getDt());
             DateTime date = new DateTime(tmp);
             int cnt = Days.daysBetween(new DateTime(), date).getDays();
-            if (cnt <= 16) {
+            if ((cnt>=0) && (cnt <= 16)) {
                 //Decode the JSON and update the forecast information
                 newForecasts.add(openweatherJsonDecoderWeather(owJSON, item, cnt));
             }
