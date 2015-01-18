@@ -101,6 +101,7 @@ public class NotificationType implements Serializable {
         this.name = name;
     }
 
+    @XmlTransient
     public String getDescription() {
         return description;
     }

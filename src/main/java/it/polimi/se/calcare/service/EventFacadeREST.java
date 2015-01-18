@@ -5,7 +5,6 @@
  */
 package it.polimi.se.calcare.service;
 
-import it.polimi.se.calcare.helpers.NotificationHelper;
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.dto.EventCreationDTO;
 import it.polimi.se.calcare.entities.City;
@@ -15,6 +14,7 @@ import it.polimi.se.calcare.entities.ForecastPK;
 import it.polimi.se.calcare.entities.NotificationType;
 import it.polimi.se.calcare.entities.Participation;
 import it.polimi.se.calcare.entities.User;
+import it.polimi.se.calcare.helpers.NotificationHelper;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
         for (User u : added) {
             participations.add(new Participation(event, u.getCalendar()));
-            helper.sendTo(u, link, event.getName(), user.getGivenName());
+            helper.sendTo(u, link, event.getName(), user.getFullName());
         }
 
         oldUsers.removeAll(newUsers);

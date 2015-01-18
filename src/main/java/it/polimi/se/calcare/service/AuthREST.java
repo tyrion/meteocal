@@ -89,12 +89,12 @@ public class AuthREST {
     }
 
     @POST
-    @Path("reset")
+    @Path("reset/request")
     public void requestReset(@Context UriInfo ui,
             @FormParam("email") String email) {
         User user = em.createNamedQuery("User.findByEmail", User.class)
                 .setParameter("email", email).getSingleResult();
-        String resetLink = ui.getBaseUri().resolve("auth/reset?token=")
+        String resetLink = ui.getBaseUri().resolve("..#/reset?token=")
                 + JWTHelper.encode("reset", user);
         SendMail.Mail(new String[]{email}, "[CalCARE] Password reset request",
                 String.format("Hey %s, someone requested to reset your "
@@ -102,16 +102,17 @@ public class AuthREST {
                         user.getGivenName(), resetLink, resetLink));
     }
 
-    @GET
-    @Path("reset")
-    public void reset(@QueryParam("token") String token) throws
-            NoSuchAlgorithmException, InvalidKeySpecException {
+    @POST
+    @Path("reset/confirm")
+    public void reset(@QueryParam("token") String token,
+            @FormParam("password") String password)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         Integer id = JWTHelper.decode(token, "reset");
 
         User user = em.createNamedQuery("User.findById", User.class)
                 .setParameter("id", id).getSingleResult();
 
         if (user.isActive())
-            user.setPassword("ciao");
+            user.setPassword(password);
     }
 }
