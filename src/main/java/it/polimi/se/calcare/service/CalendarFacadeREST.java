@@ -14,9 +14,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,6 +30,7 @@ import javax.ws.rs.core.SecurityContext;
 @Stateless
 @Path("calendars")
 public class CalendarFacadeREST extends AbstractFacade<Calendar> {
+
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
@@ -49,7 +48,6 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
         super.edit(entity);
     }
 
-
     @AuthRequired
     @GET
     @Path("{id}")
@@ -61,7 +59,7 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
                 .setParameter("calendar", id)
                 .getResultList();
     }
-    
+
     @GET
     @AuthRequired
     @Path("me")
@@ -79,15 +77,15 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     public List<Calendar> search(@Context SecurityContext sc, @QueryParam("search") String search) {
         User user = (User) sc.getUserPrincipal();
         List<Calendar> cals = getEntityManager().createNamedQuery("Calendar.search", Calendar.class)
-            .setParameter("search", '%' + search + '%')
-            .setParameter("currentUser", user.getId()) //delete the current user from results
-            .getResultList(); 
-        if(cals.size() > 10){
+                .setParameter("search", '%' + search + '%')
+                .setParameter("currentUser", user.getId()) //delete the current user from results
+                .getResultList();
+        if (cals.size() > 10) {
             cals = cals.subList(0, 10); //let's cut the list to 10 results
         }
-        
+
         //let's set a null the partecipationsList - we shouldn't return it to other users
-        for (Calendar c: cals){
+        for (Calendar c : cals) {
             c.setParticipations(null);
         }
         return cals;
@@ -97,5 +95,5 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

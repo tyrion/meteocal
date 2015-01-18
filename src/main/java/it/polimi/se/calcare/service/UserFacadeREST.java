@@ -5,14 +5,13 @@
  */
 package it.polimi.se.calcare.service;
 
-import com.auth0.jwt.JWTSigner;
-import static it.polimi.se.calcare.auth.AuthFilter.SECRET;
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.User;
+import it.polimi.se.calcare.helpers.JWTHelper;
+import it.polimi.se.calcare.helpers.SendMail;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,46 +27,39 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.ParseConversionEvent;
 
 /**
  *
  * @author tyrion
  */
 @Stateless
-@Path("/users") @Produces("application/json")
+@Path("/users")
+@Produces("application/json")
 public class UserFacadeREST extends AbstractFacade<User> {
+
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
     public UserFacadeREST() {
         super(User.class);
     }
-    
-    private String getActivationToken(User user) {
-        Map<String, Object> map = new java.util.HashMap<>();
-        map.put("activate", user.getId());
-        return (new JWTSigner(SECRET)).sign(map);
-    }
 
     @POST
-    public Response add(@Context UriInfo ui, User entity) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public Response add(@Context UriInfo ui, User entity)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         // Because Java.
         entity.setPassword(entity.getPassword());
         super.create(entity);
         em.flush();
-        
-        String URL = ui.getBaseUri().resolve("auth/activate?token=") +
-            getActivationToken(entity);
-        
-        SendMail.Mail(new String[] { entity.getEmail() },
-            "Registration to CalCARE",
-            "Welcome to CalCARE, click this link to confirm your account: " +
-            String.format("<a href=\"%s\">%s</a>\n", URL, URL));
-        return Response
-            .status(201)
-            .entity(entity)
-            .build();
+
+        String URL = ui.getBaseUri().resolve("auth/activate?token=")
+                + JWTHelper.encode("activate", entity);
+
+        SendMail.Mail(new String[]{entity.getEmail()},
+                "Registration to CalCARE",
+                "Welcome to CalCARE, click this link to confirm your account: "
+                + String.format("<a href=\"%s\">%s</a>\n", URL, URL));
+        return Response.status(201).entity(entity).build();
     }
 
     @AuthRequired
@@ -106,5 +98,5 @@ public class UserFacadeREST extends AbstractFacade<User> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

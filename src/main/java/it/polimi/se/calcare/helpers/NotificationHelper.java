@@ -14,13 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package it.polimi.se.calcare;
+package it.polimi.se.calcare.helpers;
 
 import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Notification;
 import it.polimi.se.calcare.entities.NotificationType;
 import it.polimi.se.calcare.entities.User;
-import it.polimi.se.calcare.service.SendMail;
 import java.net.URI;
 import javax.persistence.EntityManager;
 import org.owasp.encoder.Encode;

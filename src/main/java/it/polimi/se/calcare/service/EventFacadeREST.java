@@ -5,7 +5,7 @@
  */
 package it.polimi.se.calcare.service;
 
-import it.polimi.se.calcare.NotificationHelper;
+import it.polimi.se.calcare.helpers.NotificationHelper;
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.dto.EventCreationDTO;
 import it.polimi.se.calcare.entities.City;
@@ -60,6 +60,41 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         super(Event.class);
     }
 
+    private void updateParticipations(User user, EventCreationDTO dto, UriInfo ui) {
+        Event event = dto.event;
+        URI link = ui.getBaseUri().resolve("..#/events/" + event.getId());
+
+        // Ensure that the creator of the event is not among the invited people.
+        dto.invitedPeople.remove(user.getId());
+
+        Set<User> newUsers = new HashSet<>(em.createQuery(
+                "SELECT DISTINCT u FROM User u WHERE u.active = TRUE AND u.calendar.id IN :ids",
+                User.class).setParameter("ids", dto.invitedPeople).getResultList());
+
+        Set<User> oldUsers = new HashSet<>(em.createQuery(
+                "SELECT DISTINCT p.calendar.owner FROM Participation p WHERE p.event = :event",
+                User.class).setParameter("event", event).getResultList());
+
+        NotificationHelper helper = new NotificationHelper(em, NotificationType.Enum.INVITATION, event);
+
+        Set<User> added = new HashSet<>(newUsers);
+        added.removeAll(oldUsers);
+        Set<Participation> participations = new HashSet<>();
+
+        for (User u : added) {
+            participations.add(new Participation(event, u.getCalendar()));
+            helper.sendTo(u, link, event.getName(), user.getGivenName());
+        }
+
+        oldUsers.removeAll(newUsers);
+        for (User u : oldUsers)
+            participations.remove(new Participation(event, u.getCalendar()));
+
+        // The event creator always participates to the Event.
+        participations.add(new Participation(event, user.getCalendar(), true));
+        event.setParticipationCollection(participations);
+    }
+
     @AuthRequired
     @POST
     @Consumes({"application/xml", "application/json"})
@@ -71,25 +106,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         em.persist(event);
         em.flush();
 
-        // Ensure that the creator of the event is not among the invited people.
-        dto.invitedPeople.remove(user.getId());
-
-        Set<User> invitedUsers = new HashSet<>(em.createQuery(
-                "SELECT DISTINCT u FROM User u WHERE u.active = TRUE AND u.calendar.id IN :ids",
-                User.class).setParameter("ids", dto.invitedPeople)
-                .getResultList());
-
-        NotificationHelper helper = new NotificationHelper(em, NotificationType.Enum.INVITATION, event);
-        List<Participation> participations = new ArrayList<>();
-        URI link = ui.getBaseUri().resolve("..#/events/" + event.getId());
-        for (User u : invitedUsers) {
-            participations.add(new Participation(event, u.getCalendar()));
-            helper.sendTo(u, link, event.getName(), user.getGivenName());
-        }
-
-        // The event creator always participates to the Event.
-        participations.add(new Participation(event, user.getCalendar(), true));
-        event.setParticipationCollection(participations);
+        updateParticipations(user, dto, ui);
 
         try {
             City city = cityCreator(event.getLocation());
@@ -103,8 +120,18 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @PUT
     @Path("{id}")
     @Consumes({"application/xml", "application/json"})
-    public void edit(@Context SecurityContext sc, @PathParam("id") Integer id, Event entity) {
-        super.edit(entity);
+    public void edit(@Context SecurityContext sc, @Context UriInfo ui,
+            @PathParam("id") Integer id, EventCreationDTO dto) {
+        User user = (User) sc.getUserPrincipal();
+        Event event = super.find(id);
+        if (!event.getCreator().equals(user))
+            throw new WebApplicationException(403);
+        dto.event.setId(id);
+        dto.event.setCreator(user);
+
+        super.edit(dto.event);
+
+        updateParticipations(user, dto, ui);
     }
 
     @AuthRequired
@@ -113,11 +140,10 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     public void remove(@Context SecurityContext sc, @PathParam("id") Integer id) {
         User user = (User) sc.getUserPrincipal();
         Event event = super.find(id);
-        if (event.getCreator().equals(user)) {
+        if (event.getCreator().equals(user))
             super.remove(event);
-        } else {
+        else
             throw new WebApplicationException(403);
-        }
     }
 
     @AuthRequired
@@ -127,9 +153,8 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     public Event find(@Context SecurityContext sc, @PathParam("id") Integer id) {
         User user = (User) sc.getUserPrincipal();
         Event event = super.find(id);
-        if (event == null) {
+        if (event == null)
             throw new WebApplicationException(404);
-        }
 
         if (!event.isPublic()) {
             try {
