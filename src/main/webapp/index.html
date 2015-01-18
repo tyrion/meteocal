@@ -430,9 +430,8 @@
                     <div class="list-group">
                         <p ng-if="notifications.length === 0">
                             No notifications to show!
-                            <hr/>
                         </p>
-                        <a href="#" class="list-group-item" ng-repeat="n in $parent.notifications">
+                        <a href="#" class="list-group-item" ng-click="$parent.openCurrentEventModal(n.event)" ng-repeat="n in $parent.notifications">
                             <h4 class="list-group-item-heading">{{n.event.name}}</h4>
                             <p class="list-group-item-text">{{n.type.description}}</p>
                         </a>

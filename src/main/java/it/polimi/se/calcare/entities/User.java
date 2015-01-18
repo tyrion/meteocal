@@ -95,7 +95,7 @@ public class User implements Serializable, java.security.Principal {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     private Collection<Event> eventCollection;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Collection<Notification> notificationCollection;
 
     public User() {
