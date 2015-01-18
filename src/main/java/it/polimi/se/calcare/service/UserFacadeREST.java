@@ -64,9 +64,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
 
     @AuthRequired
     @PUT
-    @Path("{id}")
-    @Consumes({"application/xml", "application/json"})
-    public void edit(@PathParam("id") Integer id, User entity) {
+    @Path("me")
+    @Consumes({"application/json"})
+    public void edit(@Context SecurityContext sc, User entity) {
         super.edit(entity);
     }
 
@@ -80,10 +80,11 @@ public class UserFacadeREST extends AbstractFacade<User> {
 
     @AuthRequired
     @GET
-    @Path("{id}")
-    @Produces({"application/xml", "application/json"})
-    public User find(@PathParam("id") Integer id) {
-        return super.find(id);
+    @Path("me")
+    @Produces({"application/json"})
+    public User get(@Context SecurityContext sc) {
+        User user = (User) sc.getUserPrincipal();
+        return super.find(user.getId());
     }
 
     @AuthRequired

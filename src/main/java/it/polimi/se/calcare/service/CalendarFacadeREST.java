@@ -51,7 +51,7 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     @AuthRequired
     @GET
     @Path("{id}")
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public List<Event> find(@Context SecurityContext sc, @PathParam("id") Integer id) {
         User user = (User) sc.getUserPrincipal();
         return em.createNamedQuery("Event.calendar", Event.class)
@@ -62,9 +62,20 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
 
     @GET
     @AuthRequired
+    @Path("mine")
+    @Produces({"application/json"})
+    public Calendar myCalendar(@Context SecurityContext sc) {
+        User user = (User) sc.getUserPrincipal();
+        return em.createNamedQuery("Calendar.findById", Calendar.class)
+                .setParameter("id", user.getCalendar().getId())
+                .getSingleResult();
+    }
+    
+    @GET
+    @AuthRequired
     @Path("me")
     @Produces({"application/json"})
-    public List<Event> myCalendar(@Context SecurityContext sc) {
+    public List<Event> myEvents(@Context SecurityContext sc) {
         User user = (User) sc.getUserPrincipal();
         return em.createNamedQuery("Event.myCalendar", Event.class)
                 .setParameter("calendar", user.getCalendar())

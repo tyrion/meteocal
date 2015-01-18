@@ -28,7 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Notification.findAll", query = "SELECT n FROM Notification n"),
-    @NamedQuery(name = "Notification.findById", query = "SELECT n FROM Notification n WHERE n.id = :id")})
+    @NamedQuery(name = "Notification.findById", query = "SELECT n FROM Notification n WHERE n.id = :id"),
+    @NamedQuery(name = "Notification.findUserNotifs", query = "FROM Notification AS n WHERE n.user.id != :currentUser")})
 public class Notification implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -49,7 +50,7 @@ public class Notification implements Serializable {
 
     @JoinColumn(name = "users_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private User userId;
+    private User user;
 
     public Notification() {
     }
@@ -57,7 +58,7 @@ public class Notification implements Serializable {
     public Notification(Event event, NotificationType type, User user) {
         this.event = event;
         this.type = type;
-        this.userId = user;
+        this.user = user;
     }
 
     public Notification(Integer id) {
@@ -88,12 +89,12 @@ public class Notification implements Serializable {
         this.type = type;
     }
 
-    public User getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(User userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

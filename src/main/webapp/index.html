@@ -13,10 +13,9 @@
         <script src="js/libs/bootstrap-datetimepicker.js"></script>
         <script src="js/libs/bootstrap-filestyle.min.js" charset="utf-8"></script>
         <script src="js/calendar.js"></script>
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,300' rel='stylesheet' type='text/css'>
         <link href="css/responsive-calendar.css" rel="stylesheet" media="screen">
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link rel="stylesheet" type="text/css" media="screen" href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/master/build/css/bootstrap-datetimepicker.min.css" />
+        <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" media="screen" />
         <link href="css/style.css" media="screen" rel="stylesheet" type="text/css">
     </head>
     <body ng-controller="CalendarController">
@@ -124,7 +123,7 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="newEventLabel">New Event</h4>
                         </div>
-                        <form name="eventCreateForm" id="eventCreateForm" ng-submit="eventCreateSubmit(eventCreate); eventCreateForm.$setPristine(); eventCreate={}" role="form">
+                        <form name="eventCreateForm" id="eventCreateForm" ng-submit="eventCreateSubmit(eventCreate); eventCreateForm.$setPristine();" role="form">
                             <div class="modal-body">
                                 <div class="form-group">
                                     <input type="text" class="form-control" id="createName" placeholder="Event name" ng-model="eventCreate.event.name">
@@ -195,7 +194,93 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <div class="form-group" ng-bind-html="$parent.eventCreateNotif"></div>
                                 <input type="submit" class="btn btn-primary" value="Create" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="eventEditModal" tabindex="-1" role="dialog" aria-labelledby="editEventLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="editEventLabel">Edit Event</h4>
+                        </div>
+                        <form name="eventEditForm" id="eventEditForm" ng-submit="eventEditSubmit(eventEdit); eventEditForm.$setPristine();" role="form">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="createName" placeholder="Event name" ng-model="eventEdit.event.name">
+                                </div>
+                                <div class="form-group">
+                                    <textarea class="form-control" rows="3" id="createDesc" placeholder="Description" ng-model="eventEdit.event.description"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="createOutdoorCheck" value="outdoor" ng-model="eventEdit.event.outdoor"> Outdoor
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" id="createPublicCheck" value="public" ng-model="eventEdit.event.public1"> Public
+                                    </label>
+                                </div>
+                        
+                                <div class="row">
+                                    <div class='col-md-6'>
+                                        <div class="form-group">
+                                            <label for="editBeginDatetime">From:</label>
+                                            <div class='input-group date'>
+                                                <input type='text' class="form-control" placeholder="Choose a begin date and time" id='editBeginDatetime'/>
+                                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                     </div>
+                                     <div class='col-md-6'>
+                                        <div class="form-group">
+                                            <label for="editEndDatetime">To:</label>
+                                            <div class='input-group date'>
+                                                <input type='text' class="form-control" placeholder="Choose an end date and time" id='editEndDatetime'/>
+                                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="form-group">
+                                    <input type="text" class="form-control" id="createWhere" ng-model="eventEdit.event.location" placeholder="Where?">
+                                </div>
+                                <hr>
+                                <div class="form-group row">
+                                    <label class="col-sm-3">Invited people:</label>
+                                    <div class="col-sm-9">
+                                        <p ng-if="eventEdit.invitedPeople.length === 0">
+                                            No invited people yet...
+                                        </p>
+                                        <button type="button" style="margin-right: 10px;" ng-click="eventEdit.invitedPeople.splice($index, 1);" ng-repeat="p in eventEdit.invitedPeople" class="btn btn-sm">{{p.owner.email}} <span aria-hidden="true">&times;</span></button>&nbsp;
+                                    </div>
+                                </div>
+                        
+                                <div class="form-group has-feedback">
+                                    <input type="text" placeholder="Search for users to invite!" class="form-control" ng-change="searchUsers($parent.eventEdit)" ng-model="eventEdit.searchField">
+                                    <i class="glyphicon glyphicon-search form-control-feedback" aria-hidden="true"></i>
+                                </div>
+                                <div class="form-group" ng-if="eventEdit.searchField.length > 0">
+                                    <p ng-if="eventEdit.searchedPeople.length === 0">
+                                        No matches!
+                                    </p>
+                                    <ul class="list-group">
+                                        <li class="list-group-item" ng-repeat="p in eventEdit.searchedPeople">
+                                            <b>{{p.owner.givenName}} {{p.owner.familyName}}</b> {{p.owner.email}}
+                                            <button class="btn btn-sm pull-right" ng-click="eventEdit.invitedPeople.push(eventEdit.searchedPeople.splice($index, 1)[0]);"><i class="glyphicon glyphicon-plus" aria-hidden="true"></i></button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="form-group" ng-bind-html="$parent.eventEditNotif"></div>
+                                <input type="submit" class="btn btn-primary" value="Save" />
                             </div>
                         </form>
                     </div>
@@ -208,7 +293,7 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="editSettingsLabel">Edit Settings</h4>
                         </div>
-                        <form name="editSettingsForm" id="editSettingsForm" ng-submit="editSettingsSubmit(editSettings); editSettingsForm.$setPristine(); editSettings={}" role="form">
+                        <form name="editSettingsForm" id="editSettingsForm" ng-submit="updateUser(editSettings); editSettingsForm.$setPristine();" role="form">
                             <div class="modal-body">
                                 <div class="form-group">
                                     <input type="text" class="form-control" id="editGivenName" placeholder="Given Name" ng-model="editSettings.givenName">
@@ -225,12 +310,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="checkbox-inline">
-                                        <input type="checkbox" id="editSettingsPublicCheck" value="public1" ng-model="editSettings.public1"> Public calendar
+                                        <input type="checkbox" id="editSettingsPublicCheck" ng-change="updatePublicCalFlag()" value="public1" ng-model="$parent.myCal.public1"> Public calendar
                                     </label>
                                 </div>
                                 <div class="form-group"ng-bind-html="$parent.editSettingsNotif"></div>
                             </div>
                             <div class="modal-footer">
+                                <div class="form-group" ng-bind-html="$parent.settingsNotif"></div>
                                 <input type="submit" class="btn btn-primary" value="Save" />
                             </div>
                         </form>
@@ -277,10 +363,20 @@
                                     <input type="checkbox" onclick="return false" id="createPublicCheck" value="public" ng-checked="currentEvent.public1"> Public
                                 </label>
                             </div>
-                            <p><b>Participations:</b></p>
+                            <div class="form-group row">
+                                <label class="col-sm-3">Invited people:</label>
+                                <div class="col-sm-9">
+                                    <p ng-if="currentEvent.invitedPeople.length === 0">
+                                        No invited people yet...
+                                    </p>
+                                    <button type="button" style="margin-right: 10px;" ng-repeat="p in currentEvent.invitedPeople" class="btn btn-sm">{{p.user.email}}</button>&nbsp;
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
-                            <input type="submit" class="btn btn-primary" value="Edit" />
+                            <div class="form-group" ng-bind-html="$parent.currentEventNotif"></div>
+                            <input type="submit" class="btn btn-primary" value="Edit" ng-click="editEvent(currentEvent)" />
+                            <input type="submit" class="btn btn-danger" value="Delete" ng-click="deleteEvent(currentEvent)" />
                         </div>
                     </div>
                 </div>
@@ -335,9 +431,8 @@
                     <div class="list-group">
                         <p ng-if="notifications.length === 0">
                             No notifications to show!
-                            <hr/>
                         </p>
-                        <a href="#" class="list-group-item" ng-repeat="n in $parent.notifications">
+                        <a href="#" class="list-group-item" ng-click="$parent.openCurrentEventModal(n.event)" ng-repeat="n in $parent.notifications">
                             <h4 class="list-group-item-heading">{{n.event.name}}</h4>
                             <p class="list-group-item-text">{{n.type.description}}</p>
                         </a>
