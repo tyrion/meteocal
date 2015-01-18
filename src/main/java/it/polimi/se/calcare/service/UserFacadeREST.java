@@ -75,7 +75,10 @@ public class UserFacadeREST extends AbstractFacade<User> {
     @Path("me")
     @Consumes({"application/json"})
     public void edit(@Context SecurityContext sc, User entity) {
-        super.edit(entity);
+        User user = (User) sc.getUserPrincipal();
+        user.setFamilyName(entity.getFamilyName());
+        user.setGivenName(entity.getGivenName());
+        super.edit(user);
     }
 
     @AuthRequired
