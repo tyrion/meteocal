@@ -22,6 +22,10 @@ function generateNotif(title, body, type, $sce){
         '<span aria-hidden="true">&times;</span></button> <b>' + title + '</b> ' + body +'</div>');
 }
 
+function generateLoading($sce){
+    return $sce.trustAsHtml('<div class="form-group"><div class="col-md-12 text-center"> <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></div></div>');
+}
+
 function invitedPeopleFromEvent(e){
     var invitedPeople = [];
     e.participationCollection.forEach(function(p) {
@@ -97,7 +101,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
-            console.log(data);
+            //console.log(data);
             $scope.eventList = {
                 events: [],
                 day: ""
@@ -193,6 +197,22 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             console.log(data);
         });
         
+        //calendar info
+        $http({
+            method: 'GET',
+            url: "api/calendars/mine",
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            console.log(data);
+            $scope.myCal = data;
+            $scope.editSettings = data.owner;
+        })
+        .error(function(data) {
+            //TODO error in case of server error
+            console.log(data);
+        });
+        
     };
     
     $scope.logout = function() {
@@ -239,7 +259,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         eventCreate.event.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
         eventCreate.event.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
         console.log(eventCreate);
-        $scope.eventCreateNotif = $sce.trustAsHtml('<div class="form-group"><div class="col-md-12 text-center"> <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span></div></div>');
+        $scope.eventCreateNotif = generateLoading($sce);
         $http({
             method: 'POST',
             url: "api/events",
@@ -283,6 +303,39 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             console.log(data);
             searchObject.searchedPeople = [];
         }); 
+    };
+    
+    $scope.updatePublicCalFlag = function(){
+        $http({
+            method: 'PUT',
+            url: "api/calendars/me",
+            data: $scope.myCal,
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            $scope.settingsNotif = "";
+        })
+        .error(function(data) {
+            $scope.settingsNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
+        });
+    };
+    
+    $scope.updateUser = function(user){
+        $scope.settingsNotif = generateLoading($sce);
+        console.log(user);
+        $http({
+            method: 'PUT',
+            url: "api/users/me",
+            data: user,
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            $scope.settingsNotif = "";
+        })
+        .error(function(data) {
+            console.log(data);
+            $scope.settingsNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
+        });
     };
     
     $scope.editEvent = function(e) {

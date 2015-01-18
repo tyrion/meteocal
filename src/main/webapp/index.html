@@ -15,7 +15,7 @@
         <script src="js/calendar.js"></script>
         <link href="css/responsive-calendar.css" rel="stylesheet" media="screen">
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link rel="stylesheet" type="text/css" media="screen" href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/master/build/css/bootstrap-datetimepicker.min.css" />
+        <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" media="screen" />
         <link href="css/style.css" media="screen" rel="stylesheet" type="text/css">
     </head>
     <body ng-controller="CalendarController">
@@ -293,7 +293,7 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="editSettingsLabel">Edit Settings</h4>
                         </div>
-                        <form name="editSettingsForm" id="editSettingsForm" ng-submit="editSettingsSubmit(editSettings); editSettingsForm.$setPristine(); editSettings={}" role="form">
+                        <form name="editSettingsForm" id="editSettingsForm" ng-submit="updateUser(editSettings); editSettingsForm.$setPristine();" role="form">
                             <div class="modal-body">
                                 <div class="form-group">
                                     <input type="text" class="form-control" id="editGivenName" placeholder="Given Name" ng-model="editSettings.givenName">
@@ -310,12 +310,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="checkbox-inline">
-                                        <input type="checkbox" id="editSettingsPublicCheck" value="public1" ng-model="editSettings.public1"> Public calendar
+                                        <input type="checkbox" id="editSettingsPublicCheck" ng-change="updatePublicCalFlag()" value="public1" ng-model="$parent.myCal.public1"> Public calendar
                                     </label>
                                 </div>
                                 <div class="form-group"ng-bind-html="$parent.editSettingsNotif"></div>
                             </div>
                             <div class="modal-footer">
+                                <div class="form-group" ng-bind-html="$parent.settingsNotif"></div>
                                 <input type="submit" class="btn btn-primary" value="Save" />
                             </div>
                         </form>
