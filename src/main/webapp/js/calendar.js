@@ -363,6 +363,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             //TODO: event create success - insert event into events list for calendar
             $('#eventEditModal').modal('hide');
             $scope.openCurrentEventModal(eventEdit.event);
+            $scope.getCalendar("me");
+            
         })
         .error(function(data) {
             //TODO event create error
