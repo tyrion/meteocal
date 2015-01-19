@@ -25,13 +25,16 @@ package it.polimi.se.calcare.service;
 
 import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Forecast;
+import it.polimi.se.calcare.entities.ForecastPK;
 import static it.polimi.se.calcare.service.GetWeather.googleUrlBuilder;
+import static it.polimi.se.calcare.service.GetWeather.openWeatherUrlBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,74 +82,61 @@ public class GetWeatherTest {
         URL result = GetWeather.googleUrlBuilder(addr);
         assertEquals(expResult, result);
     }
-
+    
     /**
      * Test of createCity method, of class GetWeather.
      */
-    /*
+    
     @Test
     public void testCreateCity() throws IOException, MalformedURLException, JSONException{
         System.out.println("createCity");
-        String addr = "PiazzaLeonardoDaVinci,Milano,IT";
+        String addr = "PiazzaLeonardoDaVinci32,Milano,IT";
         GetWeather instance = new GetWeather();
-        City expResult = null;
+        City expResult = new City(3173435, "Milano", "IT", 45.47783219999999, 9.2274315);
         City result = instance.createCity(addr);
         assertEquals(expResult, result);
         
     }
-*/
+
     /**
      * Test of updateForecast method, of class GetWeather.
      */
-    /*
+    
     @Test
-    public void testUpdateForecast() throws Exception {
+    public void testUpdateForecast() throws JSONException, IOException {
         System.out.println("updateForecast");
-        List<Forecast> forecasts = null;
+        List<Forecast> nullForecasts = new ArrayList<>();
+        List<Forecast> forecasts = new ArrayList<>();
         GetWeather instance = new GetWeather();
-        List<Forecast> expResult = null;
-        List<Forecast> result = instance.updateForecast(forecasts);
-        assertEquals(expResult, result);
+        List<Forecast> expResult0 = new ArrayList<>();
+        List<Forecast> result = instance.updateForecast(new City(), nullForecasts);
+        assertEquals(expResult0, result);
     }
-*/
-    /**
-     * Test of jsonBuilder method, of class GetWeather.
-     */
-    /*
-    @Test
-    public void testJsonBuilder() throws MalformedURLException, IOException {
-        System.out.println("jsonBuilder");
-        GetWeather instance = new GetWeather();
-        InputStream urlBuilder = googleUrlBuilder("PiazzaLeonardoDaVinci,Milano,IT").openStream();
-        String expResult = "";
-        String result = instance.jsonBuilder(urlBuilder);
-        assertEquals(expResult, result);
-    }
-*/
+
     /**
      * Test of googleJsonDecoder method, of class GetWeather.
      */
-    /*
+    
     @Test
     public void testGoogleJsonDecoder() throws Exception {
         System.out.println("googleJsonDecoder");
+        City newCity=new City();
+        GetWeather instance = new GetWeather();
+        String addr = "PiazzaLeonardoDaVinci32,Milano,IT";
+        //set the address of the city for the input stream for the google URL Builder 
+        InputStream google = googleUrlBuilder(addr).openStream();
+        //varibable to call the generic json builder
+        JSONObject googleJSON = new JSONObject(instance.jsonBuilder(google));
+        //Call the Decoder for the google JSON
+        instance.googleJsonDecoder(googleJSON, newCity);
+        //Build the Openeather URL
+        InputStream openWeather = openWeatherUrlBuilder(newCity.getName()+","+newCity.getCountry()).openStream();
+        //Create the JSON for Openweather parsing
+        JSONObject owJSON = new JSONObject(instance.jsonBuilder(openWeather));
+        
         JSONObject obj = null;
         String expResult = "";
-        String result = GetWeather.googleJsonDecoder(obj);
-        assertEquals(expResult, result);
-    }
-*/
-    /**
-     * Test of openWeatherUrlPreBuilder method, of class GetWeather.
-     */
-    @Test
-    public void testOpenWeatherUrlPreBuilder() {
-        System.out.println("openWeatherUrlPreBuilder");
-        Double lat = 0.0;
-        Double lon = 0.0;
-        String expResult = "lat=0.0&lon=0.0";
-        String result = GetWeather.openWeatherUrlPreBuilder(lat, lon);
-        assertEquals(expResult, result);
+        assertEquals(new City(3173435, "Milano", "IT", 45.47783219999999, 9.2274315), instance.openweatherJsonDecoderCity(owJSON, newCity));
     }
 
     /**
@@ -155,40 +145,10 @@ public class GetWeatherTest {
     @Test
     public void testOpenWeatherUrlBuilder() throws Exception {
         System.out.println("openWeatherUrlBuilder");
-        String addr = "lat=0.0&lon=0.0";
-        URL expResult = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?lat=0.0&lon=0.0&cnt=16&mode=json");
+        String addr = "PiazzaLeonardoDaVinci32 Milano IT";
+        URL expResult = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=PiazzaLeonardoDaVinci32+Milano+IT&cnt=16&mode=json");
         URL result = GetWeather.openWeatherUrlBuilder(addr);
         assertEquals(expResult, result);
     }
-
-    /**
-     * Test of openweatherJsonDecoderCity method, of class GetWeather.
-     */
-    /*
-    @Test
-    public void testOpenweatherJsonDecoderCity() throws Exception {
-        System.out.println("openweatherJsonDecoderCity");
-        JSONObject obj = null;
-        GetWeather instance = new GetWeather();
-        City expResult = null;
-        City result = instance.openweatherJsonDecoderCity(obj);
-        assertEquals(expResult, result);
-    }
-*/
-    /**
-     * Test of openweatherJsonDecoderWeather method, of class GetWeather.
-     */
-    /*
-    @Test
-    public void testOpenweatherJsonDecoderWeather() throws Exception {
-        System.out.println("openweatherJsonDecoderWeather");
-        JSONObject obj = null;
-        Forecast forecast = null;
-        int day = 0;
-        GetWeather instance = new GetWeather();
-        Forecast expResult = null;
-        Forecast result = instance.openweatherJsonDecoderWeather(obj, forecast, day);
-        assertEquals(expResult, result);
-    }
-    */
+    
 }

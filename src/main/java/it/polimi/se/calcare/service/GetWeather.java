@@ -48,12 +48,15 @@ import javax.persistence.Query;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
+import org.json.JSONArray;
 
 /**
  *
  * @author nopesled
  */
 public class GetWeather {
+    
+    Double lat,lon;
 
     public static URL googleUrlBuilder(String addr) throws MalformedURLException, UnsupportedEncodingException {
         // build a URL
@@ -63,18 +66,19 @@ public class GetWeather {
     }
 
     public City createCity(String addr) throws MalformedURLException, IOException, JSONException {
+        City newCity=new City();
         //set the address of the city for the input stream for the google URL Builder 
         InputStream google = googleUrlBuilder(addr).openStream();
         //varibable to call the generic json builder
         JSONObject googleJSON = new JSONObject(jsonBuilder(google));
         //Call the Decoder for the google JSON
-        String location = googleJsonDecoder(googleJSON);
+        googleJsonDecoder(googleJSON, newCity);
         //Build the Openeather URL
-        InputStream openWeather = openWeatherUrlBuilder(location).openStream();
+        InputStream openWeather = openWeatherUrlBuilder(newCity.getName()+","+newCity.getCountry()).openStream();
         //Create the JSON for Openweather parsing
         JSONObject owJSON = new JSONObject(jsonBuilder(openWeather));
         //Decode the JSON and create the City into the DB
-        return (openweatherJsonDecoderCity(owJSON));
+        return (openweatherJsonDecoderCity(owJSON, newCity));
     }
 
     public List<Forecast> updateForecast(City city, List<Forecast> forecasts) throws MalformedURLException, JSONException, IOException {
@@ -82,16 +86,12 @@ public class GetWeather {
          this method is responsible for the update of the forecast
          it takes an arraylist of forecasts of THE SAME CITY
          */
-        Double lat = city.getLat();
-        Double lon = city.getLon();
-
         List<Forecast> newForecasts = new ArrayList<>();
-
-        //Format lat & lon for the URLBuilder
-        String coords = openWeatherUrlPreBuilder(lat, lon);
-
+        
+        if (forecasts.isEmpty()) return newForecasts;
+  
         //Build the Openeather URL
-        InputStream openWeather = openWeatherUrlBuilder(coords).openStream();
+        InputStream openWeather = openWeatherUrlBuilder(city.getName()+","+city.getCountry()).openStream();
 
         //Create the JSON for Openweather parsing
         JSONObject owJSON = new JSONObject(jsonBuilder(openWeather));
@@ -119,38 +119,45 @@ public class GetWeather {
         return str;
     }
 
-    public static String googleJsonDecoder(JSONObject obj) throws JSONException {
+    public void googleJsonDecoder(JSONObject obj, City newCity) throws JSONException {
         // get the lat & lng from Google result
         JSONObject res = obj.getJSONArray("results").getJSONObject(0);
+        JSONArray addr = res.getJSONArray("address_components");
+       for (int i = 0; i < addr.length(); i++) {
+             JSONObject item=addr.getJSONObject(i);
+             switch(item.getString("types")){
+                case ("[\"locality\",\"political\"]") : newCity.setName(item.getString("short_name")); break;
+                case ("[\"country\",\"political\"]"): newCity.setCountry(item.getString("short_name")); break;
+                default: break;
+             }
+            }
         JSONObject loc
                 = res.getJSONObject("geometry").getJSONObject("location");
+        
+        newCity.setLat(loc.getDouble("lat"));
+        newCity.setLon(loc.getDouble("lng"));
         // nicely format the return value to insert it directly into openweatherUrlDecoder
-        return openWeatherUrlPreBuilder(loc.getDouble("lat"), loc.getDouble("lng"));
+        //return openWeatherUrlPreBuilder(newCity.getLat(), newCity.getLon());
     }
 
-    public static String openWeatherUrlPreBuilder(Double lat, Double lon) {
-        return ("lat=" + lat.toString()
-                + "&lon=" + lon.toString());
-    }
+//    public static String openWeatherUrlPreBuilder(Double lat, Double lon) {
+//        return ("lat=" + lat.toString()
+//                + "&lon=" + lon.toString());
+//    }
 
-    public static URL openWeatherUrlBuilder(String addr) throws MalformedURLException {
+    public static URL openWeatherUrlBuilder(String addr) throws MalformedURLException, UnsupportedEncodingException {
         // build a URL
         String s = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-        s += addr;
+        s += "q=";
+        s += URLEncoder.encode(addr, "utf-8");
         s += "&cnt=16";
         s += "&mode=json";
         return new URL(s);
     }
 
-    public City openweatherJsonDecoderCity(JSONObject obj) throws JSONException {
+    public City openweatherJsonDecoderCity(JSONObject obj, City newCity) throws JSONException {
         JSONObject city = obj.getJSONObject("city");
-        City newCity = new City(
-                city.getInt("id"),
-                city.getString("name"),
-                city.getString("country"),
-                city.getJSONObject("coord").getDouble("lat"),
-                city.getJSONObject("coord").getDouble("lon")
-        );
+        newCity.setId(city.getInt("id"));
         return newCity;
     }
 
