@@ -21,6 +21,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 /**
@@ -80,6 +81,19 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
         return em.createNamedQuery("Event.myCalendar", Event.class)
                 .setParameter("calendar", user.getCalendar())
                 .getResultList();
+    }
+    
+    @GET
+    @AuthRequired
+    @Path("export")
+    @Produces({"application/json"})
+    public Response export(@Context SecurityContext sc) {
+        User user = (User) sc.getUserPrincipal();
+        List<Event> events = em.createNamedQuery("Event.myCalendar", Event.class)
+                .setParameter("calendar", user.getCalendar())
+                .getResultList();
+        String filename = "myCalendar.meteocal";
+        return Response.ok(events).header("Content-Disposition", "attachment; filename=" + filename).build();
     }
 
     @GET

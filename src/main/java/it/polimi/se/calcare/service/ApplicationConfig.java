@@ -36,7 +36,6 @@ public class ApplicationConfig extends Application {
         resources.add(it.polimi.se.calcare.service.EventFacadeREST.class);
         resources.add(it.polimi.se.calcare.service.ForecastFacadeREST.class);
         resources.add(it.polimi.se.calcare.service.NotificationFacadeREST.class);
-        resources.add(it.polimi.se.calcare.service.NotificationTypeFacadeREST.class);
         resources.add(it.polimi.se.calcare.service.ParticipationFacadeREST.class);
         resources.add(it.polimi.se.calcare.service.UserFacadeREST.class);
         resources.add(it.polimi.se.calcare.service.WeatherConditionFacadeREST.class);
