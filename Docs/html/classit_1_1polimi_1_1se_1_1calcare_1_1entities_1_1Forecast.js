@@ -1,0 +1,27 @@
+var classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast =
+[
+    [ "Forecast", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#acb0f376b45eb62f8a338abc0a12dc406", null ],
+    [ "Forecast", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a9374b07d11df110bfe7376069217aed0", null ],
+    [ "Forecast", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#aed435f4ab688311e516a532595f33bc1", null ],
+    [ "Forecast", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a14ba5435d7bf1ed8b770649911da7b76", null ],
+    [ "equals", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#ae58197996ca50b8be377d34a044b8ab6", null ],
+    [ "getCity1", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#ab21758dce500fadd7be5767be33f3485", null ],
+    [ "getEventCollection", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#abde4aa5f05fd64c1b2f22661add73963", null ],
+    [ "getForecastPK", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a4523ab646ac8b0684abb5427fa4521e9", null ],
+    [ "getHumidity", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a1bbbfde90c577657986b1b9344147f72", null ],
+    [ "getPressure", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#ac4e598af4f6a0d9dd1eebddd43ddc9f1", null ],
+    [ "getTempMax", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a95e33ba4e72a9f065b0ec9bc5a35d70c", null ],
+    [ "getTempMin", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#ab3908583bf2bf774d6b346cf244533b1", null ],
+    [ "getWeatherCondition", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a8a6123afb6d5fc1b98b0b7dcd9edd4ed", null ],
+    [ "hashCode", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a63f467375cfc1ee0432920c3810ee49a", null ],
+    [ "setCity1", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a89a40602154bda4e2e17faf8c65f7ce1", null ],
+    [ "setEventCollection", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#afb5a603cbefc3fa67af3993cb25a9e5c", null ],
+    [ "setForecastPK", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a3646c4b684d5ef0f13108325eda98819", null ],
+    [ "setHumidity", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a6b5d22246f239648729a3267bd748ecc", null ],
+    [ "setPressure", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#a334c1d3184970b661fde27d822af6896", null ],
+    [ "setTempMax", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#abe6dffcc081ed97109e69cc8ce4b738d", null ],
+    [ "setTempMin", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#ab2c9021dca8686bcc0abfe3a46dd1543", null ],
+    [ "setWeatherCondition", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#ab557545b6befbe2cbdefce0ab47aec8d", null ],
+    [ "toString", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#ad088566c059250844b4005298c9e0969", null ],
+    [ "forecastPK", "classit_1_1polimi_1_1se_1_1calcare_1_1entities_1_1Forecast.html#ac5ae3b96d754a90aadd818afe9709898", null ]
+];
