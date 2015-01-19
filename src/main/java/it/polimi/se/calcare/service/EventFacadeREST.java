@@ -15,6 +15,7 @@ import it.polimi.se.calcare.entities.NotificationType;
 import it.polimi.se.calcare.entities.Participation;
 import it.polimi.se.calcare.entities.User;
 import it.polimi.se.calcare.helpers.NotificationHelper;
+import it.polimi.se.calcare.helpers.ObjectGraphHelper;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -149,8 +150,8 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @AuthRequired
     @GET
     @Path("{id}")
-    @Produces({"application/xml", "application/json"})
-    public Event find(@Context SecurityContext sc, @PathParam("id") Integer id) {
+    @Produces({"application/json"})
+    public String find(@Context SecurityContext sc, @PathParam("id") Integer id) {
         User user = (User) sc.getUserPrincipal();
         Event event = super.find(id);
         if (event == null)
@@ -166,7 +167,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
                 throw new WebApplicationException(403);
             }
         }
-        return event;
+        return ObjectGraphHelper.render(event, "simple", Event.class);
     }
 
     @Override

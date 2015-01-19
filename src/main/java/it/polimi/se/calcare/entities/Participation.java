@@ -17,11 +17,38 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.eclipse.persistence.oxm.annotations.XmlNamedAttributeNode;
+import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraph;
+import org.eclipse.persistence.oxm.annotations.XmlNamedSubgraph;
 
 /**
  *
  * @author tyrion
  */
+@XmlNamedObjectGraph(
+        name = "simple",
+        attributeNodes = {
+            @XmlNamedAttributeNode("participationPK"),
+            @XmlNamedAttributeNode("accepted"),
+            @XmlNamedAttributeNode(value = "event", subgraph = "noloop")
+        },
+        subgraphs = {
+            @XmlNamedSubgraph(
+                    name = "noloop",
+                    attributeNodes = {
+                        @XmlNamedAttributeNode("id"),
+                        @XmlNamedAttributeNode("name"),
+                        @XmlNamedAttributeNode("description"),
+                        @XmlNamedAttributeNode("start"),
+                        @XmlNamedAttributeNode("end"),
+                        @XmlNamedAttributeNode("location"),
+                        @XmlNamedAttributeNode("public1"),
+                        @XmlNamedAttributeNode("outdoor"),
+                        @XmlNamedAttributeNode("creator")
+                    }
+            )
+        }
+)
 @Entity
 @Table(name = "participations")
 @XmlRootElement
@@ -101,7 +128,6 @@ public class Participation implements Serializable {
         this.calendar = calendar;
     }
 
-    @XmlTransient
     public Event getEvent() {
         return event;
     }

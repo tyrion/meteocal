@@ -18,6 +18,8 @@ package it.polimi.se.calcare;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -33,6 +35,7 @@ public class JSONExceptionMapper implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(Exception exception) {
+        Logger.getLogger(JSONExceptionMapper.class.getName()).log(Level.SEVERE, null, exception);
         ResponseBuilder response;
         if (exception instanceof WebApplicationException) {
             WebApplicationException ex = (WebApplicationException) exception;

@@ -25,21 +25,30 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+import org.eclipse.persistence.oxm.annotations.XmlNamedAttributeNode;
+import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraph;
 
 /**
  *
  * @author tyrion
  */
+@XmlNamedObjectGraph(
+        name = "simple",
+        attributeNodes = {
+            @XmlNamedAttributeNode("owner"),
+            @XmlNamedAttributeNode("public1"),
+            @XmlNamedAttributeNode(value = "participations", subgraph = "simple"),}
+)
 @Entity
 @Table(name = "calendars")
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 @NamedQueries({
     @NamedQuery(name = "Calendar.findAll", query = "SELECT c FROM Calendar c"),
     @NamedQuery(name = "Calendar.findById", query = "SELECT c FROM Calendar c WHERE c.id = :id"),
     @NamedQuery(name = "Calendar.search", query = "FROM Calendar AS c WHERE c.owner.id != :currentUser AND c.owner.email LIKE :search")})
 public class Calendar implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -47,10 +56,11 @@ public class Calendar implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "public")
+    @XmlElement(name = "public")
     private boolean public1;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "calendar")
@@ -58,9 +68,9 @@ public class Calendar implements Serializable {
 
     @JoinColumn(name = "owner", referencedColumnName = "id")
     @OneToOne(optional = false)
-    @XmlElement(name="owner")
+    @XmlElement(name = "owner")
     private User owner;
-    
+
     public Calendar() {
     }
 
@@ -91,7 +101,7 @@ public class Calendar implements Serializable {
     public void setOwner(User owner) {
         this.owner = owner;
     }
-    
+
     public boolean isPublic1() {
         return public1;
     }
@@ -124,5 +134,5 @@ public class Calendar implements Serializable {
     public String toString() {
         return "it.polimi.se.calcare.entities.Calendar[ id=" + id + " ]";
     }
-    
+
 }

@@ -27,13 +27,41 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.eclipse.persistence.oxm.annotations.XmlNamedAttributeNode;
+import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraph;
+import org.eclipse.persistence.oxm.annotations.XmlNamedSubgraph;
 
 /**
  *
  * @author tyrion
  */
+@XmlNamedObjectGraph(
+        name = "simple",
+        attributeNodes = {
+            @XmlNamedAttributeNode("id"),
+            @XmlNamedAttributeNode("name"),
+            @XmlNamedAttributeNode("description"),
+            @XmlNamedAttributeNode("start"),
+            @XmlNamedAttributeNode("end"),
+            @XmlNamedAttributeNode("location"),
+            @XmlNamedAttributeNode("public1"),
+            @XmlNamedAttributeNode("outdoor"),
+            @XmlNamedAttributeNode("creator"),
+            @XmlNamedAttributeNode(value = "participationCollection", subgraph = "noloop")
+        },
+        subgraphs = {
+            @XmlNamedSubgraph(
+                    name = "noloop",
+                    attributeNodes = {
+                        @XmlNamedAttributeNode("participationPK"),
+                        @XmlNamedAttributeNode("accepted")
+                    }
+            )
+        }
+)
 @Entity
 @Table(name = "events")
 @XmlRootElement
@@ -186,6 +214,7 @@ public class Event implements Serializable {
         this.location = location;
     }
 
+    @XmlElement(name = "public")
     public boolean getPublic1() {
         return public1;
     }
@@ -206,7 +235,7 @@ public class Event implements Serializable {
         this.outdoor = outdoor;
     }
 
-    @XmlTransient
+    @XmlElement(name = "forecasts")
     public Collection<Forecast> getForecastCollection() {
         return forecastCollection;
     }
@@ -215,6 +244,7 @@ public class Event implements Serializable {
         this.forecastCollection = forecastCollection;
     }
 
+    @XmlElement(name = "participations")
     public Collection<Participation> getParticipationCollection() {
         return participationCollection;
     }

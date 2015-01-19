@@ -25,6 +25,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -38,6 +40,7 @@ import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
 @Entity
 @Table(name = "users")
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 @NamedQueries({
     @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
     @NamedQuery(name = "User.findById", query = "SELECT u FROM User u WHERE u.id = :id"),
@@ -46,7 +49,8 @@ import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
     @NamedQuery(name = "User.findByGivenName", query = "SELECT u FROM User u WHERE u.givenName = :givenName"),
     @NamedQuery(name = "User.findByFamilyName", query = "SELECT u FROM User u WHERE u.familyName = :familyName"),
     @NamedQuery(name = "User.findMany", query = "SELECT u FROM User u WHERE u.id IN :ids"),
-    @NamedQuery(name = "User.invited", query = "SELECT DISTINCT u FROM User u WHERE u.active = TRUE AND u.calendar.id IN :ids")
+    @NamedQuery(name = "User.invited", query = "SELECT DISTINCT u FROM User u WHERE u.active = TRUE AND u.calendar.id IN :ids"),
+    @NamedQuery(name = "User.search", query = "FROM User u WHERE u != :currentUser AND u.email LIKE :search")
 })
 public class User implements Serializable, java.security.Principal {
 
@@ -87,15 +91,18 @@ public class User implements Serializable, java.security.Principal {
     @Basic(optional = true)
     @NotNull
     @Column(name = "active")
+    @XmlTransient
     private boolean active;
 
     @XmlInverseReference(mappedBy = "owner")
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
     private Calendar calendar;
 
+    @XmlTransient
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     private Collection<Event> eventCollection;
 
+    @XmlTransient
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Collection<Notification> notificationCollection;
 
@@ -178,6 +185,11 @@ public class User implements Serializable, java.security.Principal {
 
     public void setCalendar(Calendar calendar) {
         this.calendar = calendar;
+    }
+
+    @XmlElement(name = "calendar")
+    public Integer getCalendarId() {
+        return (this.calendar != null) ? this.calendar.getId() : null;
     }
 
     @XmlTransient

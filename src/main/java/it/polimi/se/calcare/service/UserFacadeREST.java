@@ -22,6 +22,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -89,12 +90,17 @@ public class UserFacadeREST extends AbstractFacade<User> {
         return super.find(user.getId());
     }
 
-    @AuthRequired
     @GET
-    @Override
+    @AuthRequired
     @Produces({"application/xml", "application/json"})
-    public List<User> findAll() {
-        return super.findAll();
+    public List<User> search(@Context SecurityContext sc, @QueryParam("search") String search) {
+        User user = (User) sc.getUserPrincipal();
+        List<User> users = getEntityManager().createNamedQuery("User.search", User.class)
+                .setParameter("search", '%' + search + '%')
+                .setParameter("currentUser", user) //delete the current user from results
+                .setMaxResults(10).getResultList();
+
+        return users;
     }
 
     @Override
