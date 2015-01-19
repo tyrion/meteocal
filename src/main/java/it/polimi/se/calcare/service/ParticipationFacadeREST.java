@@ -5,9 +5,10 @@
  */
 package it.polimi.se.calcare.service;
 
+import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.Participation;
 import it.polimi.se.calcare.entities.ParticipationPK;
-import java.util.List;
+import it.polimi.se.calcare.entities.User;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,7 +20,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  *
@@ -28,6 +32,7 @@ import javax.ws.rs.core.PathSegment;
 @Stateless
 @Path("it.polimi.se.calcare.entities.participation")
 public class ParticipationFacadeREST extends AbstractFacade<Participation> {
+
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
 
@@ -66,15 +71,28 @@ public class ParticipationFacadeREST extends AbstractFacade<Participation> {
     @PUT
     @Path("{id}")
     @Consumes({"application/xml", "application/json"})
-    public void edit(@PathParam("id") PathSegment id, Participation entity) {
-        super.edit(entity);
+    public void edit(@Context SecurityContext sc,
+            @PathParam("id") PathSegment id, Participation changed) {
+        ParticipationPK key = getPrimaryKey(id);
+        User user = (User) sc.getUserPrincipal();
+        Participation p = super.find(key);
+        if (p.getCalendar().equals(user.getCalendar())) {
+            p.setAccepted(changed.getAccepted());
+            super.edit(p);
+        }
     }
 
+    @AuthRequired
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") PathSegment id) {
-        it.polimi.se.calcare.entities.ParticipationPK key = getPrimaryKey(id);
-        super.remove(super.find(key));
+    public void remove(@Context SecurityContext sc, @PathParam("id") PathSegment id) {
+        ParticipationPK key = getPrimaryKey(id);
+        User user = (User) sc.getUserPrincipal();
+        Participation p = super.find(key);
+        if (p.getCalendar().equals(user.getCalendar()))
+            super.remove(p);
+        else
+            throw new WebApplicationException(403);
     }
 
     @GET
@@ -85,30 +103,9 @@ public class ParticipationFacadeREST extends AbstractFacade<Participation> {
         return super.find(key);
     }
 
-    @GET
-    @Override
-    @Produces({"application/xml", "application/json"})
-    public List<Participation> findAll() {
-        return super.findAll();
-    }
-
-    @GET
-    @Path("{from}/{to}")
-    @Produces({"application/xml", "application/json"})
-    public List<Participation> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
-    }
-
-    @GET
-    @Path("count")
-    @Produces("text/plain")
-    public String countREST() {
-        return String.valueOf(super.count());
-    }
-
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }
