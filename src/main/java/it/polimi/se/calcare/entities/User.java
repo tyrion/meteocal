@@ -45,7 +45,8 @@ import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
     @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password"),
     @NamedQuery(name = "User.findByGivenName", query = "SELECT u FROM User u WHERE u.givenName = :givenName"),
     @NamedQuery(name = "User.findByFamilyName", query = "SELECT u FROM User u WHERE u.familyName = :familyName"),
-    @NamedQuery(name = "User.findMany", query = "SELECT u FROM User u WHERE u.id IN :ids")
+    @NamedQuery(name = "User.findMany", query = "SELECT u FROM User u WHERE u.id IN :ids"),
+    @NamedQuery(name = "User.invited", query = "SELECT DISTINCT u FROM User u WHERE u.active = TRUE AND u.calendar.id IN :ids")
 })
 public class User implements Serializable, java.security.Principal {
 
@@ -95,7 +96,7 @@ public class User implements Serializable, java.security.Principal {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     private Collection<Event> eventCollection;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Collection<Notification> notificationCollection;
 
     public User() {

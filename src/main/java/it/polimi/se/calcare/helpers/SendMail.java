@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package it.polimi.se.calcare.service;
+package it.polimi.se.calcare.helpers;
 
 import java.util.*;
 import java.util.logging.Level;

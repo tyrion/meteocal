@@ -1,45 +1,29 @@
 /*
- * The MIT License
+ * Copyright (C) 2015 Germano Gabbianelli
  *
- * Copyright 2015 tyrion.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package it.polimi.se.calcare.service;
 
-import com.auth0.jwt.JWTSigner;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.JWTVerifyException;
-import it.polimi.se.calcare.auth.AuthFilter;
 import it.polimi.se.calcare.auth.Password;
 import it.polimi.se.calcare.entities.Calendar;
 import it.polimi.se.calcare.entities.User;
-import java.io.IOException;
+import it.polimi.se.calcare.helpers.JWTHelper;
+import it.polimi.se.calcare.helpers.SendMail;
 import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -50,56 +34,47 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 /**
  *
- * @author tyrion
+ * @author Germano Gabbianelli
  */
 @Stateless
 @Path("auth")
 public class AuthREST {
+
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
-    
+
     @POST
     @Path("login")
     @Produces("application/json")
     public String login(@FormParam("email") String email, @FormParam("password") String password) throws InvalidKeySpecException, NoSuchAlgorithmException {
         if (email == null || password == null)
             throw new WebApplicationException(401);
-        User user;
         try {
-            user = em.createNamedQuery("User.findByEmail", User.class)
-                .setParameter("email", email)
-                .getSingleResult();
-            if (user.isActive() && Password.check(password, user.getPassword())) {
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("user", user.getId());
-                String token = (new JWTSigner(AuthFilter.SECRET)).sign(map);
-                return String.format("{\"token\":\"%s\"}", token);
-            }
-        } catch (javax.persistence.NoResultException ex) {}
+            User user = em.createNamedQuery("User.findByEmail", User.class)
+                    .setParameter("email", email).getSingleResult();
+            if (user.isActive() && Password.check(password, user.getPassword()))
+                return String.format("{\"token\":\"%s\"}",
+                        JWTHelper.encode("user", user));
+        } catch (javax.persistence.NoResultException ex) {
+        }
+
         throw new WebApplicationException(401);
     }
 
     @GET
     @Path("activate")
-    public Response activate(@QueryParam("token") String token) throws URISyntaxException {
-        JWTVerifier verifier = new JWTVerifier(AuthFilter.SECRET);
-        Map<String, Object> payload;
+    public Response activate(@QueryParam("token") String token)
+            throws URISyntaxException {
 
-        try {
-            payload = verifier.verify(token);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalStateException | IOException | SignatureException | JWTVerifyException ex) {
-            Logger.getLogger(AuthREST.class.getName()).log(Level.SEVERE, null, ex);
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
-
-        Integer id  = (Integer)payload.get("activate");
+        Integer id = JWTHelper.decode(token, "activate");
         User user = em.createNamedQuery("User.findById", User.class)
-            .setParameter("id", id)
-            .getSingleResult();
+                .setParameter("id", id).getSingleResult();
 
         if (!user.isActive()) {
             user.setActive(true);
@@ -108,9 +83,36 @@ public class AuthREST {
             Calendar calendar = new Calendar();
             calendar.setOwner(user);
             em.persist(calendar);
-
         }
 
         return Response.seeOther(new java.net.URI("..#/activated")).build();
+    }
+
+    @POST
+    @Path("reset/request")
+    public void requestReset(@Context UriInfo ui,
+            @FormParam("email") String email) {
+        User user = em.createNamedQuery("User.findByEmail", User.class)
+                .setParameter("email", email).getSingleResult();
+        String resetLink = ui.getBaseUri().resolve("..#/reset?token=")
+                + JWTHelper.encode("reset", user);
+        SendMail.Mail(new String[]{email}, "[CalCARE] Password reset request",
+                String.format("Hey %s, someone requested to reset your "
+                        + "password. Click the link to confirm: <a href=\"%s\">%s</a>\n",
+                        user.getGivenName(), resetLink, resetLink));
+    }
+
+    @POST
+    @Path("reset/confirm")
+    public void reset(@QueryParam("token") String token,
+            @FormParam("password") String password)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
+        Integer id = JWTHelper.decode(token, "reset");
+
+        User user = em.createNamedQuery("User.findById", User.class)
+                .setParameter("id", id).getSingleResult();
+
+        if (user.isActive())
+            user.setPassword(password);
     }
 }

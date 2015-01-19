@@ -1,26 +1,31 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2015 Germano Gabbianelli
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package it.polimi.se.calcare.auth;
 
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.JWTVerifyException;
 import it.polimi.se.calcare.entities.User;
+import it.polimi.se.calcare.helpers.JWTHelper;
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Priority;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Priorities;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
@@ -28,60 +33,36 @@ import javax.ws.rs.ext.Provider;
 
 /**
  *
- * @author tyrion
+ * @author Germano Gabbianelli
  */
-
 @Priority(Priorities.AUTHENTICATION)
 @Provider
 @AuthRequired
 public class AuthFilter implements ContainerRequestFilter {
-    
+
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
-    
-    public static final String SECRET = "4553414d4544494d455244414a4156414d4d45524441";
+
     private static final Pattern HEADER_PATTERN = Pattern.compile("Bearer (.+)");
-    private static final JWTVerifier jwtVerifier = new JWTVerifier(SECRET);
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         String header = requestContext.getHeaderString("Authorization");
-        if (header == null) {
-            unauthorized(requestContext);
-            return;
-        }
-        Map<String, Object> token;
+        if (header == null)
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+
         Matcher matcher = HEADER_PATTERN.matcher(header);
-        String payload;
-        
         matcher.find();
-        
-        payload = matcher.group(1);
-        
-        try {
-            token = jwtVerifier.verify(payload);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalStateException | IOException | SignatureException | JWTVerifyException ex) {
-            Logger.getLogger(AuthFilter.class.getName()).log(Level.SEVERE, null, ex);
-            unauthorized(requestContext);
-            return;
-        }
-        Integer id  = (Integer)token.get("user");
+
+        String token = matcher.group(1);
+        Integer id = JWTHelper.decode(token, "user", 401);
         User user = em.createNamedQuery("User.findById", User.class)
-            .setParameter("id", id)
-            .getSingleResult();
-        
+                .setParameter("id", id).getSingleResult();
+
         SecurityContext sc = new SecurityContext(user);
         requestContext.setSecurityContext(sc);
-        
+
         if (!sc.isUserInRole("users"))
-            unauthorized(requestContext);        
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
-    
-    private void unauthorized(ContainerRequestContext requestContext) {
-        requestContext.abortWith(Response
-                    .status(Response.Status.UNAUTHORIZED)
-                    .entity("Unauthorized\n")
-                    .build());
-    }
-    
 }
