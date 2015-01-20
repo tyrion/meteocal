@@ -1,0 +1,83 @@
+\begin{theindex}
+
+  \item {check}
+    \subitem {it\+::polimi\+::se\+::calcare\+::auth\+::\+Password}, 
+		\hyperpage{32}
+
+  \indexspace
+
+  \item {get\+Salted\+Hash}
+    \subitem {it\+::polimi\+::se\+::calcare\+::auth\+::\+Password}, 
+		\hyperpage{32}
+
+  \indexspace
+
+  \item {it.\+polimi.\+se.\+calcare.\+auth.\+Auth\+Filter}, 
+		\hyperpage{7}
+  \item {it.\+polimi.\+se.\+calcare.\+auth.\+Auth\+Required}, 
+		\hyperpage{7}
+  \item {it.\+polimi.\+se.\+calcare.\+auth.\+Password}, \hyperpage{32}
+  \item {it.\+polimi.\+se.\+calcare.\+auth.\+Security\+Context}, 
+		\hyperpage{33}
+  \item {it.\+polimi.\+se.\+calcare.\+dto.\+Event\+Creation\+D\+T\+O}, 
+		\hyperpage{15}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Calendar}, 
+		\hyperpage{8}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+City}, \hyperpage{11}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Event}, \hyperpage{13}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Forecast}, 
+		\hyperpage{17}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Forecast\+P\+K}, 
+		\hyperpage{20}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Notification}, 
+		\hyperpage{24}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Notification\+Type}, 
+		\hyperpage{26}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Notification\+Type.\+Enum}, 
+		\hyperpage{12}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Participation}, 
+		\hyperpage{28}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Participation\+P\+K}, 
+		\hyperpage{31}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+User}, \hyperpage{34}
+  \item {it.\+polimi.\+se.\+calcare.\+entities.\+Weather\+Condition}, 
+		\hyperpage{37}
+  \item {it.\+polimi.\+se.\+calcare.\+helpers.\+J\+W\+T\+Helper}, 
+		\hyperpage{23}
+  \item {it.\+polimi.\+se.\+calcare.\+helpers.\+Notification\+Helper}, 
+		\hyperpage{26}
+  \item {it.\+polimi.\+se.\+calcare.\+helpers.\+Send\+Mail}, 
+		\hyperpage{34}
+  \item {it.\+polimi.\+se.\+calcare.\+J\+S\+O\+N\+Exception\+Mapper}, 
+		\hyperpage{22}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Abstract\+Facade$<$ T $>$}, 
+		\hyperpage{5}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Application\+Config}, 
+		\hyperpage{6}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Auth\+R\+E\+S\+T}, 
+		\hyperpage{8}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Calendar\+Facade\+R\+E\+S\+T}, 
+		\hyperpage{10}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Cron\+Job}, 
+		\hyperpage{12}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Event\+Facade\+R\+E\+S\+T}, 
+		\hyperpage{16}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Forecast\+Facade\+R\+E\+S\+T}, 
+		\hyperpage{18}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Get\+Weather}, 
+		\hyperpage{21}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Get\+Weather\+Test}, 
+		\hyperpage{21}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Notification\+Facade\+R\+E\+S\+T}, 
+		\hyperpage{25}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Participation\+Facade\+R\+E\+S\+T}, 
+		\hyperpage{29}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+User\+Facade\+R\+E\+S\+T}, 
+		\hyperpage{35}
+  \item {it.\+polimi.\+se.\+calcare.\+service.\+Weather\+Condition\+Facade\+R\+E\+S\+T}, 
+		\hyperpage{38}
+  \item {it\+::polimi\+::se\+::calcare\+::auth\+::\+Password}
+    \subitem {check}, \hyperpage{32}
+    \subitem {get\+Salted\+Hash}, \hyperpage{32}
+
+\end{theindex}

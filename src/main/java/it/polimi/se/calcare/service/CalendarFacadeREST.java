@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -65,12 +68,31 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     @GET
     @Path("{id}")
     @Produces({"application/json"})
-    public List<Event> find(@Context SecurityContext sc, @PathParam("id") Integer id) {
+    public Set<Event> find(@Context SecurityContext sc,
+            @PathParam("id") Integer id) {
         User user = (User) sc.getUserPrincipal();
-        return em.createNamedQuery("Event.calendar", Event.class)
-                .setParameter("user", user)
-                .setParameter("calendar", id)
+        // public events and if public calendar also private events NOT in common
+        int userCal = user.getCalendar().getId();
+        List<Event> events = em.createNativeQuery(
+                "SELECT DISTINCT e.* FROM events e "
+                + "INNER JOIN participations p1 ON (e.id = p1.event) "
+                + "INNER JOIN calendars c ON (p1.calendars_id = c.id) "
+                + "LEFT OUTER JOIN participations p2 ON (p1.event = p2.event AND p2.calendars_id = ?) "
+                + "WHERE c.id = ? AND (e.public = 1 OR (c.public = 1 AND p2.event IS NULL))",
+                Event.class).setParameter(1, userCal).setParameter(2, id)
                 .getResultList();
+        List<Event> commonPrivate = em.createNativeQuery(
+                "SELECT DISTINCT e.* FROM events e "
+                + "INNER JOIN participations p1 ON (e.id = p1.event) "
+                + "INNER JOIN participations p2 ON (p1.event = p2.event) "
+                + "WHERE p1.calendars_id = ? AND p2.calendars_id = ? "
+                + "AND e.public = 0", Event.class).setParameter(1, id)
+                .setParameter(2, userCal).getResultList();
+
+        Set<Event> result = new HashSet<>(commonPrivate);
+        for (Event e : events)
+            result.add(e.isPublic() ? e : e.asPrivate());
+        return result;
     }
 
     @GET
@@ -83,7 +105,7 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
                 .setParameter("id", user.getCalendar().getId())
                 .getSingleResult();
     }
-    
+
     @GET
     @AuthRequired
     @Path("me")
