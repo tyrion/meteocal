@@ -37,7 +37,7 @@ import javax.ws.rs.WebApplicationException;
  */
 public class JWTHelper {
 
-    private static final String SECRET = "4553414d4544494d455244414a4156414d4d45524441";
+    protected static final String SECRET = "4553414d4544494d455244414a4156414d4d45524441";
     private static final JWTVerifier verifier = new JWTVerifier(SECRET);
     private static final JWTSigner signer = new JWTSigner(SECRET);
 
