@@ -93,7 +93,7 @@ public class GetWeatherTest {
         String addr = "PiazzaLeonardoDaVinci32,Milano,IT";
         GetWeather instance = new GetWeather();
         City expResult = new City(3173435, "Milano", "IT", 45.47783219999999, 9.2274315);
-        City result = instance.createCity(addr);
+        City result = instance.cityParser(addr);
         assertEquals(expResult, result);
         
     }

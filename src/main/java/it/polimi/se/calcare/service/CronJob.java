@@ -65,7 +65,6 @@ public class CronJob {
                 Date tmp = (update.getForecastPK().getDt());
                 DateTime date = new DateTime(tmp);
                 int cnt = Days.daysBetween(new DateTime(), date).getDays();
-                
                 if (cnt==3){
                     
                     //genera mail di warning causa pioggia
