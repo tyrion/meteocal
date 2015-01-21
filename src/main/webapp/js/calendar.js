@@ -382,6 +382,20 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         });
     };
     
+    $scope.deleteNotif = function(id){
+        $http({
+            method: 'DELETE',
+            url: "api/notifications/"+id,
+            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+        })
+        .success(function(data) {
+            $scope.notificationsNotif = "";
+        })
+        .error(function(data) {
+            $scope.notificationsNotif = generateNotif('Oh snap!', 'There was an error.', 'danger', $sce);
+        });
+    };
+    
     $scope.editEvent = function(e) {
         $scope.eventEdit.event = e;
         $scope.eventEdit.invitedPeople = invitedPeopleFromEvent(e);

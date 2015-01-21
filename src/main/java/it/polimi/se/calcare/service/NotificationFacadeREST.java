@@ -6,6 +6,7 @@
 package it.polimi.se.calcare.service;
 
 import it.polimi.se.calcare.auth.AuthRequired;
+import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Notification;
 import it.polimi.se.calcare.entities.User;
 import java.util.List;
@@ -20,6 +21,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 
@@ -45,6 +47,17 @@ public class NotificationFacadeREST extends AbstractFacade<Notification> {
         return em.createNamedQuery("Notification.findUserNotifs", Notification.class)
                 .setParameter("currentUser", user.getId())
                 .getResultList();
+    }
+    
+    @AuthRequired
+    @DELETE
+    @Path("{id}")
+    public void remove(@Context SecurityContext sc, @PathParam("id") Integer id) {
+        User user = (User) sc.getUserPrincipal();
+        Notification n = super.find(id);
+        if (!n.getUser().equals(user))
+            throw new WebApplicationException(403);
+        super.remove(n);
     }
 
     @Override
