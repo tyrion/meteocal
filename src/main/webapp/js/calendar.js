@@ -94,6 +94,50 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         window.location.hash = '#/';
     }
     
+    //check if we have a reset token
+    if (window.location.hash.replace("#/", "").substring(0,12) === 'reset?token='){
+        $scope.newPasswordStruct = {resetToken: window.location.hash.replace("#/reset?token=", "")};
+        
+        $(document).ready(function() {
+            $('#newPasswordForm').toggle();
+        });
+    };
+    
+    $scope.newPasswordSubmit = function(newPassword, resetToken){
+        $http({
+            method: 'POST',
+            url: "api/auth/reset/confirm/?token="+resetToken,
+            data: $.param({password: newPassword}),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(data) {
+            $scope.landingNotif = generateNotif('Yay!', 'You have a new password! Now simply log in :)', 'success', $sce);
+        })
+        .error(function(data) {
+            $scope.landingNotif = generateNotif('Oh snap!', 'Something went wrong while setting your new password.', 'danger', $sce);
+        });
+    }
+    
+    $scope.passwordReset = function(){
+        $('#resetForm').toggle();
+    };
+    
+    $scope.resetSubmit = function(reset){
+        $scope.landingNotif = generateLoading($sce);
+        $http({
+            method: 'POST',
+            url: "api/auth/reset/request",
+            data: $.param({email: reset.email}),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(data) {
+            $scope.landingNotif = generateNotif('Yay!', 'You have a mail with your password reset link :)', 'success', $sce);
+        })
+        .error(function(data) {
+            $scope.landingNotif = generateNotif('Oh snap!', 'Something went wrong while resetting your password.', 'danger', $sce);
+        });
+    };
+    
     $scope.getCalendar = function(id) {
         $http({
             method: 'GET',

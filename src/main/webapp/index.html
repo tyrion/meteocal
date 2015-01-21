@@ -41,22 +41,43 @@
                             <span class="icon-bar"></span>
                         </button>
                     </div>
-                    <div id="navbar" class="navbar-collapse collapse">
-                        <form class="navbar-form navbar-right" name="loginForm" id="loginForm" ng-submit="loginSubmit(loginInfo); loginForm.$setPristine(); loginInfo={}; " role="form">
-                            <div class="form-group">
-                                <input type="email" placeholder="Email" class="form-control" ng-model="loginInfo.email" />
-                            </div>
-                            <div class="form-group">
-                                <input type="password" placeholder="Password" class="form-control" ng-model="loginInfo.password" />
-                            </div>
-                            <input type="submit" id="loginButton" class="btn btn-success" value="Sign In" />
-                        </form>
+                    <div id="navbar" class="navbar-collapse collapse navbar-right">
+                        <ul class="nav navbar-nav">
+                            <li><a ng-click="passwordReset()" href="#/">Lost your password?</a></li>
+                            <li>
+                                <form class="navbar-form navbar-right" name="loginForm" id="loginForm" ng-submit="loginSubmit(loginInfo); loginForm.$setPristine(); loginInfo={}; " role="form">
+                                    <div class="form-group">
+                                        <input type="email" placeholder="Email" class="form-control" ng-model="loginInfo.email" />
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" placeholder="Password" class="form-control" ng-model="loginInfo.password" />
+                                    </div>
+                                    <input type="submit" id="loginButton" class="btn btn-success" value="Sign In" />
+                                </form>
+                            </li>
+                        </ul>
                     </div><!--/.navbar-collapse -->
                 </div>
             </nav>
 
             <div class="jumbotron">
                 <div class="container">
+                    <p>
+                        <form name="resetForm" style="display:none; margin-top: -55px;" id="resetForm" ng-submit="resetSubmit(reset); resetForm.$setPristine(); reset={}" class="navbar-form" role="form">
+                            <div class="form-group">
+                                <input type="email" placeholder="Email" class="form-control" ng-model="reset.email" />
+                            </div>
+                            <input type="submit" id="resetButton" class="btn btn-primary" value="Reset password" />
+                        </form>
+                    </p>
+                    <p>
+                        <form name="newPasswordForm" style="display:none;" id="newPasswordForm" ng-submit="newPasswordSubmit(newPassword, newPasswordStruct.resetToken); newPasswordForm.$setPristine(); newPassword=''" class="navbar-form" role="form">
+                            <div class="form-group">
+                                <input type="password" placeholder="New Password" class="form-control" ng-model="newPassword" />
+                            </div>
+                            <input type="submit" id="resetButton" class="btn btn-primary" value="Set new password" />
+                        </form>
+                    </p>
                     <h1>CalCARE</h1>
                     <p>With CalCARE you can keep track of your indoor and outdoor events, and be notified if suddenly comes the rain.</p>
                     <h2>Try our Online Weather Calendar. </h2>
