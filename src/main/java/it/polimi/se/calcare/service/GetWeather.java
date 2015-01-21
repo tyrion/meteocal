@@ -65,7 +65,7 @@ public class GetWeather {
         return new URL(s);
     }
 
-    public City createCity(String addr) throws MalformedURLException, IOException, JSONException {
+    public City cityParser(String addr) throws MalformedURLException, IOException, JSONException {
         City newCity=new City();
         //set the address of the city for the input stream for the google URL Builder 
         InputStream google = googleUrlBuilder(addr).openStream();
