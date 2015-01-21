@@ -25,6 +25,8 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -47,21 +49,39 @@ public class CryptoHelper {
     public CryptoHelper() {
         this.ivSpec = new IvParameterSpec(iv);
     }
-
-    public byte[] encrypt(byte[] input) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+    
+    private byte[] doAES(int opmode, byte[] input) {
         byte[] key = Arrays.copyOfRange(JWTHelper.SECRET.getBytes(), 0, 16);
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-        return cipher.doFinal(input);
+        
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException ex) {
+            Logger.getLogger(CryptoHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        try {
+            cipher.init(opmode, keySpec, ivSpec);
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException ex) {
+            Logger.getLogger(CryptoHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        try {
+            return cipher.doFinal(input);
+        } catch (IllegalBlockSizeException | BadPaddingException ex) {
+            Logger.getLogger(CryptoHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return null;
+    }
+
+    public byte[] encrypt(byte[] input) {
+        return doAES(Cipher.ENCRYPT_MODE, input);
     }
     
-    public byte[] decrypt(byte[] input) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
-        byte[] key = Arrays.copyOfRange(JWTHelper.SECRET.getBytes(), 0, 16);
-        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
-        return cipher.doFinal(input);
+    public byte[] decrypt(byte[] input) {
+        return doAES(Cipher.DECRYPT_MODE, input);
     }
     
     public byte[] objToBytes(Object obj) throws IOException{

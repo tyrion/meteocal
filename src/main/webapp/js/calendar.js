@@ -101,7 +101,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
-            //console.log(data);
+            console.log(data);
             $scope.eventList = {
                 events: [],
                 day: ""
@@ -402,7 +402,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
 
         $http.post("api/calendars/import", fd, {
             withCredentials: true,
-            headers: {'Content-Type': undefined, 'Authorization': 'Bearer ' + $localStorage.token },
+            headers: {'Content-Type': 'text/plain', 'Authorization': 'Bearer ' + $localStorage.token },
             transformRequest: angular.identity
         })
         .success(function(data) {
@@ -410,6 +410,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         })
         .error(function(data) {
             //TODO calendar import failure
+            console.log(data);
         });
     };
     

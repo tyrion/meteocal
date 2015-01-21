@@ -11,6 +11,7 @@ import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.User;
 import it.polimi.se.calcare.helpers.CryptoHelper;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -38,6 +39,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -129,12 +132,7 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
         String filename = "myCalendar.meteocal";
         
         CryptoHelper ch = new CryptoHelper();
-        String blob = null;
-        try {
-            blob = ch.bytesToHex(ch.encrypt(ch.objToBytes(events)));
-        } catch (InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException ex) {
-            Logger.getLogger(CalendarFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String blob = ch.bytesToHex(ch.encrypt(ch.objToBytes(events)));
         
         return Response.ok(blob).header("Content-Disposition", "attachment; filename=" + filename).build();
     }
@@ -142,22 +140,27 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     @POST
     @AuthRequired
     @Path("import")
-    @Produces({"application/json"})
-    public void importCal(@Context SecurityContext sc, String blob) throws IOException{
+    public void importCal(@Context SecurityContext sc, String blob){
         User user = (User) sc.getUserPrincipal();
         
         CryptoHelper ch = new CryptoHelper();
         
+        //this is because the import form funky format: 
+        //we need to cut away the box and only keep the super giant string with the content
+        blob = blob.split("application/octet-stream")[1].split("-")[0].trim();
+        
         List<Event> events = null;
         try {
             events = (List<Event>) ch.bytesToObj(ch.decrypt(ch.hexToBytes(blob)));
-        } catch (InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException ex) {
-            Logger.getLogger(CalendarFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException | IOException ex) {
             Logger.getLogger(CalendarFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        //TODO import the list
+        //TODO import the list into db
+        for(Event e : events){
+            System.out.println(e.getDescription());
+        }
+        
     }
 
     @GET
