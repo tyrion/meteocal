@@ -103,7 +103,7 @@ public class Notification implements Serializable {
     @XmlElement
     public String getDescription() {
         return String.format(this.type.getDescription(), this.event.getName(),
-                this.user.getFullName());
+                this.event.getCreator().getFullName());
     }
 
     @Override
