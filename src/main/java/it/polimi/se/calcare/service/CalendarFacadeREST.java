@@ -9,6 +9,18 @@ import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.Calendar;
 import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.User;
+import it.polimi.se.calcare.helpers.CryptoHelper;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,13 +29,18 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -101,6 +118,49 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
         return em.createNamedQuery("Event.myCalendar", Event.class)
                 .setParameter("calendar", user.getCalendar())
                 .getResultList();
+    }
+    
+    @GET
+    @AuthRequired
+    @Path("export")
+    @Produces({"application/json"})
+    public Response export(@Context SecurityContext sc) throws IOException{
+        User user = (User) sc.getUserPrincipal();
+        List<Event> events = em.createNamedQuery("Event.myCalendar", Event.class)
+                .setParameter("calendar", user.getCalendar())
+                .getResultList();
+        String filename = "myCalendar.meteocal";
+        
+        CryptoHelper ch = new CryptoHelper();
+        String blob = ch.bytesToHex(ch.encrypt(ch.objToBytes(events)));
+        
+        return Response.ok(blob).header("Content-Disposition", "attachment; filename=" + filename).build();
+    }
+    
+    @POST
+    @AuthRequired
+    @Path("import")
+    public void importCal(@Context SecurityContext sc, String blob){
+        User user = (User) sc.getUserPrincipal();
+        
+        CryptoHelper ch = new CryptoHelper();
+        
+        //this is because the import form funky format: 
+        //we need to cut away the box and only keep the super giant string with the content
+        blob = blob.split("application/octet-stream")[1].split("-")[0].trim();
+        
+        List<Event> events = null;
+        try {
+            events = (List<Event>) ch.bytesToObj(ch.decrypt(ch.hexToBytes(blob)));
+        } catch (ClassNotFoundException | IOException ex) {
+            Logger.getLogger(CalendarFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        //TODO import the list into db
+        for(Event e : events){
+            System.out.println(e.getDescription());
+        }
+        
     }
 
     @GET

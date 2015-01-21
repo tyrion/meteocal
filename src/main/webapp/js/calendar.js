@@ -94,6 +94,50 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         window.location.hash = '#/';
     }
     
+    //check if we have a reset token
+    if (window.location.hash.replace("#/", "").substring(0,12) === 'reset?token='){
+        $scope.newPasswordStruct = {resetToken: window.location.hash.replace("#/reset?token=", "")};
+        
+        $(document).ready(function() {
+            $('#newPasswordForm').toggle();
+        });
+    };
+    
+    $scope.newPasswordSubmit = function(newPassword, resetToken){
+        $http({
+            method: 'POST',
+            url: "api/auth/reset/confirm/?token="+resetToken,
+            data: $.param({password: newPassword}),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(data) {
+            $scope.landingNotif = generateNotif('Yay!', 'You have a new password! Now simply log in :)', 'success', $sce);
+        })
+        .error(function(data) {
+            $scope.landingNotif = generateNotif('Oh snap!', 'Something went wrong while setting your new password.', 'danger', $sce);
+        });
+    }
+    
+    $scope.passwordReset = function(){
+        $('#resetForm').toggle();
+    };
+    
+    $scope.resetSubmit = function(reset){
+        $scope.landingNotif = generateLoading($sce);
+        $http({
+            method: 'POST',
+            url: "api/auth/reset/request",
+            data: $.param({email: reset.email}),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(data) {
+            $scope.landingNotif = generateNotif('Yay!', 'You have a mail with your password reset link :)', 'success', $sce);
+        })
+        .error(function(data) {
+            $scope.landingNotif = generateNotif('Oh snap!', 'Something went wrong while resetting your password.', 'danger', $sce);
+        });
+    };
+    
     $scope.getCalendar = function(id) {
         $http({
             method: 'GET',
@@ -101,7 +145,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
-            //console.log(data);
+            console.log(data);
             $scope.eventList = {
                 events: [],
                 day: ""
@@ -363,6 +407,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             //TODO: event create success - insert event into events list for calendar
             $('#eventEditModal').modal('hide');
             $scope.openCurrentEventModal(eventEdit.event);
+            $scope.getCalendar("me");
+            
         })
         .error(function(data) {
             //TODO event create error
@@ -400,7 +446,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
 
         $http.post("api/calendars/import", fd, {
             withCredentials: true,
-            headers: {'Content-Type': undefined, 'Authorization': 'Bearer ' + $localStorage.token },
+            headers: {'Content-Type': 'text/plain', 'Authorization': 'Bearer ' + $localStorage.token },
             transformRequest: angular.identity
         })
         .success(function(data) {
@@ -408,23 +454,122 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         })
         .error(function(data) {
             //TODO calendar import failure
+            console.log(data);
         });
     };
     
-    $scope.exportCalendar = function(){
+    // Based on an implementation here: web.student.tuwien.ac.at/~e0427417/jsdownload.html
+    $scope.exportCalendar = function() {
+        // Use an arraybuffer
         $http({
             method: 'GET',
             url: "api/calendars/export",
-            headers: {'Authorization': 'Bearer ' + $localStorage.token}
+            headers: {'Authorization': 'Bearer ' + $localStorage.token},
+            responseType: 'arraybuffer'
         })
-        .success(function(data) {
-            console.log(data);
-            //TODO: serve file
+        .success( function(data, status, headers) {
+
+            var octetStreamMime = 'application/octet-stream';
+            var success = false;
+
+            // Get the headers
+            headers = headers();
+
+            // Get the filename from the x-filename header or default to "download.bin"
+            var filename = headers['x-filename'] || 'myCalendar.meteocal';
+
+            // Determine the content type from the header or default to "application/octet-stream"
+            var contentType = headers['content-type'] || octetStreamMime;
+
+            try
+            {
+                // Try using msSaveBlob if supported
+                console.log("Trying saveBlob method ...");
+                var blob = new Blob([data], { type: contentType });
+                if(navigator.msSaveBlob)
+                    navigator.msSaveBlob(blob, filename);
+                else {
+                    // Try using other saveBlob implementations, if available
+                    var saveBlob = navigator.webkitSaveBlob || navigator.mozSaveBlob || navigator.saveBlob;
+                    if(saveBlob === undefined) throw "Not supported";
+                    saveBlob(blob, filename);
+                }
+                console.log("saveBlob succeeded");
+                success = true;
+            } catch(ex)
+            {
+                console.log("saveBlob method failed with the following exception:");
+                console.log(ex);
+            }
+
+            if(!success)
+            {
+                // Get the blob url creator
+                var urlCreator = window.URL || window.webkitURL || window.mozURL || window.msURL;
+                if(urlCreator)
+                {
+                    // Try to use a download link
+                    var link = document.createElement('a');
+                    if('download' in link)
+                    {
+                        // Try to simulate a click
+                        try
+                        {
+                            // Prepare a blob URL
+                            console.log("Trying download link method with simulated click ...");
+                            var blob = new Blob([data], { type: contentType });
+                            var url = urlCreator.createObjectURL(blob);
+                            link.setAttribute('href', url);
+
+                            // Set the download attribute (Supported in Chrome 14+ / Firefox 20+)
+                            link.setAttribute("download", filename);
+
+                            // Simulate clicking the download link
+                            var event = document.createEvent('MouseEvents');
+                            event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                            link.dispatchEvent(event);
+                            console.log("Download link method with simulated click succeeded");
+                            success = true;
+
+                        } catch(ex) {
+                            console.log("Download link method with simulated click failed with the following exception:");
+                            console.log(ex);
+                        }
+                    }
+
+                    if(!success)
+                    {
+                        // Fallback to window.location method
+                        try
+                        {
+                            // Prepare a blob URL
+                            // Use application/octet-stream when using window.location to force download
+                            console.log("Trying download link method with window.location ...");
+                            var blob = new Blob([data], { type: octetStreamMime });
+                            var url = urlCreator.createObjectURL(blob);
+                            window.location = url;
+                            console.log("Download link method with window.location succeeded");
+                            success = true;
+                        } catch(ex) {
+                            console.log("Download link method with window.location failed with the following exception:");
+                            console.log(ex);
+                        }
+                    }
+
+                }
+            }
+
+            if(!success)
+            {
+                // Fallback to window.open method
+                console.log("No methods worked for saving the arraybuffer, using last resort window.open");
+                window.open(httpPath, '_blank', '');
+            }
         })
         .error(function(data) {
             console.log(data);
             $scope.editSettingsNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
-        }); 
+        });
     };
 });
 
