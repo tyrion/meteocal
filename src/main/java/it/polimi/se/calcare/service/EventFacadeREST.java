@@ -16,9 +16,11 @@ import it.polimi.se.calcare.entities.Participation;
 import it.polimi.se.calcare.entities.User;
 import it.polimi.se.calcare.helpers.NotificationHelper;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +44,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
 import org.json.JSONException;
 
@@ -110,7 +113,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
         try {
             City city = cityCreator(event.getLocation());
-            forecastCreator(event.getLocation(), event.getStart(), event.getEnd(), city);
+            forecastCreator(event.getStart(), event.getEnd(), city);
         } catch (JSONException | IOException ex) {
             Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -121,19 +124,30 @@ public class EventFacadeREST extends AbstractFacade<Event> {
     @Path("{id}")
     @Consumes({"application/xml", "application/json"})
     public void edit(@Context SecurityContext sc, @Context UriInfo ui,
-            @PathParam("id") Integer id, EventCreationDTO dto) {
+            @PathParam("id") Integer id, EventCreationDTO dto) throws IOException, MalformedURLException, JSONException {
         User user = (User) sc.getUserPrincipal();
         Event event = super.find(id);
         if (!event.getCreator().equals(user))
             throw new WebApplicationException(403);
         dto.event.setId(id);
         dto.event.setCreator(user);
-
+        Event oldEvent = em.createQuery("SELECT c FROM Event c WHERE c.id = :"+event.getId(), Event.class).getSingleResult();
+        String oldLocation=oldEvent.getLocation();
+        String newLocation=event.getLocation();
         super.edit(dto.event);
-
+        City city=null;
+        if (!(oldLocation.equals(event.getLocation()))) 
+            city = cityCreator(event.getLocation());
+        else city=new GetWeather().cityParser(newLocation);
+        DateTime start=new DateTime(event.getStart());
+        DateTime end= new DateTime(event.getEnd());
+        List<Forecast> toDelete = (List<Forecast>) event.getForecastCollection();
+        for (Forecast item: toDelete)
+            em.remove(item);    
+        forecastCreator(event.getStart(), event.getEnd(), city);
         updateParticipations(user, dto, ui);
     }
-
+    
     @AuthRequired
     @DELETE
     @Path("{id}")
@@ -176,7 +190,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
     private City cityCreator(String location) throws JSONException, IOException {
         //Create the City in the DB
-        City city = new GetWeather().createCity(location);
+        City city = new GetWeather().cityParser(location);
 
         try {
             em.persist(city);
@@ -187,7 +201,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         return city;
     }
 
-    private void forecastCreator(String location, Date s, Date e, City city) throws JSONException, IOException {
+    private void forecastCreator(Date s, Date e, City city) throws JSONException, IOException {
         DateTime start = new DateTime(s);
         DateTime end = new DateTime(e);
         int cnt = Days.daysBetween(start, end).getDays();
@@ -206,4 +220,6 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         }
         em.flush();
     }
+    
 }
+

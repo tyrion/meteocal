@@ -8,6 +8,7 @@ package it.polimi.se.calcare.entities;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -267,6 +268,27 @@ public class Event implements Serializable {
     @Override
     public String toString() {
         return "Event[ id=" + id + " ]";
+    }
+    
+    public Forecast weatherEvaluator(Event event){
+        Forecast worst=null;
+        Boolean setted=false;
+        List<Forecast> forecasts=(List <Forecast>) event.getForecastCollection();
+        for (Forecast item : forecasts){
+            if (isWeatherBad(item)) return item;
+            else if(setted==false){
+                worst=item;
+                setted=true;
+            }
+        }
+        return worst;
+    }
+    
+    public boolean isWeatherBad(Forecast f){
+        int weather=f.getWeatherCondition().getId();
+        if (!((weather<900) && (weather>800)))
+            return false;
+        return true;
     }
 
 }
