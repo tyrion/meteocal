@@ -184,4 +184,11 @@ public class Forecast implements Serializable {
         return "it.polimi.se.calcare.entities.Forecast[ forecastPK=" + forecastPK + " ]";
     }
     
+    public boolean isWeatherBad(Forecast f){
+        int weather=f.getWeatherCondition().getId();
+        if (!((weather<900) && (weather>800)))
+            return false;
+        return true;
+    }
+    
 }
