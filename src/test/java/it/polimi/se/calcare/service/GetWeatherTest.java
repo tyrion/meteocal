@@ -102,7 +102,7 @@ public class GetWeatherTest {
      * Test of updateForecast method, of class GetWeather.
      */
     
-    @Test
+   /* @Test
     public void testUpdateForecast() throws JSONException, IOException {
         System.out.println("updateForecast");
         List<Forecast> nullForecasts = new ArrayList<>();
@@ -112,7 +112,7 @@ public class GetWeatherTest {
         List<Forecast> result = instance.updateForecast(new City(), nullForecasts);
         assertEquals(expResult0, result);
     }
-
+    */
     /**
      * Test of googleJsonDecoder method, of class GetWeather.
      */

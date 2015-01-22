@@ -11,6 +11,7 @@ import it.polimi.se.calcare.helpers.JWTHelper;
 import it.polimi.se.calcare.helpers.SendMail;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -53,8 +54,9 @@ public class UserFacadeREST extends AbstractFacade<User> {
 
         String URL = ui.getBaseUri().resolve("auth/activate?token=")
                 + JWTHelper.encode("activate", entity);
-
-        SendMail.Mail(new String[]{entity.getEmail()},
+        ArrayList<String> receiver=new ArrayList<String>();
+        receiver.add(entity.getEmail());
+        SendMail.Mail(receiver,
                 "Registration to CalCARE",
                 "Welcome to CalCARE, click this link to confirm your account: "
                 + String.format("<a href=\"%s\">%s</a>\n", URL, URL));

@@ -29,6 +29,7 @@ import it.polimi.se.calcare.entities.Forecast;
 import it.polimi.se.calcare.entities.ForecastPK;
 import it.polimi.se.calcare.entities.Participation;
 import it.polimi.se.calcare.entities.User;
+import it.polimi.se.calcare.helpers.SendMail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,23 +54,33 @@ public class CronJob {
 
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
-    @Schedule(dayOfWeek = "*", month = "*", hour = "*/23", dayOfMonth = "*", year = "*", minute = "*", second = "0", persistent = false)
+    @Schedule(dayOfWeek = "*", month = "*", hour = "*/23", dayOfMonth = "*", year = "*", minute = "*", second = "*", persistent = false)
     public void WeatherFetcher() throws IOException, JSONException, Exception {
-        List <City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
-        for (City item: cities){
-            List <Forecast> toUpdate = (List) item.getForecastCollection();
-            List <Forecast> newForecasts = new GetWeather().updateForecast(item, toUpdate);
-
+        
+            List <City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
+            ArrayList<String> mailingList=new ArrayList<>();
+            
+            for (City item: cities){
+               List <Forecast> toUpdate = (List) item.getForecastCollection();
+               List <Forecast> newForecasts=new GetWeather().updateForecast(item, toUpdate);
+               
             for (Forecast update: newForecasts) {
                 em.merge(update);
                 Date tmp = (update.getForecastPK().getDt());
                 DateTime date = new DateTime(tmp);
                 int cnt = Days.daysBetween(new DateTime(), date).getDays();
-                if (cnt==3){
-                    //genera mail di warning causa pioggia
+                if ((cnt==3) && (update.isWeatherBad())){
+                    for (Event event: update.getEventCollection()){
+                        if (event.getOutdoor())
+                        mailingList.add(event.getCreator().getEmail());
+                    }
                 }
             }
         }
+        if (!mailingList.isEmpty())
+        SendMail.Mail(mailingList,
+                    "BadWeatherReport",
+                    "Greetings, during your event shit will rain, have a good day!");
         em.flush();
             
     }

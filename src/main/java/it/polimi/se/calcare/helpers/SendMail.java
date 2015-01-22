@@ -33,19 +33,15 @@ public class SendMail {
 
     private static String USER_NAME = "noreply.calcare";  // GMail user name (just the part before "@gmail.com")
     private static String PASSWORD = "4553414d4544494d455244414a4156414d4d45524441"; // GMail password
-    //private static String RECIPIENT = "";
 
-    public static void Mail(String[] to, String subject, String body) {
+    public static void Mail(ArrayList<String> to, String subject, String body) {
         String from = USER_NAME;
         String pass = PASSWORD;
-        //String[] to = { RECIPIENT }; // list of recipient email addresses
-        //String subject = "Diocane";
-        //String body = "Funziona!";
 
         sendFromGMail(from, pass, to, subject, body);
     }
 
-    private static void sendFromGMail(String from, String pass, String[] to, String subject, String body) {
+    private static void sendFromGMail(String from, String pass, ArrayList<String> to, String subject, String body) {
         Properties props = System.getProperties();
         String host = "smtp.gmail.com";
         props.put("mail.smtp.starttls.enable", "true");
@@ -60,15 +56,15 @@ public class SendMail {
 
         try {
             message.setFrom(new InternetAddress(from));
-            InternetAddress[] toAddress = new InternetAddress[to.length];
-
+            ArrayList<InternetAddress> toAddress= new ArrayList<InternetAddress>();
+            
             // To get the array of addresses
-            for( int i = 0; i < to.length; i++ ) {
-                toAddress[i] = new InternetAddress(to[i]);
+            for( int i = 0; i < to.size(); i++ ) {
+                toAddress.add(new InternetAddress (to.get(i)));
             }
 
-            for( int i = 0; i < toAddress.length; i++) {
-                message.addRecipient(Message.RecipientType.TO, toAddress[i]);
+            for( int i = 0; i < toAddress.size(); i++) {
+                message.addRecipient(Message.RecipientType.TO, toAddress.get(i));
             }
 
             message.setSubject(subject);

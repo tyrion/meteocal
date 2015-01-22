@@ -21,6 +21,7 @@ import it.polimi.se.calcare.entities.Notification;
 import it.polimi.se.calcare.entities.NotificationType;
 import it.polimi.se.calcare.entities.User;
 import java.net.URI;
+import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import org.owasp.encoder.Encode;
 
@@ -51,7 +52,9 @@ public class NotificationHelper {
         em.persist(n);
 
         String body = String.format(this.type.getDescription(), args);
-        SendMail.Mail(new String[]{user.getEmail()},
+        ArrayList<String> receiver=new ArrayList<String>();
+        receiver.add(user.getEmail());
+        SendMail.Mail(receiver,
                 String.format("CalCARE Notification: %s", this.type.getName()),
                 String.format("<a href=\"%s\">%s</a>", link, Encode.forHtml(body)));
 

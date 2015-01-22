@@ -24,6 +24,7 @@ import it.polimi.se.calcare.helpers.SendMail;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -91,12 +92,14 @@ public class AuthREST {
     @POST
     @Path("reset/request")
     public void requestReset(@Context UriInfo ui,
-            @FormParam("email") String email) {
+            @FormParam("email") String email){
+        ArrayList<String> receiver=new ArrayList<String>();
         User user = em.createNamedQuery("User.findByEmail", User.class)
                 .setParameter("email", email).getSingleResult();
         String resetLink = ui.getBaseUri().resolve("..#/reset?token=")
                 + JWTHelper.encode("reset", user);
-        SendMail.Mail(new String[]{email}, "[CalCARE] Password reset request",
+        receiver.add(email);
+        SendMail.Mail(receiver, "[CalCARE] Password reset request",
                 String.format("Hey %s, someone requested to reset your "
                         + "password. Click the link to confirm: <a href=\"%s\">%s</a>\n",
                         user.getGivenName(), resetLink, resetLink));
