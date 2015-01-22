@@ -275,7 +275,7 @@ public class Event implements Serializable {
         Boolean setted=false;
         List<Forecast> forecasts=(List <Forecast>) event.getForecastCollection();
         for (Forecast item : forecasts){
-            if (item.isWeatherBad(item)) return item;
+            if (item.isWeatherBad()) return item;
             else if(setted==false){
                 worst=item;
                 setted=true;
