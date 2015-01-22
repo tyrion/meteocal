@@ -396,8 +396,19 @@
                         </div>
                         <div class="modal-footer">
                             <div class="form-group" ng-bind-html="$parent.currentEventNotif"></div>
-                            <input type="submit" class="btn btn-primary" value="Edit" ng-click="editEvent(currentEvent)" />
-                            <input type="submit" class="btn btn-danger" value="Delete" ng-click="deleteEvent(currentEvent)" />
+                            <div ng-switch on="currentEvent.isMine" id="main">
+                                <div ng-switch-when="true">
+                                    <input type="submit" class="btn btn-primary" value="Edit" ng-click="editEvent(currentEvent)" />
+                                    <input type="submit" class="btn btn-danger" value="Delete" ng-click="deleteEvent(currentEvent)" />
+                                </div>
+                                <div ng-switch-when="false">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-{{o.color}}" ng-repeat="o in currentEvent.rangeOptions" ng-click="changeParticipation(o.val)" ng-class="{active:currentEvent.myP.accepted==o.val}">
+                                            <input type="radio" name="participationAccepted" autocomplete="off"> {{o.label}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -447,9 +447,54 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         });
     };
     
+    $scope.changeParticipation = function(newVal) {
+        currentEvent = $scope.currentEvent;
+        currentEvent.myP.accepted = newVal;
+        
+        if(newVal !== "maybe"){
+            currentEvent.myP.accepted = false;
+            if(newVal === "yes") currentEvent.myP.accepted = true;
+            $http({
+                method: 'PUT',
+                url: "api/participations/"+currentEvent.id,
+                data: currentEvent.myP,
+                headers: {'Authorization': 'Bearer ' + $localStorage.token}
+            })
+            .success(function(data) {})
+            .error(function(data) {
+                //TODO event create error
+                $scope.currentEventNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
+            });
+        }
+        
+        
+    };
+    
     $scope.openCurrentEventModal = function(e) {
         $scope.currentEvent = e;
         $scope.currentEvent.invitedPeople = invitedPeopleFromEvent(e);
+            
+        //check for creator: edit and delete buttons?
+        e.isMine = true;
+        if(e.creator.email !== $scope.editSettings.email){
+            e.isMine = false;
+            e.rangeOptions = [
+                {label:"Yes!",color:"success",val:true},
+                {label:"Maybe",color:"default",val:"maybe"},
+                {label:"No.",color:"danger",val:false}
+            ];
+            //going through all the participations to find the current one
+            e.participationCollection.forEach(function(p){
+                if(p.user.email === $scope.editSettings.email){
+                    e.myP = p;
+                    
+                    if(typeof p.accepted === 'undefined'){
+                        e.myP.accepted = "maybe";
+                    }
+                }
+            });
+        }
+        
         $('#currentEventModal').modal('show');
     };
     
