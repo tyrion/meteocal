@@ -8,6 +8,7 @@ package it.polimi.se.calcare.service;
 import it.polimi.se.calcare.auth.AuthRequired;
 import it.polimi.se.calcare.entities.Calendar;
 import it.polimi.se.calcare.entities.Event;
+import it.polimi.se.calcare.entities.Forecast;
 import it.polimi.se.calcare.entities.User;
 import it.polimi.se.calcare.helpers.CryptoHelper;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -115,9 +117,15 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
     @Produces({"application/json"})
     public List<Event> myEvents(@Context SecurityContext sc) {
         User user = (User) sc.getUserPrincipal();
-        return em.createNamedQuery("Event.myCalendar", Event.class)
+        List<Event> events = em.createNamedQuery("Event.myCalendar", Event.class)
                 .setParameter("calendar", user.getCalendar())
                 .getResultList();
+        for (Event e : events){
+            List<Forecast> forecasts=new ArrayList<Forecast>();
+            forecasts.add(e.getWorstWeather());
+            e.setForecastCollection(forecasts);
+        }
+        return events;
     }
     
     @GET

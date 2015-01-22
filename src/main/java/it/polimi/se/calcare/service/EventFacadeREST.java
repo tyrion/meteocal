@@ -113,10 +113,12 @@ public class EventFacadeREST extends AbstractFacade<Event> {
 
         try {
             City city = cityCreator(event.getLocation());
-            forecastCreator(event.getStart(), event.getEnd(), city);
+            List<Forecast> toBind=forecastCreator(event.getStart(), event.getEnd(), city);
+            event.setForecastCollection(toBind);
         } catch (JSONException | IOException ex) {
             Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
         }
+        em.persist(event);
     }
 
     @AuthRequired
@@ -201,7 +203,7 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         return city;
     }
 
-    private void forecastCreator(Date s, Date e, City city) throws JSONException, IOException {
+    private List<Forecast> forecastCreator(Date s, Date e, City city) throws JSONException, IOException {
         DateTime start = new DateTime(s);
         DateTime end = new DateTime(e);
         int cnt = Days.daysBetween(start, end).getDays();
@@ -215,10 +217,12 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         }
         List<Forecast> toPush = new GetWeather().updateForecast(city, toUpdate);
 
-        for (Forecast item : toPush) {
+        for (Forecast item : toPush) {    
             em.persist(item);
         }
         em.flush();
+        return toPush;
+        
     }
     
 }

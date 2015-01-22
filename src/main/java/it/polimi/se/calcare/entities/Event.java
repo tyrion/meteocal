@@ -207,7 +207,6 @@ public class Event implements Serializable {
         this.outdoor = outdoor;
     }
 
-    @XmlTransient
     public Collection<Forecast> getForecastCollection() {
         return forecastCollection;
     }
@@ -270,10 +269,10 @@ public class Event implements Serializable {
         return "Event[ id=" + id + " ]";
     }
     
-    public Forecast weatherEvaluator(Event event){
+    public Forecast getWorstWeather(){
         Forecast worst=null;
         Boolean setted=false;
-        List<Forecast> forecasts=(List <Forecast>) event.getForecastCollection();
+        List<Forecast> forecasts=(List <Forecast>) this.getForecastCollection();
         for (Forecast item : forecasts){
             if (item.isWeatherBad()) return item;
             else if(setted==false){
