@@ -120,11 +120,8 @@ public class CalendarFacadeREST extends AbstractFacade<Calendar> {
         List<Event> events = em.createNamedQuery("Event.myCalendar", Event.class)
                 .setParameter("calendar", user.getCalendar())
                 .getResultList();
-        for (Event e : events){
-            List<Forecast> forecasts=new ArrayList<Forecast>();
-            forecasts.add(e.getWorstWeather());
-            e.setForecastCollection(forecasts);
-        }
+        for (Event e : events)
+            e.setForecastCollection(e.getWorstWeather());
         return events;
     }
     

@@ -6,8 +6,10 @@
 package it.polimi.se.calcare.entities;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -269,18 +271,14 @@ public class Event implements Serializable {
         return "Event[ id=" + id + " ]";
     }
     
-    public Forecast getWorstWeather(){
-        Forecast worst=null;
-        Boolean setted=false;
-        List<Forecast> forecasts=(List <Forecast>) this.getForecastCollection();
-        for (Forecast item : forecasts){
-            if (item.isWeatherBad()) return item;
-            else if(setted==false){
-                worst=item;
-                setted=true;
-            }
+    public List<Forecast> getWorstWeather(){
+        Forecast worst = null;
+        for (Forecast f : this.getForecastCollection()){
+            if (f.isWeatherBad())
+                return Arrays.asList(f);
+            worst = f;
         }
-        return worst;
+        return Arrays.asList(worst);
     }
     
 }

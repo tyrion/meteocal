@@ -36,26 +36,31 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "WeatherCondition.findByIcon", query = "SELECT w FROM WeatherCondition w WHERE w.icon = :icon")})
 public class WeatherCondition implements Serializable {
     private static final long serialVersionUID = 1L;
+    
     @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "id")
     private Integer id;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "name")
     private String name;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "icon")
     private String icon;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "weatherCondition")
     private Collection<Forecast> forecastCollection;
 

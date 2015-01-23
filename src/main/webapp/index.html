@@ -385,6 +385,9 @@
                                     <input type="checkbox" onclick="return false" id="createPublicCheck" value="public" ng-checked="currentEvent.public1"> Public
                                 </label>
                             </div>
+                            <div class="form-group">
+                                <b>Weather:</b> {{currentEvent.forecastCollection[0].weatherCondition.name}} <img alt="{{currentEvent.forecastCollection[0].weatherCondition.description}}" src="http://openweathermap.org/img/w/{{currentEvent.forecastCollection[0].weatherCondition.icon}}.png"/>
+                            </div>
                             <div class="form-group row">
                                 <label class="col-sm-3">Invited people:</label>
                                 <div class="col-sm-9">

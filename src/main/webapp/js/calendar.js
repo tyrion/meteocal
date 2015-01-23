@@ -221,9 +221,6 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.userSearch.searchField = "";
         $scope.notifications = [];
         
-        //get the user calendar
-        $scope.getCalendar("me");
-        
         setTimeout(function(){ setupUserPage($scope.myEvents); }, 10);
         
         //get the user notifications
@@ -257,6 +254,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             console.log(data);
         });
         
+        //get the user calendar
+        $scope.getCalendar("me");
     };
     
     $scope.logout = function() {
