@@ -25,6 +25,7 @@ package it.polimi.se.calcare.service;
 
 import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Forecast;
+import it.polimi.se.calcare.entities.ForecastPK;
 import it.polimi.se.calcare.entities.WeatherCondition;
 import java.io.IOException;
 import java.io.InputStream;
@@ -140,11 +141,6 @@ public class GetWeather {
         //return openWeatherUrlPreBuilder(newCity.getLat(), newCity.getLon());
     }
 
-//    public static String openWeatherUrlPreBuilder(Double lat, Double lon) {
-//        return ("lat=" + lat.toString()
-//                + "&lon=" + lon.toString());
-//    }
-
     public static URL openWeatherUrlBuilder(String addr) throws MalformedURLException, UnsupportedEncodingException {
         // build a URL
         String s = "http://api.openweathermap.org/data/2.5/forecast/daily?";
@@ -173,4 +169,27 @@ public class GetWeather {
         forecast.setWeatherCondition(new WeatherCondition(weather.getInt("id")));
         return forecast;
     }
+
+    Forecast nextSunnyDay(DateTime now, City city, Date dt) throws JSONException, MalformedURLException, UnsupportedEncodingException, IOException {
+        //Build the Openeather URL
+        InputStream openWeather = openWeatherUrlBuilder(city.getName()+","+city.getCountry()).openStream();
+        //Create the JSON for Openweather parsing
+        JSONObject owJSON = new JSONObject(jsonBuilder(openWeather));
+        //Decode the JSON and create the City into the DB
+        return sunnyFinder(owJSON, new Forecast(), dt, city.getId());
+    }
+
+    public Forecast sunnyFinder(JSONObject obj, Forecast forecast, Date dt, Integer id) throws JSONException{
+        JSONObject list;
+        forecast.setForecastPK(new ForecastPK(dt, id));
+        for (int i=0; i<16; i++){
+        list = obj.getJSONArray("list").getJSONObject(i);
+        JSONObject weather = list.getJSONArray("weather").getJSONObject(0);
+        forecast.setWeatherCondition(new WeatherCondition(weather.getInt("id")));
+        if (forecast.isWeatherBad()==false)
+        return forecast;
+        }
+        return null;
+    }
 }
+

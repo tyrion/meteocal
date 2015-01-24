@@ -60,7 +60,9 @@ public class NotificationType implements Serializable {
     public enum Enum {
 
         INVITATION(1),
-        BAD_WEATHER(2);
+        BAD_WEATHER(2),
+        BAD_WEATHER_WITHOUT_CHOICE(3), 
+        BAD_WEATHER_ONE_DAY(4);
 
         public int id;
 

@@ -23,6 +23,7 @@
  */
 package it.polimi.se.calcare.helpers;
 
+import java.net.URI;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,8 +32,10 @@ import javax.mail.internet.*;
 
 public class SendMail {
 
+    private static String uri;
     private static String USER_NAME = "noreply.calcare";  // GMail user name (just the part before "@gmail.com")
     private static String PASSWORD = "4553414d4544494d455244414a4156414d4d45524441"; // GMail password
+
 
     public static void Mail(ArrayList<String> to, String subject, String body) {
         String from = USER_NAME;
@@ -80,5 +83,13 @@ public class SendMail {
         catch (MessagingException ex) {
             Logger.getLogger(SendMail.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static void setContextPath(String uri){
+        SendMail.uri=uri;
+    }
+    
+    public static String getContextPath(){
+        return SendMail.uri;
     }
 }
