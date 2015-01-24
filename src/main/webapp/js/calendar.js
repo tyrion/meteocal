@@ -434,10 +434,12 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     
     $scope.eventEditSubmit = function(eventEdit) {
         delete eventEdit.searchedPeople;
-        delete eventEdit.event.participationsCollection;
+        delete eventEdit.event.participationCollection;
+        delete eventEdit.event.forecastCollection;
         eventEdit.invitedPeople = eventEdit.invitedPeople.map(function(x){return x.participationPK.calendarsId;});
         eventEdit.event.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
         eventEdit.event.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
+        $scope.eventEditNotif = generateLoading($sce);
         $http({
             method: 'PUT',
             url: "api/events/"+eventEdit.event.id,
@@ -445,10 +447,10 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             headers: {'Authorization': 'Bearer ' + $localStorage.token}
         })
         .success(function(data) {
-            //TODO: event create success - insert event into events list for calendar
             $('#eventEditModal').modal('hide');
             $scope.openCurrentEventModal(eventEdit.event);
             $scope.getCalendar("me");
+            $scope.eventEditNotif = '';
             
         })
         .error(function(data, status) {
