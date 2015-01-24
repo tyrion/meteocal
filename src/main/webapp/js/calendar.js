@@ -434,6 +434,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     
     $scope.eventEditSubmit = function(eventEdit) {
         delete eventEdit.searchedPeople;
+        delete eventEdit.event.participationsCollection;
         eventEdit.invitedPeople = eventEdit.invitedPeople.map(function(x){return x.participationPK.calendarsId;});
         eventEdit.event.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
         eventEdit.event.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
@@ -478,8 +479,6 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         currentEvent.myP.accepted = newVal;
         
         if(newVal !== "maybe"){
-            currentEvent.myP.accepted = false;
-            if(newVal === "yes") currentEvent.myP.accepted = true;
             $http({
                 method: 'PUT',
                 url: "api/participations/"+currentEvent.id,

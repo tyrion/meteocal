@@ -386,7 +386,7 @@
                                 </label>
                             </div>
                             <div class="form-group" ng-if="currentEvent.outdoor === true">
-                                <b>Weather:</b> {{currentEvent.forecastCollection[0].weatherCondition.name}} <img alt="{{currentEvent.forecastCollection[0].weatherCondition.description}}" ng-src="http://openweathermap.org/img/w/{{currentEvent.forecastCollection[0].weatherCondition.icon}}.png"/>
+                                <b>Weather:</b> {{currentEvent.forecastCollection[0].weatherCondition.description}} <img alt="" ng-src="http://openweathermap.org/img/w/{{currentEvent.forecastCollection[0].weatherCondition.icon}}.png"/>
                             </div>
                             <div class="form-group row">
                                 <label class="col-sm-3">Invited people:</label>
@@ -406,8 +406,9 @@
                                     <input type="submit" class="btn btn-danger" value="Delete" ng-click="deleteEvent(currentEvent)" />
                                 </div>
                                 <div ng-switch-when="false">
+                                    <div class="form-group"><b>Participate?</b></div>
                                     <div class="btn-group" data-toggle="buttons">
-                                        <label class="btn btn-{{o.color}}" ng-repeat="o in currentEvent.rangeOptions" ng-click="changeParticipation(o.val)" ng-class="{active:currentEvent.myP.accepted==o.val}">
+                                        <label class="btn" ng-repeat="o in currentEvent.rangeOptions" ng-click="changeParticipation(o.val)" ng-class="{'btn-default':currentEvent.myP.accepted!==o.val, 'btn-primary active':currentEvent.myP.accepted==o.val}">
                                             <input type="radio" name="participationAccepted" autocomplete="off"> {{o.label}}
                                         </label>
                                     </div>
