@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Priority;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
@@ -54,10 +55,14 @@ public class AuthFilter implements ContainerRequestFilter {
         Matcher matcher = HEADER_PATTERN.matcher(header);
         matcher.find();
 
-        String token = matcher.group(1);
-        Integer id = JWTHelper.decode(token, "user", 401);
-        User user = em.createNamedQuery("User.findById", User.class)
-                .setParameter("id", id).getSingleResult();
+        User user;
+        try {
+            Integer id = JWTHelper.decode(matcher.group(1), "user", 401);
+            user = em.createNamedQuery("User.findById", User.class)
+                    .setParameter("id", id).getSingleResult();
+        } catch (NoResultException | IllegalStateException ex) {
+            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+        }
 
         SecurityContext sc = new SecurityContext(user);
         requestContext.setSecurityContext(sc);
