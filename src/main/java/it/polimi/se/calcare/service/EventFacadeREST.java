@@ -112,13 +112,15 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         updateParticipations(user, dto, ui);
 
         try {
-            City city = cityCreator(event.getLocation());
+            City city = new GetWeather().cityParser(event.getLocation());
+            em.merge(city);
             List<Forecast> toBind=forecastCreator(event.getStart(), event.getEnd(), city);
             event.setForecastCollection(toBind);
         } catch (JSONException | IOException ex) {
             Logger.getLogger(EventFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
         }
         em.persist(event);
+        em.flush();
     }
 
     @AuthRequired
@@ -133,20 +135,20 @@ public class EventFacadeREST extends AbstractFacade<Event> {
             throw new WebApplicationException(403);
         dto.event.setId(id);
         dto.event.setCreator(user);
-        Event oldEvent = em.createQuery("SELECT c FROM Event c WHERE c.id = :"+event.getId(), Event.class).getSingleResult();
-        String oldLocation=oldEvent.getLocation();
-        String newLocation=event.getLocation();
+        String oldLocation=event.getLocation();
+        String newLocation=dto.event.getLocation();
+        
+        City city=new GetWeather().cityParser(newLocation);
+        if (!(oldLocation.equals(newLocation))){
+            em.merge(city);
+        }
+        
+        DateTime start=new DateTime(dto.event.getStart());
+        DateTime end= new DateTime(dto.event.getEnd());
+
+        List<Forecast> toBind = forecastCreator(dto.event.getStart(), dto.event.getEnd(), city);
+        event.setForecastCollection(toBind);
         super.edit(dto.event);
-        City city=null;
-        if (!(oldLocation.equals(event.getLocation()))) 
-            city = cityCreator(event.getLocation());
-        else city=new GetWeather().cityParser(newLocation);
-        DateTime start=new DateTime(event.getStart());
-        DateTime end= new DateTime(event.getEnd());
-        List<Forecast> toDelete = (List<Forecast>) event.getForecastCollection();
-        for (Forecast item: toDelete)
-            em.remove(item);    
-        forecastCreator(event.getStart(), event.getEnd(), city);
         updateParticipations(user, dto, ui);
     }
     
@@ -190,35 +192,22 @@ public class EventFacadeREST extends AbstractFacade<Event> {
         return em;
     }
 
-    private City cityCreator(String location) throws JSONException, IOException {
-        //Create the City in the DB
-        City city = new GetWeather().cityParser(location);
-
-        try {
-            em.persist(city);
-            em.flush();
-        } catch (PersistenceException ex) {
-        }
-
-        return city;
-    }
-
     private List<Forecast> forecastCreator(Date s, Date e, City city) throws JSONException, IOException {
         DateTime start = new DateTime(s);
         DateTime end = new DateTime(e);
         int cnt = Days.daysBetween(start, end).getDays();
         List<Forecast> toUpdate = new ArrayList<>();
+     
         for (int i = 0; i <= cnt; i++) {
             Forecast forecast = new Forecast(
                     new ForecastPK(start.plusDays(i).toDate(), city.getId()),
                     0, 0, 0, 0);
             toUpdate.add(forecast);
-            em.persist(forecast);
         }
         List<Forecast> toPush = new GetWeather().updateForecast(city, toUpdate);
 
-        for (Forecast item : toPush) {    
-            em.persist(item);
+        for (Forecast item : toPush) {
+            em.merge(item);
         }
         em.flush();
         return toPush;
