@@ -21,9 +21,11 @@
     <body ng-controller="CalendarController">
         <div ng-switch on="loginData" id="main">
             <div ng-switch-when="true">
-                <div ng-include="'userNav'"></div>
-                <div ng-include="'userModals'"></div>
-                <div ng-include="'userPage'"></div> 
+                <div id="userPageWrapper">
+                    <div ng-include="'userNav'"></div>
+                    <div ng-include="'userModals'"></div>
+                    <div ng-include="'userPage'"></div> 
+                </div>
             </div>
             <div ng-switch-when="false">
                 <div ng-include="'guestPage'" id="landing"></div>
@@ -105,7 +107,6 @@
         </script>
         
         <script type="text/ng-template" id="userNav">
-            <div id="userPageWrapper">
             <nav class="navbar navbar-inverse navbar-fixed-top">
                 <div class="container">
                     <div class="navbar-header">
@@ -484,9 +485,6 @@
                         </a>
                     </div>
                 </div>
-                
-                
-            </div>
             </div>
         </script>
     </body>
