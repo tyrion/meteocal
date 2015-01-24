@@ -56,7 +56,7 @@ public class NotificationHelper {
         receiver.add(user.getEmail());
         SendMail.Mail(receiver,
                 String.format("CalCARE Notification: %s", this.type.getName()),
-                String.format("<a href=\"%s\">%s</a>", link, Encode.forHtml(body)));
+                String.format("%s %s", Encode.forHtml(body), link));
 
         return n;
     }
