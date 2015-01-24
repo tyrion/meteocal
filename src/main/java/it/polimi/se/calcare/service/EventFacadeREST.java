@@ -131,9 +131,13 @@ public class EventFacadeREST extends AbstractFacade<Event> {
             @PathParam("id") Integer id, EventCreationDTO dto) throws IOException, MalformedURLException, JSONException {
         User user = (User) sc.getUserPrincipal();
         Event event = super.find(id);
+
+        em.detach(event);
+        dto.event.setParticipationCollection(event.getParticipationCollection());
+
         if (!event.getCreator().equals(user))
             throw new WebApplicationException(403);
-        dto.event.setId(id);
+
         dto.event.setCreator(user);
 
         String oldLocation = event.getLocation();
@@ -144,13 +148,14 @@ public class EventFacadeREST extends AbstractFacade<Event> {
             em.merge(city);
         }
 
-        DateTime start = new DateTime(dto.event.getStart());
-        DateTime end = new DateTime(dto.event.getEnd());
-
         List<Forecast> toBind = forecastCreator(dto.event.getStart(), dto.event.getEnd(), city);
         event.setForecastCollection(toBind);
-        super.edit(dto.event);
+
+        em.merge(dto.event);
+        em.flush();
+
         updateParticipations(user, dto, ui);
+        em.detach(dto.event);
     }
 
     @AuthRequired
