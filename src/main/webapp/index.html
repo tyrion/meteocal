@@ -385,8 +385,8 @@
                                     <input type="checkbox" onclick="return false" id="createPublicCheck" value="public" ng-checked="currentEvent.public1"> Public
                                 </label>
                             </div>
-                            <div class="form-group">
-                                <b>Weather:</b> {{currentEvent.forecastCollection[0].weatherCondition.name}} <img alt="{{currentEvent.forecastCollection[0].weatherCondition.description}}" src="http://openweathermap.org/img/w/{{currentEvent.forecastCollection[0].weatherCondition.icon}}.png"/>
+                            <div class="form-group" ng-if="currentEvent.outdoor === true">
+                                <b>Weather:</b> {{currentEvent.forecastCollection[0].weatherCondition.name}} <img alt="{{currentEvent.forecastCollection[0].weatherCondition.description}}" ng-src="http://openweathermap.org/img/w/{{currentEvent.forecastCollection[0].weatherCondition.icon}}.png"/>
                             </div>
                             <div class="form-group row">
                                 <label class="col-sm-3">Invited people:</label>
@@ -430,7 +430,7 @@
                         <ul class="list-group">
                             <li class="list-group-item" ng-repeat="p in userSearch.searchedPeople">
                                 <b style="margin-right:2em;">{{p.owner.givenName}} {{p.owner.familyName}}</b> {{p.owner.email}}
-                                <button class="btn btn-sm pull-right" ng-click="getCalendar(p.id);"><i class="glyphicon glyphicon-chevron-right" aria-hidden="true"></i></button>
+                                <button class="btn btn-sm pull-right" ng-click="getCalendar(p.id); userSearch.searchField=''"><i class="glyphicon glyphicon-chevron-right" aria-hidden="true"></i></button>
                             </li>
                         </ul>
                     </div>

@@ -65,6 +65,10 @@ function setupUserPage(eventsDataStructure){
         $('#editBeginDatetime').data("DateTimePicker").setMaxDate(e.date);
     });
     
+    $('#currentEventModal').on('hidden.bs.modal', function (e) {
+        window.location.hash = '#/';
+    });
+    
     $("#importCalendarField").attr("class","filestyle").attr("data-buttonName", "btn-primary");
 };
 
