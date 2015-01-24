@@ -17,16 +17,14 @@ html, body{
 #landing, #userPageWrapper {
     width: calc(100% + 18px);
     overflow-y: scroll;
-    height: 100%;
+    height: calc(100% + 30px);
+    position: absolute;
+    top: 0px;
 }
 
 #landing{
-    height: 100%;
-    position: absolute;
-    top: 0px;
     background: url('../img/background.jpg') no-repeat center;
 }
-
 
 .jumbotron {
     margin-top: 50px;
@@ -98,7 +96,7 @@ html, body{
     box-shadow: none;
     position: relative;
     padding: 45px 15px 15px;
-    margin: 0px -15px 15px;
+    margin: 15px -15px 15px;
     border-style: solid;
     height: 100%;
 }

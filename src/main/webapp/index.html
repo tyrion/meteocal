@@ -21,9 +21,11 @@
     <body ng-controller="CalendarController">
         <div ng-switch on="loginData" id="main">
             <div ng-switch-when="true">
-                <div ng-include="'userNav'"></div>
-                <div ng-include="'userModals'"></div>
-                <div ng-include="'userPage'"></div> 
+                <div id="userPageWrapper">
+                    <div ng-include="'userNav'"></div>
+                    <div ng-include="'userModals'"></div>
+                    <div ng-include="'userPage'"></div> 
+                </div>
             </div>
             <div ng-switch-when="false">
                 <div ng-include="'guestPage'" id="landing"></div>
@@ -105,7 +107,6 @@
         </script>
         
         <script type="text/ng-template" id="userNav">
-            <div id="userPageWrapper">
             <nav class="navbar navbar-inverse navbar-fixed-top">
                 <div class="container">
                     <div class="navbar-header">
@@ -119,7 +120,7 @@
                     </div>
                     <div id="navbar" class="navbar-collapse collapse navbar-right">
                          <ul class="nav navbar-nav">
-                            <li><a href="#/">Welcome, {{editSettings.email}}</a></li>
+                            <li><a ng-href="#/"  ng-click="login()">Welcome, {{editSettings.email}}</a></li>
                             <li><button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventCreateModal">New Event</button></li>
                             <li><a href="#/" data-toggle="modal" data-target="#editSettingsModal">Settings</a></li>
                             <li><a ng-click="logout()" href="#/">Logout</a></li>
@@ -354,10 +355,14 @@
                         </div>
                         <div class="modal-body">
                             <div class="list-group">
-                                <a ng-href="#/events/{{e.id}}" ng-click="$parent.openCurrentEventModal(e)" class="list-group-item" ng-repeat="e in eventList.events">
+                                <a ng-href="#/events/{{e.id}}" ng-if="e.id!=undefined" ng-click="$parent.openCurrentEventModal(e)" class="list-group-item" ng-repeat="e in eventList.events">
                                     <h4 class="list-group-item-heading">{{e.name}}</h4>
                                     <p class="list-group-item-text">{{e.description}}</p><br/>
                                     <p class="list-group-item-text">Where: {{e.location}}</p>
+                                </a>
+                                <a ng-href="#/" ng-if="e.id==undefined" class="list-group-item" ng-repeat="e in eventList.events">
+                                    <p class="list-group-item-text">From: {{e.startFormatted}}</p>
+                                    <p class="list-group-item-text">To: {{e.endFormatted}}</p>
                                 </a>
                             </div>
                         </div>
@@ -385,8 +390,8 @@
                                     <input type="checkbox" onclick="return false" id="createPublicCheck" value="public" ng-checked="currentEvent.public1"> Public
                                 </label>
                             </div>
-                            <div class="form-group">
-                                <b>Weather:</b> {{currentEvent.forecastCollection[0].weatherCondition.name}} <img alt="{{currentEvent.forecastCollection[0].weatherCondition.description}}" src="http://openweathermap.org/img/w/{{currentEvent.forecastCollection[0].weatherCondition.icon}}.png"/>
+                            <div class="form-group" ng-if="currentEvent.outdoor === true">
+                                <b>Weather:</b> {{currentEvent.forecastCollection[0].weatherCondition.description}} <img alt="" ng-src="http://openweathermap.org/img/w/{{currentEvent.forecastCollection[0].weatherCondition.icon}}.png"/>
                             </div>
                             <div class="form-group row">
                                 <label class="col-sm-3">Invited people:</label>
@@ -406,8 +411,9 @@
                                     <input type="submit" class="btn btn-danger" value="Delete" ng-click="deleteEvent(currentEvent)" />
                                 </div>
                                 <div ng-switch-when="false">
+                                    <div class="form-group"><b>Participate?</b></div>
                                     <div class="btn-group" data-toggle="buttons">
-                                        <label class="btn btn-{{o.color}}" ng-repeat="o in currentEvent.rangeOptions" ng-click="changeParticipation(o.val)" ng-class="{active:currentEvent.myP.accepted==o.val}">
+                                        <label class="btn" ng-repeat="o in currentEvent.rangeOptions" ng-click="changeParticipation(o.val)" ng-class="{'btn-default':currentEvent.myP.accepted!==o.val, 'btn-primary active':currentEvent.myP.accepted==o.val}">
                                             <input type="radio" name="participationAccepted" autocomplete="off"> {{o.label}}
                                         </label>
                                     </div>
@@ -430,11 +436,12 @@
                         <ul class="list-group">
                             <li class="list-group-item" ng-repeat="p in userSearch.searchedPeople">
                                 <b style="margin-right:2em;">{{p.owner.givenName}} {{p.owner.familyName}}</b> {{p.owner.email}}
-                                <button class="btn btn-sm pull-right" ng-click="getCalendar(p.id);"><i class="glyphicon glyphicon-chevron-right" aria-hidden="true"></i></button>
+                                <button class="btn btn-sm pull-right" ng-click="getCalendar(p.id, p.owner); userSearch.searchField=''"><i class="glyphicon glyphicon-chevron-right" aria-hidden="true"></i></button>
                             </li>
                         </ul>
                     </div>
                     <!-- Responsive calendar - START -->
+                    <h2  ng-if="$parent.owner!==''">{{$parent.owner.givenName}}'s Calendar</h2>
                     <div class="responsive-calendar">
                         <div class="controls">
                             <a class="pull-left" data-go="prev"><div class="btn btn-primary">
@@ -473,14 +480,11 @@
                             <h4 class="list-group-item-heading">{{n.type.name}}</h4>
                             <p class="list-group-item-text">{{n.description}}</p>
                             <span class="pull-right">
-                                <button class="btn btn-danger" ng-click="deleteNotif(n.id); $event.stopPropagation();"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></button>
+                                <button class="btn btn-danger" ng-click="deleteNotif(n.id); $event.stopPropagation(); $parent.notifications.splice($parent.notifications.indexOf(n), 1);"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></button>
                             </span>
                         </a>
                     </div>
                 </div>
-                
-                
-            </div>
             </div>
         </script>
     </body>
