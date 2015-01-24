@@ -426,7 +426,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.eventEdit.event = e;
         $scope.eventEdit.invitedPeople = invitedPeopleFromEvent(e);
         $('#editBeginDatetime').data("DateTimePicker").setDate(moment(e.start).format('MM/DD/YYYY h:mm A'));
-        $('#editEndDatetime').data("DateTimePicker").setDate(moment(e.start).format('MM/DD/YYYY h:mm A'));
+        $('#editEndDatetime').data("DateTimePicker").setDate(moment(e.end).format('MM/DD/YYYY h:mm A'));
         $('#eventListModal').modal('hide');
         $('#currentEventModal').modal('hide');
         $('#eventEditModal').modal('show');
@@ -434,8 +434,6 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     
     $scope.eventEditSubmit = function(eventEdit) {
         delete eventEdit.searchedPeople;
-        delete eventEdit.event.participationCollection;
-        delete eventEdit.event.forecastCollection;
         eventEdit.invitedPeople = eventEdit.invitedPeople.map(function(x){return x.participationPK.calendarsId;});
         eventEdit.event.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
         eventEdit.event.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
