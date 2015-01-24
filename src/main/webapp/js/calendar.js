@@ -37,7 +37,7 @@ function invitedPeopleFromEvent(e){
     return invitedPeople;
 }
 
-function setupUserPage(eventsDataStructure){
+function setupUserPage(eventsDataStructure, $scope){
     $(".responsive-calendar").responsiveCalendar(eventsDataStructure);
 
     $("#nextMonthButton").click(function(){
@@ -69,6 +69,22 @@ function setupUserPage(eventsDataStructure){
         window.location.hash = '#/';
     });
     
+    $(document).click(function(){
+        if (window.location.hash.replace("#/", "").substring(0,5) === 'list/' && 
+                !($('#eventListModal').data('modal') && !$('#eventListModal').data('bs.modal').isShown)){
+            var key = window.location.hash.replace("#/list/", "");
+            if( eventsDataStructure.events[key] !== 'undefined'){
+                var thisDayEvent = eventsDataStructure.events[key];
+
+                $scope.eventList.day = moment(key).format("MMMM Do");
+                $scope.eventList.events = thisDayEvent.dayEvents;
+
+                $('#eventListModal').modal('show');
+                window.location.hash = '#/';
+            }
+        };
+    });
+    
     $("#importCalendarField").attr("class","filestyle").attr("data-buttonName", "btn-primary");
 };
 
@@ -80,7 +96,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     $scope.landingNotif = '';
     $scope.loginData = false;
     $scope.myEvents = {
-        onActiveDayClick: function(events) {
+        /*onActiveDayClick: function(events) {
             var thisDayEvent, key;
             key = $(this).data('year')+'-'+addLeadingZero( $(this).data('month') )+'-'+addLeadingZero( $(this).data('day') );
             thisDayEvent = events[key];
@@ -89,7 +105,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             $scope.eventList.events = thisDayEvent.dayEvents;
 
             $('#eventListModal').modal('show');
-        }
+        }*/
     };
     
     //check for user activation
@@ -229,7 +245,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         $scope.userSearch.searchField = "";
         $scope.notifications = [];
         
-        setTimeout(function(){ setupUserPage($scope.myEvents); }, 10);
+        setTimeout(function(){ setupUserPage($scope.myEvents, $scope); }, 10);
         
         //get the user notifications
         $http({
