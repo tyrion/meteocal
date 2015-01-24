@@ -119,7 +119,7 @@
                     </div>
                     <div id="navbar" class="navbar-collapse collapse navbar-right">
                          <ul class="nav navbar-nav">
-                            <li><a href="#/">Welcome, {{editSettings.email}}</a></li>
+                            <li><a ng-href="#/"  ng-click="login()">Welcome, {{editSettings.email}}</a></li>
                             <li><button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventCreateModal">New Event</button></li>
                             <li><a href="#/" data-toggle="modal" data-target="#editSettingsModal">Settings</a></li>
                             <li><a ng-click="logout()" href="#/">Logout</a></li>
@@ -431,11 +431,12 @@
                         <ul class="list-group">
                             <li class="list-group-item" ng-repeat="p in userSearch.searchedPeople">
                                 <b style="margin-right:2em;">{{p.owner.givenName}} {{p.owner.familyName}}</b> {{p.owner.email}}
-                                <button class="btn btn-sm pull-right" ng-click="getCalendar(p.id); userSearch.searchField=''"><i class="glyphicon glyphicon-chevron-right" aria-hidden="true"></i></button>
+                                <button class="btn btn-sm pull-right" ng-click="getCalendar(p.id, p.owner); userSearch.searchField=''"><i class="glyphicon glyphicon-chevron-right" aria-hidden="true"></i></button>
                             </li>
                         </ul>
                     </div>
                     <!-- Responsive calendar - START -->
+                    <h2  ng-if="$parent.owner!==''">{{$parent.owner.givenName}}'s Calendar</h2>
                     <div class="responsive-calendar">
                         <div class="controls">
                             <a class="pull-left" data-go="prev"><div class="btn btn-primary">

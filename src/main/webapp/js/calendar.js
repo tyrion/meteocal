@@ -164,7 +164,13 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         });
     };
     
-    $scope.getCalendar = function(id) {
+    $scope.getCalendar = function(id, owner) {
+        if(typeof owner === 'undefined'){
+            $scope.owner = '';
+        } else {
+            $scope.owner = owner;
+        }
+        
         $http({
             method: 'GET',
             url: "api/calendars/"+id,
