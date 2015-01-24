@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Notification.findAll", query = "SELECT n FROM Notification n"),
     @NamedQuery(name = "Notification.findById", query = "SELECT n FROM Notification n WHERE n.id = :id"),
-    @NamedQuery(name = "Notification.findUserNotifs", query = "FROM Notification AS n WHERE n.user.id != :currentUser")})
+    @NamedQuery(name = "Notification.findByUser", query = "FROM Notification n WHERE n.user = :user")})
 public class Notification implements Serializable {
 
     private static final long serialVersionUID = 1L;
