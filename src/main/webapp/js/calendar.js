@@ -107,6 +107,11 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         });
     };
     
+    $scope.unauthorized = function(status){
+        if(status === 401)
+            $scope.logout("Unauthorized!");
+    };
+    
     $scope.newPasswordSubmit = function(newPassword, resetToken){
         $http({
             method: 'POST',
@@ -197,9 +202,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             $(".responsive-calendar").responsiveCalendar('clearAll');
             $(".responsive-calendar").responsiveCalendar('edit', $scope.myEvents.events);
         })
-        .error(function(data) {
-            //TODO error in case of server error
-            console.log(data);
+        .error(function(data, status) {
+            $scope.unauthorized(status);
         }); 
     };
            
@@ -237,9 +241,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             console.log(data);
             $scope.notifications = data;
         })
-        .error(function(data) {
-            //TODO error in case of server error
-            console.log(data);
+        .error(function(data, status) {
+            $scope.unauthorized(status);
         });
         
         //calendar info
@@ -253,18 +256,21 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             $scope.myCal = data;
             $scope.editSettings = data.owner;
         })
-        .error(function(data) {
-            //TODO error in case of server error
-            console.log(data);
+        .error(function(data, status) {
+            $scope.unauthorized(status);
         });
         
         //get the user calendar
         $scope.getCalendar("me");
     };
     
-    $scope.logout = function() {
+    $scope.logout = function(landingError) {
         $scope.loginData = false;
-        setTimeout(function(){ positionBG(); $scope.landingNotif = '';}, 10);
+        setTimeout(function(){ 
+            positionBG();
+            if (typeof landingError === 'undefined') { $scope.landingNotif = ''; }
+            else { $scope.landingNotif = generateNotif('Oh snap!', landingError, 'danger', $sce); }
+        }, 10);
         delete $localStorage.token;
     };
     
@@ -320,8 +326,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             $scope.eventCreateNotif = "";
             $scope.getCalendar("me");
         })
-        .error(function(data) {
-            //TODO event create error
+        .error(function(data, status) {
+            $scope.unauthorized(status);
             eventCreate.invitedPeople = [];
             $scope.eventCreateNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
@@ -345,9 +351,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
                 });
             };
         })
-        .error(function(data) {
-            //TODO error in case of server error
-            console.log(data);
+        .error(function(data, status) {
+            $scope.unauthorized(status);
             searchObject.searchedPeople = [];
         }); 
     };
@@ -362,7 +367,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .success(function(data) {
             $scope.settingsNotif = "";
         })
-        .error(function(data) {
+        .error(function(data, status) {
+            $scope.unauthorized(status);
             $scope.settingsNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
     };
@@ -379,8 +385,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .success(function(data) {
             $scope.settingsNotif = "";
         })
-        .error(function(data) {
-            console.log(data);
+        .error(function(data, status) {
+            $scope.unauthorized(status);
             $scope.settingsNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
     };
@@ -394,7 +400,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .success(function(data) {
             $scope.notificationsNotif = "";
         })
-        .error(function(data) {
+        .error(function(data, status) {
+            $scope.unauthorized(status);
             $scope.notificationsNotif = generateNotif('Oh snap!', 'There was an error.', 'danger', $sce);
         });
     };
@@ -427,8 +434,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             $scope.getCalendar("me");
             
         })
-        .error(function(data) {
-            //TODO event create error
+        .error(function(data, status) {
+            $scope.unauthorized(status);
             $scope.eventEditNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
     };
@@ -444,8 +451,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
             $('#eventListModal').modal('hide');
             $scope.getCalendar("me");
         })
-        .error(function(data) {
-            //TODO event create error
+        .error(function(data, status) {
+            $scope.unauthorized(status);
             $scope.currentEventNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
     };
@@ -464,8 +471,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
                 headers: {'Authorization': 'Bearer ' + $localStorage.token}
             })
             .success(function(data) {})
-            .error(function(data) {
-                //TODO event create error
+            .error(function(data, status) {
+                $scope.unauthorized(status);
                 $scope.currentEventNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
             });
         }
@@ -514,8 +521,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
         .success(function(data) {
             //TODO: calendar import success
         })
-        .error(function(data) {
-            //TODO calendar import failure
+        .error(function(data, status) {
+            $scope.unauthorized(status);
             console.log(data);
         });
     };
@@ -628,8 +635,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
                 window.open(httpPath, '_blank', '');
             }
         })
-        .error(function(data) {
-            console.log(data);
+        .error(function(data, status) {
+            $scope.unauthorized(status);
             $scope.editSettingsNotif = generateNotif('Oh snap!', 'There was an error while validating your request. Please retry.', 'danger', $sce);
         });
     };
