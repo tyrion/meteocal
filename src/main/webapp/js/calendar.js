@@ -32,6 +32,7 @@ function invitedPeopleFromEvent(e){
         if(p.user.email !== e.creator.email){
             invitedPeople.push(p);
             p.owner = p.user;
+            p.id = p.participationPK.calendarsId;
         };
     });
     return invitedPeople;
@@ -434,7 +435,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     
     $scope.eventEditSubmit = function(eventEdit) {
         delete eventEdit.searchedPeople;
-        eventEdit.invitedPeople = eventEdit.invitedPeople.map(function(x){return x.participationPK.calendarsId;});
+        console.log(eventEdit.invitedPeople);
+        eventEdit.invitedPeople = eventEdit.invitedPeople.map(function(x){return x.id;});
         eventEdit.event.start = $('#editBeginDatetime').data("DateTimePicker").getDate()._d;
         eventEdit.event.end = $('#editEndDatetime').data("DateTimePicker").getDate()._d;
         $scope.eventEditNotif = generateLoading($sce);
