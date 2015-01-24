@@ -354,10 +354,14 @@
                         </div>
                         <div class="modal-body">
                             <div class="list-group">
-                                <a ng-href="#/events/{{e.id}}" ng-click="$parent.openCurrentEventModal(e)" class="list-group-item" ng-repeat="e in eventList.events">
+                                <a ng-href="#/events/{{e.id}}" ng-if="e.id!=undefined" ng-click="$parent.openCurrentEventModal(e)" class="list-group-item" ng-repeat="e in eventList.events">
                                     <h4 class="list-group-item-heading">{{e.name}}</h4>
                                     <p class="list-group-item-text">{{e.description}}</p><br/>
                                     <p class="list-group-item-text">Where: {{e.location}}</p>
+                                </a>
+                                <a ng-href="#/" ng-if="e.id==undefined" class="list-group-item" ng-repeat="e in eventList.events">
+                                    <p class="list-group-item-text">From: {{e.startFormatted}}</p>
+                                    <p class="list-group-item-text">To: {{e.endFormatted}}</p>
                                 </a>
                             </div>
                         </div>
