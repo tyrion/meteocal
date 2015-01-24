@@ -435,8 +435,8 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
     $scope.eventEditSubmit = function(eventEdit) {
         delete eventEdit.searchedPeople;
         eventEdit.invitedPeople = eventEdit.invitedPeople.map(function(x){return x.participationPK.calendarsId;});
-        eventEdit.event.start = $('#createBeginDatetime').data("DateTimePicker").getDate()._d;
-        eventEdit.event.end = $('#createEndDatetime').data("DateTimePicker").getDate()._d;
+        eventEdit.event.start = $('#editBeginDatetime').data("DateTimePicker").getDate()._d;
+        eventEdit.event.end = $('#editEndDatetime').data("DateTimePicker").getDate()._d;
         $scope.eventEditNotif = generateLoading($sce);
         $http({
             method: 'PUT',
