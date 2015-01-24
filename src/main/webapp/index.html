@@ -473,7 +473,7 @@
                             <h4 class="list-group-item-heading">{{n.type.name}}</h4>
                             <p class="list-group-item-text">{{n.description}}</p>
                             <span class="pull-right">
-                                <button class="btn btn-danger" ng-click="deleteNotif(n.id); $event.stopPropagation();"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></button>
+                                <button class="btn btn-danger" ng-click="deleteNotif(n.id); $event.stopPropagation(); $parent.notifications.splice($parent.notifications.indexOf(n), 1);"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></button>
                             </span>
                         </a>
                     </div>
