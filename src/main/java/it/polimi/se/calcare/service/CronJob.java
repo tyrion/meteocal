@@ -98,7 +98,7 @@ public class CronJob {
         NotificationHelper helper;
         
         //happens in three days? - if we are in the 12 hours range
-        if (e.getOutdoor() && (difference - 24*3) <= 12){
+        if (e.getOutdoor() && (difference - 24*3) < 12){
             if (sunnyDayDt != null){
                 helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER, e);
                 helper.sendTo(e.getCreator(),
@@ -108,9 +108,9 @@ public class CronJob {
                 );
             } else {
                 helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER_WITHOUT_CHOICE, e);
-                helper.sendTo(e.getCreator(), e.getName());
+                helper.sendTo(e.getCreator(), " ", e.getName());
             }
-        } else if(e.getOutdoor() && (difference - 24*1) <= 12) {
+        } else if(e.getOutdoor() && (difference - 24*1) < 12) {
             //happens in 12 or 24 hours
             helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER_ONE_DAY, e);
             helper.sendTo(e.getCreator(),
