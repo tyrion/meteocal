@@ -91,14 +91,6 @@ public class UserFacadeREST extends AbstractFacade<User> {
         return super.find(user.getId());
     }
 
-    @AuthRequired
-    @GET
-    @Override
-    @Produces({"application/xml", "application/json"})
-    public List<User> findAll() {
-        return super.findAll();
-    }
-
     @Override
     protected EntityManager getEntityManager() {
         return em;
