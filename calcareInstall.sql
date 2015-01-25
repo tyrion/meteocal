@@ -226,7 +226,7 @@ INSERT INTO meteocal.notifications_types (`name`, description)
 INSERT INTO meteocal.notifications_types (`name`, description) 
 	VALUES ('Bad Weather - 3 Days - No sunny days', 'For your event %s the forecast reports bad weather. Unfortunately there isn''t any sunny day for the next days.');
 INSERT INTO meteocal.notifications_types (`name`, description) 
-	VALUES ('Bad Weather - Tomorrow!', 'There''s bad weather for your tomorrow event %s!');
+	VALUES ('Bad Weather - Tomorrow!', 'There''s bad weather for your tomorrow event %s! ');
 INSERT INTO meteocal.notifications_types (`name`, description) 
     VALUES ('Forecast change', 'The forecast for the event you''re participating %s is changed! Check it out: ');
 

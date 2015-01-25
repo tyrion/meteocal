@@ -26,34 +26,19 @@ package it.polimi.se.calcare.service;
 import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Forecast;
-import it.polimi.se.calcare.entities.ForecastPK;
 import it.polimi.se.calcare.entities.NotificationType;
 import it.polimi.se.calcare.entities.Participation;
-import it.polimi.se.calcare.entities.User;
 import it.polimi.se.calcare.helpers.NotificationHelper;
 import it.polimi.se.calcare.helpers.SendMail;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.Resource;
 import javax.ejb.Schedule;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 
 /**
@@ -66,10 +51,9 @@ public class CronJob {
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
     @Schedule(dayOfWeek = "*", month = "*", hour = "*/12", dayOfMonth = "*", year = "*", minute = "*", second = "*", persistent = false)
-    
     public void weatherFetcher() throws IOException, JSONException, Exception {
         List <City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
-        List <Forecast> newForecasts = null;
+        List <Forecast> newForecasts;
 
         for (City c: cities){
            newForecasts = new GetWeather().updateForecast(c, (List<Forecast>) c.getForecastCollection());               
@@ -86,7 +70,7 @@ public class CronJob {
                     DateTime sunnyDayDt = new DateTime(new GetWeather().nextSunnyDay(new DateTime(now), f.getCity1(), forecastDate).getForecastPK().getDt());
 
                     for (Event event: f.getEventCollection()){ 
-                        sendMail(event, difference, sunnyDayDt);
+                        //sendMail(event, difference, sunnyDayDt);
                     }
                 }
             }
@@ -102,7 +86,7 @@ public class CronJob {
             if (sunnyDayDt != null){
                 helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER, e);
                 helper.sendTo(e.getCreator(),
-                        "http://localhost:8080" + SendMail.getContextPath() + "/#/events/" + e.getId(),
+                        composeEventLink(e),
                         e.getName(),
                         DateTimeFormat.forPattern("d MMMM yyyy").print(sunnyDayDt)
                 );
@@ -113,10 +97,23 @@ public class CronJob {
         } else if(e.getOutdoor() && (difference - 24*1) < 12) {
             //happens in 12 or 24 hours
             helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER_ONE_DAY, e);
-            helper.sendTo(e.getCreator(),
-                    "http://localhost:8080" + SendMail.getContextPath() + "/#/events/" + e.getId(),
-                    e.getName()
-            );
+            
+            //should warn all the participants
+            List<Participation> participations = em.createNamedQuery("Participation.findByAcceptedForEvent", Participation.class)
+                .setParameter("event", e)
+                .setParameter("accepted", true)
+                .getResultList();
+            
+            for (Participation p: participations){
+                helper.sendTo(p.getUser(),
+                        "", //because no link goes here
+                        e.getName()
+                );
+            }
         }
+    }
+    
+    private String composeEventLink(Event e){
+        return "http://localhost:8080" + SendMail.getContextPath() + "/#/events/" + e.getId();
     }
 }
