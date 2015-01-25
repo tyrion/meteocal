@@ -220,15 +220,15 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
 INSERT INTO meteocal.notifications_types (`name`, description) 
-	VALUES ('Event Creation', 'You''ve been invited to the event %s by %s. Link to the event: ');
+	VALUES ('Event Creation', 'You''ve been invited to the event %s by %s. ');
 INSERT INTO meteocal.notifications_types (`name`, description) 
-	VALUES ('Bad Weather - 3 Days', 'For your event %s the forecast reports bad weather. We found the first available sunny day to be on %s. Edit your event at: ');
+	VALUES ('Bad Weather - 3 Days', 'For your event %s the forecast reports bad weather. We found the first available sunny day to be on %s. Edit your event! ');
 INSERT INTO meteocal.notifications_types (`name`, description) 
-	VALUES ('Bad Weather - 3 Days - No sunny days', 'For your event %s the forecast reports bad weather. Unfortunately there isn''t any sunny day for the next days.');
+	VALUES ('Bad Weather - 3 Days - No sunny days', 'For your event %s the forecast reports bad weather. Unfortunately there isn''t any sunny day for the next days. ');
 INSERT INTO meteocal.notifications_types (`name`, description) 
 	VALUES ('Bad Weather - Tomorrow!', 'There''s bad weather for your tomorrow event %s! ');
 INSERT INTO meteocal.notifications_types (`name`, description) 
-    VALUES ('Forecast change', 'The forecast for the event you''re participating %s is changed! Check it out: ');
+    VALUES ('Forecast change', 'The forecast for the event you''re participating %s is changed! ');
 
 
 INSERT INTO `meteocal`.`weather_conditions` (`id`, `name`, `description`, `icon`) VALUES ('200', 'Thunderstorm', 'thunderstorm with light rain', '11d');
