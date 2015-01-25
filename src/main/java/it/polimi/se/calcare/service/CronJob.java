@@ -26,34 +26,19 @@ package it.polimi.se.calcare.service;
 import it.polimi.se.calcare.entities.City;
 import it.polimi.se.calcare.entities.Event;
 import it.polimi.se.calcare.entities.Forecast;
-import it.polimi.se.calcare.entities.ForecastPK;
 import it.polimi.se.calcare.entities.NotificationType;
 import it.polimi.se.calcare.entities.Participation;
-import it.polimi.se.calcare.entities.User;
 import it.polimi.se.calcare.helpers.NotificationHelper;
 import it.polimi.se.calcare.helpers.SendMail;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.Resource;
 import javax.ejb.Schedule;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 
 /**
@@ -65,44 +50,76 @@ public class CronJob {
     
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
-    @Schedule(dayOfWeek = "*", month = "*", hour = "*/12", dayOfMonth = "*", year = "*", minute = "*", second = "*", persistent = false)
-    
+    @Schedule(dayOfWeek = "*", month = "*", dayOfMonth = "*", year = "*", hour = "*/12", minute = "0", second = "0", persistent = false)
     public void weatherFetcher() throws IOException, JSONException, Exception {
-        List <City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
-        List <Forecast> newForecasts = null;
-
+        List<City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
+        List<Forecast> newForecasts;
+        List<Forecast> oldForecasts;
+        
         for (City c: cities){
-           newForecasts = new GetWeather().updateForecast(c, (List<Forecast>) c.getForecastCollection());               
+            oldForecasts = (List<Forecast>) c.getForecastCollection();
+            newForecasts = new GetWeather().updateForecast(c, oldForecasts);
+            
+            //we have to send to all the participants a mail if the weather is changed between forecasts
+            for (Forecast newF: newForecasts) {
+                for (Forecast oldF: oldForecasts) {
+                    //we have a forecasts for the city, so let's match only the time
+                    if(oldF.getForecastPK().getDt().equals(newF.getForecastPK().getDt())){
+                        //if the weather code is different - so the weather is changed -
+                        //we send a mail warning all the participants
+                        if(!oldF.getWeatherCondition().getId().equals(newF.getWeatherCondition().getId())){
+                            for (Event e: oldF.getEventCollection()){ 
+                                NotificationHelper helper = new NotificationHelper(em, NotificationType.Enum.WEATHER_CHANGE, e);
+
+                                //should warn all the participants
+                                for (Participation p: getParticipantsForEvent(e)){
+                                    helper.sendTo(p.getUser(),
+                                            composeEventLink(e),
+                                            e.getName()
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             for (Forecast f: newForecasts) {
                 em.merge(f);
                 Date forecastDate = (f.getForecastPK().getDt());
                 DateTime forecastDateTime = new DateTime(forecastDate);
                 Long now = new Date().getTime();
-                //int cnt = Days.daysBetween(new DateTime(), date).getDays();
+                
                 if (f.isWeatherBad()) {
-                    //hours of difference between the forecast and the current moment
-                    Long difference = (forecastDateTime.minus(now)).getMillis()/(1000*60*60);
-                    DateTime sunnyDayDt = new DateTime(new GetWeather().nextSunnyDay(new DateTime(now), f.getCity1(), forecastDate).getForecastPK().getDt());
-
-                    for (Event event: f.getEventCollection()){ 
-                        sendMail(event, difference, sunnyDayDt);
-                    }
-                }
+                    for (Event event: f.getEventCollection()){
+                        Date eventStart = event.getStart();
+                        DateTime eventStartDt = new DateTime(eventStart);
+                        
+                        //hours of difference between the event and the current moment
+                        Long difference = (eventStartDt.minus(now)).getMillis()/(1000*60*60);
+                        DateTime sunnyDayDt = null;
+                        
+                        Date sunnyDayDate = new GetWeather().nextSunnyDay(f.getCity1(), forecastDate).getForecastPK().getDt();
+                        if (sunnyDayDate != null)
+                            sunnyDayDt = new DateTime(sunnyDayDate);
+                        
+                        sendMailForBadWeather(event, difference, sunnyDayDt);
+                    } 
+               }
             }
         }
         em.flush();
     }
     
-    public void sendMail(Event e, Long difference, DateTime sunnyDayDt){
+    public void sendMailForBadWeather(Event e, Long difference, DateTime sunnyDayDt){
         NotificationHelper helper;
         
         //happens in three days? - if we are in the 12 hours range
-        if (e.getOutdoor() && (difference - 24*3) < 12){
+        if (e.getOutdoor() && (difference - 24*3) < 12 && (difference - 24*3) >= 0){
             if (sunnyDayDt != null){
                 helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER, e);
                 helper.sendTo(e.getCreator(),
-                        "http://localhost:8080" + SendMail.getContextPath() + "/#/events/" + e.getId(),
+                        composeEventLink(e),
                         e.getName(),
                         DateTimeFormat.forPattern("d MMMM yyyy").print(sunnyDayDt)
                 );
@@ -110,13 +127,29 @@ public class CronJob {
                 helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER_WITHOUT_CHOICE, e);
                 helper.sendTo(e.getCreator(), " ", e.getName());
             }
-        } else if(e.getOutdoor() && (difference - 24*1) < 12) {
-            //happens in 12 or 24 hours
+        } else if(e.getOutdoor() && (difference - 24*1) < 12 && (difference - 24*1) >= 0) {
+            //happens in 24 or 36 hours
             helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER_ONE_DAY, e);
-            helper.sendTo(e.getCreator(),
-                    "http://localhost:8080" + SendMail.getContextPath() + "/#/events/" + e.getId(),
-                    e.getName()
-            );
+            
+            //should warn all the participants
+            for (Participation p: getParticipantsForEvent(e)){
+                helper.sendTo(p.getUser(),
+                        "", //because no link goes here
+                        e.getName()
+                );
+            }
         }
     }
+    
+    private String composeEventLink(Event e){
+        return "http://localhost:8080" + SendMail.getContextPath() + "/#/events/" + e.getId();
+    }
+    
+    private List<Participation> getParticipantsForEvent(Event e){
+        return em.createNamedQuery("Participation.findByAcceptedForEvent", Participation.class)
+                .setParameter("event", e)
+                .setParameter("accepted", true)
+                .getResultList();
+    }
 }
+

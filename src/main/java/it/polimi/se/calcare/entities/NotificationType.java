@@ -62,7 +62,8 @@ public class NotificationType implements Serializable {
         INVITATION(1),
         BAD_WEATHER(2),
         BAD_WEATHER_WITHOUT_CHOICE(3), 
-        BAD_WEATHER_ONE_DAY(4);
+        BAD_WEATHER_ONE_DAY(4), 
+        WEATHER_CHANGE (5);
 
         public int id;
 
