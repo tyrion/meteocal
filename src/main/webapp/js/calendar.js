@@ -538,7 +538,7 @@ calApp.controller("CalendarController", function ($scope, $http, $sce, $localSto
 
         $http.post("api/calendars/import", fd, {
             withCredentials: true,
-            headers: {'Content-Type': 'text/plain', 'Authorization': 'Bearer ' + $localStorage.token },
+            headers: {'Content-Type': undefined, 'Authorization': 'Bearer ' + $localStorage.token },
             transformRequest: angular.identity
         })
         .success(function(data) {

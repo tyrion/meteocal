@@ -5,6 +5,7 @@
  */
 package it.polimi.se.calcare.entities;
 
+import com.auth0.jwt.internal.com.fasterxml.jackson.annotation.JsonIgnore;
 import it.polimi.se.calcare.auth.Password;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
@@ -64,6 +65,7 @@ public class User implements Serializable, java.security.Principal {
     @Column(name = "email")
     private String email;
 
+    @JsonIgnore
     @XmlElement
     @XmlReadOnly
     @Basic(optional = false)
@@ -84,18 +86,22 @@ public class User implements Serializable, java.security.Principal {
     @Column(name = "family_name")
     private String familyName;
 
+    @JsonIgnore
     @Basic(optional = true)
     @NotNull
     @Column(name = "active")
     private boolean active;
 
+    @JsonIgnore
     @XmlInverseReference(mappedBy = "owner")
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
     private Calendar calendar;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator")
     private Collection<Event> eventCollection;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Collection<Notification> notificationCollection;
 
@@ -158,6 +164,7 @@ public class User implements Serializable, java.security.Principal {
         this.familyName = familyName;
     }
 
+    @JsonIgnore
     public String getFullName() {
         return String.format("%s %s", givenName, familyName);
     }
@@ -223,6 +230,7 @@ public class User implements Serializable, java.security.Principal {
         return "User[ id=" + id + " ]";
     }
 
+    @JsonIgnore
     @Override
     public String getName() {
         return null;

@@ -5,6 +5,7 @@
  */
 package it.polimi.se.calcare.entities;
 
+import com.auth0.jwt.internal.com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -104,6 +105,7 @@ public class Event implements Serializable {
     @Column(name = "outdoor")
     private boolean outdoor;
 
+    @JsonIgnore
     @JoinTable(name = "events_forecasts", joinColumns = {
         @JoinColumn(name = "events_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "forecasts_city", referencedColumnName = "city"),
@@ -111,6 +113,7 @@ public class Event implements Serializable {
     @ManyToMany
     private Collection<Forecast> forecastCollection;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Participation> participationCollection;
 
@@ -118,6 +121,7 @@ public class Event implements Serializable {
     @ManyToOne(optional = false)
     private User creator;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private Collection<Notification> notificationCollection;
 
@@ -194,6 +198,7 @@ public class Event implements Serializable {
         return public1;
     }
 
+    @JsonIgnore
     public boolean isPublic() {
         return public1;
     }
@@ -210,6 +215,7 @@ public class Event implements Serializable {
         this.outdoor = outdoor;
     }
 
+    @JsonIgnore
     @XmlElement
     @XmlWriteOnly
     public Collection<Forecast> getForecastCollection() {
@@ -220,6 +226,7 @@ public class Event implements Serializable {
         this.forecastCollection = forecastCollection;
     }
 
+    @JsonIgnore
     @XmlElement
     @XmlWriteOnly
     public Collection<Participation> getParticipationCollection() {
@@ -238,6 +245,7 @@ public class Event implements Serializable {
         this.creator = creator;
     }
 
+    @JsonIgnore
     @XmlTransient
     public Collection<Notification> getNotificationCollection() {
         return notificationCollection;
@@ -276,6 +284,7 @@ public class Event implements Serializable {
         return "Event[ id=" + id + " ]";
     }
 
+    @JsonIgnore
     public List<Forecast> getWorstWeather() {
         Forecast worst = null;
         for (Forecast f : this.getForecastCollection()) {

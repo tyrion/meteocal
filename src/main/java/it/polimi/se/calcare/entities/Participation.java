@@ -5,6 +5,7 @@
  */
 package it.polimi.se.calcare.entities;
 
+import com.auth0.jwt.internal.com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -14,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -25,6 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name = "participations")
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
 @NamedQueries({
     @NamedQuery(name = "Participation.findAll", query = "SELECT p FROM Participation p"),
     @NamedQuery(name = "Participation.findByEvent", query = "SELECT p FROM Participation p WHERE p.participationPK.event = :event"),
@@ -42,6 +46,7 @@ public class Participation implements Serializable {
     @Column(name = "accepted")
     private Boolean accepted;
 
+    @JsonIgnore
     @JoinColumn(name = "calendars_id", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
     private Calendar calendar;
@@ -110,6 +115,7 @@ public class Participation implements Serializable {
         this.event = event;
     }
 
+    @JsonIgnore
     @XmlElement
     public User getUser() {
         return this.calendar.getOwner();

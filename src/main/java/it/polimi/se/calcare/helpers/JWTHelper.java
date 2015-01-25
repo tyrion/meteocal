@@ -62,7 +62,7 @@ public class JWTHelper {
                 IllegalStateException | IOException | SignatureException |
                 JWTVerifyException ex) {
             Logger.getLogger(AuthREST.class.getName()).log(Level.SEVERE, null, ex);
-            throw new WebApplicationException(status);
+            throw new WebApplicationException(ex, status);
         }
     }
 
