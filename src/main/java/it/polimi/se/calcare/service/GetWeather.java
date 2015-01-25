@@ -103,7 +103,8 @@ public class GetWeather {
             int cnt = Days.daysBetween(new DateTime(), date).getDays();
             if ((cnt>=0) && (cnt <= 16)) {
                 //Decode the JSON and update the forecast information
-                newForecasts.add(openweatherJsonDecoderWeather(owJSON, item, cnt));
+                Forecast f = openweatherJsonDecoderWeather(owJSON, item, cnt);
+                newForecasts.add(f);
             }
         }
         return newForecasts;
@@ -170,7 +171,7 @@ public class GetWeather {
         return forecast;
     }
 
-    Forecast nextSunnyDay(DateTime now, City city, Date dt) throws JSONException, MalformedURLException, UnsupportedEncodingException, IOException {
+    Forecast nextSunnyDay(City city, Date dt) throws JSONException, MalformedURLException, UnsupportedEncodingException, IOException {
         //Build the Openeather URL
         InputStream openWeather = openWeatherUrlBuilder(city.getName()+","+city.getCountry()).openStream();
         //Create the JSON for Openweather parsing
@@ -182,7 +183,7 @@ public class GetWeather {
     public Forecast sunnyFinder(JSONObject obj, Forecast forecast, Date dt, Integer id) throws JSONException{
         JSONObject list;
         forecast.setForecastPK(new ForecastPK(dt, id));
-        for (int i=0; i<16; i++){
+        for (int i=1; i<16; i++){
             list = obj.getJSONArray("list").getJSONObject(i);
             JSONObject weather = list.getJSONArray("weather").getJSONObject(0);
             forecast.setWeatherCondition(new WeatherCondition(weather.getInt("id")));

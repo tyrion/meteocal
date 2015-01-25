@@ -89,20 +89,23 @@ public class CronJob {
                 Date forecastDate = (f.getForecastPK().getDt());
                 DateTime forecastDateTime = new DateTime(forecastDate);
                 Long now = new Date().getTime();
-                //int cnt = Days.daysBetween(new DateTime(), date).getDays();
+                
                 if (f.isWeatherBad()) {
-                    //hours of difference between the forecast and the current moment
-                    Long difference = (forecastDateTime.minus(now)).getMillis()/(1000*60*60);
-                    DateTime sunnyDayDt = null;
-                    
-                    Date sunnyDayDate = new GetWeather().nextSunnyDay(new DateTime(now), f.getCity1(), forecastDate).getForecastPK().getDt();
-                    if (sunnyDayDate != null)
-                        sunnyDayDt = new DateTime(sunnyDayDate);
-                    
-                    for (Event event: f.getEventCollection()){ 
+                    for (Event event: f.getEventCollection()){
+                        Date eventStart = event.getStart();
+                        DateTime eventStartDt = new DateTime(eventStart);
+                        
+                        //hours of difference between the event and the current moment
+                        Long difference = (eventStartDt.minus(now)).getMillis()/(1000*60*60);
+                        DateTime sunnyDayDt = null;
+                        
+                        Date sunnyDayDate = new GetWeather().nextSunnyDay(f.getCity1(), forecastDate).getForecastPK().getDt();
+                        if (sunnyDayDate != null)
+                            sunnyDayDt = new DateTime(sunnyDayDate);
+                        
                         sendMailForBadWeather(event, difference, sunnyDayDt);
-                    }
-                }
+                    } 
+               }
             }
         }
         em.flush();
@@ -112,7 +115,7 @@ public class CronJob {
         NotificationHelper helper;
         
         //happens in three days? - if we are in the 12 hours range
-        if (e.getOutdoor() && (difference - 24*3) < 12){
+        if (e.getOutdoor() && (difference - 24*3) < 12 && (difference - 24*3) >= 0){
             if (sunnyDayDt != null){
                 helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER, e);
                 helper.sendTo(e.getCreator(),
@@ -124,8 +127,8 @@ public class CronJob {
                 helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER_WITHOUT_CHOICE, e);
                 helper.sendTo(e.getCreator(), " ", e.getName());
             }
-        } else if(e.getOutdoor() && (difference - 24*1) < 12) {
-            //happens in 12 or 24 hours
+        } else if(e.getOutdoor() && (difference - 24*1) < 12 && (difference - 24*1) >= 0) {
+            //happens in 24 or 36 hours
             helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER_ONE_DAY, e);
             
             //should warn all the participants
@@ -149,3 +152,4 @@ public class CronJob {
                 .getResultList();
     }
 }
+
