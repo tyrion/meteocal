@@ -50,7 +50,7 @@ public class CronJob {
     
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
-    @Schedule(dayOfWeek = "*", month = "*", hour = "*/12", dayOfMonth = "*", year = "*", minute = "*", second = "*", persistent = false)
+    @Schedule(dayOfWeek = "*", month = "*", dayOfMonth = "*", year = "*",hour = "*/12", minute = "0", second = "0", persistent = false)
     public void weatherFetcher() throws IOException, JSONException, Exception {
         List <City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
         List <Forecast> newForecasts;
