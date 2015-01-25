@@ -183,11 +183,11 @@ public class GetWeather {
         JSONObject list;
         forecast.setForecastPK(new ForecastPK(dt, id));
         for (int i=0; i<16; i++){
-        list = obj.getJSONArray("list").getJSONObject(i);
-        JSONObject weather = list.getJSONArray("weather").getJSONObject(0);
-        forecast.setWeatherCondition(new WeatherCondition(weather.getInt("id")));
-        if (forecast.isWeatherBad()==false)
-        return forecast;
+            list = obj.getJSONArray("list").getJSONObject(i);
+            JSONObject weather = list.getJSONArray("weather").getJSONObject(0);
+            forecast.setWeatherCondition(new WeatherCondition(weather.getInt("id")));
+            if (forecast.isWeatherBad()==false)
+                return forecast;
         }
         return null;
     }

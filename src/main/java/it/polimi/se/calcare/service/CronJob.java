@@ -50,13 +50,39 @@ public class CronJob {
     
     @PersistenceContext(unitName = "it.polimi.se_CalCARE_war_1.0-SNAPSHOTPU")
     private EntityManager em;
-    @Schedule(dayOfWeek = "*", month = "*", dayOfMonth = "*", year = "*",hour = "*/12", minute = "0", second = "0", persistent = false)
+    @Schedule(dayOfWeek = "*", month = "*", dayOfMonth = "*", year = "*", hour = "*/12", minute = "0", second = "0", persistent = false)
     public void weatherFetcher() throws IOException, JSONException, Exception {
-        List <City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
-        List <Forecast> newForecasts;
-
+        List<City> cities = em.createNamedQuery("City.findAll", City.class).getResultList();
+        List<Forecast> newForecasts;
+        List<Forecast> oldForecasts;
+        
         for (City c: cities){
-           newForecasts = new GetWeather().updateForecast(c, (List<Forecast>) c.getForecastCollection());               
+            oldForecasts = (List<Forecast>) c.getForecastCollection();
+            newForecasts = new GetWeather().updateForecast(c, oldForecasts);
+            
+            //we have to send to all the participants a mail if the weather is changed between forecasts
+            for (Forecast newF: newForecasts) {
+                for (Forecast oldF: oldForecasts) {
+                    //we have a forecasts for the city, so let's match only the time
+                    if(oldF.getForecastPK().getDt().equals(newF.getForecastPK().getDt())){
+                        //if the weather code is different - so the weather is changed -
+                        //we send a mail warning all the participants
+                        if(!oldF.getWeatherCondition().getId().equals(newF.getWeatherCondition().getId())){
+                            for (Event e: oldF.getEventCollection()){ 
+                                NotificationHelper helper = new NotificationHelper(em, NotificationType.Enum.WEATHER_CHANGE, e);
+
+                                //should warn all the participants
+                                for (Participation p: getParticipantsForEvent(e)){
+                                    helper.sendTo(p.getUser(),
+                                            composeEventLink(e),
+                                            e.getName()
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             for (Forecast f: newForecasts) {
                 em.merge(f);
@@ -67,10 +93,14 @@ public class CronJob {
                 if (f.isWeatherBad()) {
                     //hours of difference between the forecast and the current moment
                     Long difference = (forecastDateTime.minus(now)).getMillis()/(1000*60*60);
-                    DateTime sunnyDayDt = new DateTime(new GetWeather().nextSunnyDay(new DateTime(now), f.getCity1(), forecastDate).getForecastPK().getDt());
-
+                    DateTime sunnyDayDt = null;
+                    
+                    Date sunnyDayDate = new GetWeather().nextSunnyDay(new DateTime(now), f.getCity1(), forecastDate).getForecastPK().getDt();
+                    if (sunnyDayDate != null)
+                        sunnyDayDt = new DateTime(sunnyDayDate);
+                    
                     for (Event event: f.getEventCollection()){ 
-                        //sendMail(event, difference, sunnyDayDt);
+                        sendMailForBadWeather(event, difference, sunnyDayDt);
                     }
                 }
             }
@@ -78,7 +108,7 @@ public class CronJob {
         em.flush();
     }
     
-    public void sendMail(Event e, Long difference, DateTime sunnyDayDt){
+    public void sendMailForBadWeather(Event e, Long difference, DateTime sunnyDayDt){
         NotificationHelper helper;
         
         //happens in three days? - if we are in the 12 hours range
@@ -99,12 +129,7 @@ public class CronJob {
             helper = new NotificationHelper(em, NotificationType.Enum.BAD_WEATHER_ONE_DAY, e);
             
             //should warn all the participants
-            List<Participation> participations = em.createNamedQuery("Participation.findByAcceptedForEvent", Participation.class)
-                .setParameter("event", e)
-                .setParameter("accepted", true)
-                .getResultList();
-            
-            for (Participation p: participations){
+            for (Participation p: getParticipantsForEvent(e)){
                 helper.sendTo(p.getUser(),
                         "", //because no link goes here
                         e.getName()
@@ -115,5 +140,12 @@ public class CronJob {
     
     private String composeEventLink(Event e){
         return "http://localhost:8080" + SendMail.getContextPath() + "/#/events/" + e.getId();
+    }
+    
+    private List<Participation> getParticipantsForEvent(Event e){
+        return em.createNamedQuery("Participation.findByAcceptedForEvent", Participation.class)
+                .setParameter("event", e)
+                .setParameter("accepted", true)
+                .getResultList();
     }
 }
