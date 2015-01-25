@@ -52,11 +52,11 @@ public class NotificationHelper {
         em.persist(n);
 
         String body = String.format(this.type.getDescription(), args);
-        ArrayList<String> receiver=new ArrayList<String>();
+        ArrayList<String> receiver = new ArrayList<String>();
         receiver.add(user.getEmail());
         SendMail.Mail(receiver,
                 String.format("CalCARE Notification: %s", this.type.getName()),
-                String.format("%s %s", Encode.forHtml(body), link));
+                String.format("%s\n%s", Encode.forHtml(body), link));
 
         return n;
     }

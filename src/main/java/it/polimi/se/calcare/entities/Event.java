@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -30,8 +29,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
 
 /**
  *
@@ -209,6 +210,8 @@ public class Event implements Serializable {
         this.outdoor = outdoor;
     }
 
+    @XmlElement
+    @XmlWriteOnly
     public Collection<Forecast> getForecastCollection() {
         return forecastCollection;
     }
@@ -217,6 +220,8 @@ public class Event implements Serializable {
         this.forecastCollection = forecastCollection;
     }
 
+    @XmlElement
+    @XmlWriteOnly
     public Collection<Participation> getParticipationCollection() {
         return participationCollection;
     }
@@ -270,15 +275,15 @@ public class Event implements Serializable {
     public String toString() {
         return "Event[ id=" + id + " ]";
     }
-    
-    public List<Forecast> getWorstWeather(){
+
+    public List<Forecast> getWorstWeather() {
         Forecast worst = null;
-        for (Forecast f : this.getForecastCollection()){
+        for (Forecast f : this.getForecastCollection()) {
             if (f.isWeatherBad())
                 return Arrays.asList(f);
             worst = f;
         }
         return Arrays.asList(worst);
     }
-    
+
 }
