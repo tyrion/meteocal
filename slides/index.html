@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="remark,remarkjs,markdown,slideshow,presentation" />
+    <meta name="description" content="CalCARE - Software Engineering 2 Course Project" />
+    <title>CalCARE - Software Engineering 2 Course Project</title>
+    <link rel="stylesheet" href="css/dark.css"/>
+    <link rel="stylesheet" href="css/progressjs.min.css"/>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+
+<style type="text/css">
+.landing {
+  background: url('img/background.jpg') no-repeat center;
+  background-size: cover;
+  color: white;
+  text-shadow: 0px 2px 12px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+.remark-slide-content h3 {
+    font-size: 1.4em;
+    letter-spacing: 0;
+}
+.remark-slide-content h4 {
+    letter-spacing: 0;
+    font-weight: 400;
+}
+.middle h2 {
+  position: relative;
+  bottom: 2em;
+}
+</style>
+    <textarea id="source">
+name: landing
+layout: true
+class: center, middle, light, landing
+---
+
+#CalCARE
+###Software Engineering 2 Course Project "Meteocal"
+<img src="img/polimi.png" alt="polimilogo" style="width: 20%;">
+<br><br>
+####February 26, 2015
+###Andrea Grazioso<br>Germano Gabbianelli<br>Fabrizio Ferrai
+<br>
+<button class="btn btn-primary btn-lg go-next">Signup &raquo;</button>
+
+---
+
+name: sign
+layout: true
+.sign[***CalCARE***]
+.course-right[Andrea Grazioso, Germano Gabbianelli, Fabrizio Ferrai]
+---
+
+name: light
+layout: true
+class: center, middle, light
+
+---
+
+template: sign
+layout: true
+---
+
+name:projdev
+.title[##Project Development: Timeline]
+--
+.text[###***Nov 16, 2014*** - Requirements Analysis and Specification Document: use cases, functional and non-functional requirements]
+--
+.text[###***Dec 7, 2014*** - Design Document: persistent data design, technologic choices, general architecture]
+--
+.text[###***Jan 25, 2015*** - Implementation: code, Installation Manual, Testing Cases]
+--
+.text[###***Feb 8, 2015*** - Acceptance Testing]
+--
+.text[###***Feb 10, 2015*** - Project Reporting]
+---
+
+name:numbers
+.title[##Some numbers first...]
+--
+.text[###Line count here]
+--
+.text[###CoCoMo here]
+
+---
+
+name:what
+.title[##What is CalCARE?]
+--
+.text[###**CalCARE** is a new weather based online calendar]
+--
+.text[###for helping people scheduling their personal events]
+--
+.text[###avoiding bad weather conditions in case of outdoor activities.]
+---
+
+template:light
+layout:false
+##The Requirements
+---
+
+name:implemented
+.title[##Required Features (1)]
+--
+.text[###Functional requirements of the system were divided in 4 macro-areas:]
+<br>
+--
+
+.text[###**Event Management**]
+--
+.text[####add a new event]
+--
+.text[####edit an existing event]
+--
+.text[####delete an existing event]
+--
+.text[####make an event «Public» or «Private»]
+--
+.text[####specify details for an event: description, time, location]
+--
+.text[####invite other users of the service to events]
+--
+.text[####accept other users invitations for their own events]
+--
+.text[####automatic enrichment with weather information for every creation or edit of an event, and every 12 hours]
+---
+
+name:implemented2
+.title[##Required Features (2)]
+--
+.text[###**User profile management**]
+--
+.text[####registration]
+--
+.text[####login]
+--
+.text[####logout]
+--
+
+.text[###**Calendar Management**]
+--
+.text[####modify privacy setting of the calendar (it can be public or private)]
+--
+.text[####import calendar]
+--
+.text[####export calendar]
+--
+
+.text[###**Notifications Management**]
+--
+.text[####automatic notification (with subsequent proposal for a new sunny day, if available) if an outdoor event turns to have bad weather three days before its happening]
+--
+.text[####email notifications for bad weather]
+---
+
+name:additional
+.title[##Additional Features we implemented]
+--
+.text[###**Advanced User profile management**]
+--
+.text[####password reset]
+--
+.text[####email confirmation with token for the registration (more on this later)]
+--
+.text[####modify personal data]
+
+--
+.text[###**Modern UI: HTML5+CSS3**]
+--
+.text[####Responsive]
+--
+.text[####(...Mobile application?)]
+---
+
+name:assumptions
+.title[##Assumptions]
+--
+.text[###We do not explicitly handle event overlapping. Anyway, the UX clearly displays the number of events in a day.]
+--
+.text[###In the definition of "bad weather" is included every weather type different than sunny or cloudy weather.]
+---
+
+template:light
+layout:false
+##The Design
+---
+
+name:design1
+.title[##Design Pt.1: Data persistence]
+--
+<img src="img/dbmodel.svg" alt="dbmodel" style="width: 110%; position:relative; left: 8em;">
+---
+
+name:design2
+.title[##Design Pt.2: Architecture]
+--
+.text[###We chose to implement a client-server architecture.]
+--
+.text[###Through REST API endpoints. Advantages:]
+--
+.text[####the frontend is totally decoupled from the backend, except for the data format]
+--
+.text[####so, Separation of Concerns -> Modularity.]
+--
+.text[####and probably less code, so less development time.]
+---
+
+name:design3
+.title[##Design Pt.3: UX]
+--
+<img src="img/ux.svg" alt="ux" style="width: 110%; position:relative; left: -2em; top: 3em;">
+---
+
+template:light
+layout:false
+##A closer look to The Code
+---
+
+name:tools
+.title[##Technology: Tools]
+--
+<br><br>
+.text[###<img src="img/maven.svg" alt="" style="width: 50%; margin-left: 5em;">]
+--
+.text[###<img src="img/netbeans.svg" alt="" style="width: 50%; margin-left: 5em;">]
+--
+.text[###<img src="img/git.svg" alt="" style="width: 40%; margin-left: 5em;">]
+---
+
+name:tiers
+.title[##Technology: Tiers Architecture]
+--
+<img src="img/tiers.png" alt="tiers" style="width: 100%; position:relative; left: 1em;">
+---
+
+name:jwt
+.title[##Code Focus: JWT auth & Security]
+--
+.text[###jwt explanation here]
+---
+
+name:recovery
+.title[##Code Focus: Password recovery]
+--
+.text[###pr explanation here]
+---
+
+name:angular
+.title[##Code Focus: AngularJS]
+<div style="position:relative; top: -1em; left: 3em;">.title[###The Good, the Bad and the Ugly]</div>
+<img src="img/gbu.jpg" alt="gbu" style="width: 22%; position:absolute; right: 2em; top: .5em">
+--
+.text[###angularjs opinions here]
+---
+
+template:light
+layout:false
+##DEMO!
+---
+
+template:light
+layout:false
+##Acceptance testing
+---
+
+name:jwt
+.title[##Acceptance Testing]
+--
+.text[###describe our testing here]
+---
+
+template:light
+layout:false
+##Questions!
+<img src="img/questiontime.jpg" alt="qt" style="width: 90%; position:relative; top: -1em;">
+---
+
+template:light
+layout:false
+##Thank you :)
+
+
+    </textarea>
+    <script src="js/progress.min.js" type="text/javascript"></script>
+    <script src="js/jquery-2.1.3.min.js" type="text/javascript"></script>
+    <script src="js/remark-latest.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var hljs = remark.highlighter.engine;
+    </script>
+    <script src="js/remark.language.js" type="text/javascript"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+      var slideshow = remark.create({
+        highlightStyle: 'monokai',
+        highlightLanguage: 'remark'
+      }) ;
+      $('.remark-slide-number').hide();
+      var progbar = progressJs(".remark-slides-area");
+      progbar.start();
+      progbar.set(0);
+      slideshow.on('showSlide', function (slide) {
+        var total = $('.remark-slide-number').html().split(" / ")[1]
+        progbar.set(slide.getSlideIndex()/total*100);
+      });
+      setTimeout(function(){ $(".landing").css('background-size', 'cover').css('background-position', '0 0'); }, 1000);
+      $(".go-next").click(function(){ slideshow.gotoNextSlide(); });
+    });
+    </script>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-46402862-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>

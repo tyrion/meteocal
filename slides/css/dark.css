@@ -1,0 +1,140 @@
+@import url(http://fonts.googleapis.com/css?family=Droid+Sans);
+@import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300);
+@import url(http://fonts.googleapis.com/css?family=Lato:400,300,100);
+
+body {
+  font-family: 'Open Sans';
+  font-size: 20px;
+  font-weight: 300;
+}
+h1, h2, h3, h4 {
+  font-family: 'Open Sans';
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5em;
+}
+h1 { font-size: 4.5em; }
+h2 { font-size: 2em; }
+h3 { font-size: 1.6em; }
+h4 { font-size: 1.2em; }
+li{
+  list-style-type: square;
+}
+li p { line-height: 1.25em; }
+.red { color: #fa0000; }
+.large { font-size: 2em; }
+a, a > code {
+  color: #0099CF;
+  text-decoration: none;
+}
+code {
+  float:left;
+  -moz-border-radius: 5px;
+  -web-border-radius: 5px;
+  background: #e7e8e2;
+  border-radius: 5px;
+  font-size: 15px;
+  width: 80%;
+  margin-left: 10%;
+}
+.pull-left {
+  float: left;
+  width: 52%;
+  margin-left: 3em;
+}
+.pull-right {
+  float: right;
+  width: 40%;
+}
+.pull-top{
+  position: absolute;
+  top: 6em;
+  left: 50%;
+}
+.pull-right ~ p {
+  clear: both;
+}
+.text-left {
+  float: left;
+  width: 90%;
+  margin-left: 6em;
+}
+#slideshow .slide .content code {
+  font-size: 0.8em;
+}
+#slideshow .slide .content pre code {
+  font-size: 0.9em;
+  padding: 15px;
+}
+
+
+
+
+/* Title-text layout */
+.title {
+  width: 100%;
+  float: left;
+}
+
+.text{
+  color: #777;
+  width: calc(100% - 2.5em);
+  float: left;
+  padding-top: 0;
+  margin: 0;
+  font-weight: 200;
+}
+.text h3{
+  margin-top: 0.5em;
+  padding-left: 2em;
+  font-weight: 200;
+}
+.text h4{
+  margin-top: 0.5em;
+  padding-left: 4em;
+  font-weight: 200;
+}
+.text:last-of-type, .text:last-child {
+  color: #000;
+}
+.footnote {
+  position: absolute;
+  bottom: 4em;
+  left: 3em;
+  font-weight: 400;
+  width: calc(100% - 5em);
+  letter-spacing: -0.05em;
+}
+.center{
+  text-align: center;
+}
+.little{
+  font-size: 0.8em;
+  margin-left: 1em;
+
+}
+.sign {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 0.5em;
+  width: 100%;
+  background: #f3f3f3;
+  font-weight: 200;
+  font-size: 0.8em;
+}
+.course {
+  position: absolute;
+  bottom: 0.5em;
+  left: 50%;
+  font-weight: 400;
+}
+
+.course-right {
+  position: absolute;
+  bottom: 0.3em;
+  right: 0.5em;
+  font-weight: 200;
+}
+
