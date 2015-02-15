@@ -173,7 +173,14 @@ name:additional
 --
 .text[####Responsive]
 --
-.text[####(...Mobile application?)]
+.text[####Mobile ready]
+--
+.text[###**...Mobile Application!**]
+--
+<img src="img/android.svg" alt="android" style="width: 13%; position:relative; left: 6em;">
+<img src="img/apple.svg" alt="apple" style="width: 10%; position:relative; left: 6em;">
+--
+<img src="img/calcareapp.png" alt="app" style="width: 20%; position:absolute; bottom: 4em; right: 8em;">
 ---
 
 name:assumptions
@@ -239,14 +246,45 @@ name:tiers
 
 name:jwt
 .title[##Code Focus: JWT auth & Security]
+.text[###What's JWT?]
 --
-.text[###jwt explanation here]
+.text[####**JSON Web Token** is a new token format, used in space-constrained environments such as HTTP Authorization headers. JWT is architected as a method for transferring security *claims-based* between parties.]
+--
+.text[###Token based vs. Cookie based]
+<img src="img/cookie-token-auth.png" alt="cookie-token" style="width: 80%; position:relative; left: 4em;">
+---
+
+name:jwt2
+.title[##Code Focus: JWT auth & Security]
+.text[###What are the benefits of using a token-based approach?]
+--
+.text[####**Cross-domain / CORS**: cookies don't play well across different domains.]
+--
+.text[####**Stateless (a.k.a. Server side scalability)**: no need to keep a session store, as token is self-contanined]
+--
+.text[####**CDN**: server side just API.]
+--
+.text[####**Decoupling**: not tied to a particular authentication scheme.]
+--
+.text[####**Mobile ready**: on mobile cookies are not ideal when consuming a secure API.]
+--
+.text[####**CSRF**: no cookies, no forgery.]
+--
+.text[####**Performance**: no hard benchmarks, but finding a session in a database is likely to take more time than calculating an HMACSHA256.]
+--
+.text[####**Standard-based**: this is a standard and there are multiple backend libraries and companies backing their infrastructure.]
 ---
 
 name:recovery
-.title[##Code Focus: Password recovery]
+.title[##Code Focus: Password reset]
 --
-.text[###pr explanation here]
+.text[###We implemented a *secure* password reset mechanism]
+--
+.text[###How it works:]
+--
+.text[####The user loses her password]
+--
+.text[####...?]
 ---
 
 name:angular
@@ -254,7 +292,21 @@ name:angular
 <div style="position:relative; top: -1em; left: 3em;">.title[###The Good, the Bad and the Ugly]</div>
 <img src="img/gbu.jpg" alt="gbu" style="width: 22%; position:absolute; right: 2em; top: .5em">
 --
-.text[###angularjs opinions here]
+.text[###We loved AngularJS.]
+--
+.text[####Coupled with REST APIs, it's a breeze to make wonderful SPApps]
+--
+.text[####Easy to understand for a basic usage]
+--
+.text[####Way less code! (than a JSF approach for example)]
+--
+.text[###But it is not all a bed of roses.]
+--
+.text[####Difficult to build such a complex application like Meteocal]
+--
+.text[####Obscure bugs due to immaturity]
+--
+.text[####Really hard debugging: useless tracebacks]
 ---
 
 template:light
@@ -262,12 +314,7 @@ layout:false
 ##DEMO!
 ---
 
-template:light
-layout:false
-##Acceptance testing
----
-
-name:jwt
+name:acceptance
 .title[##Acceptance Testing]
 --
 .text[###describe our testing here]
