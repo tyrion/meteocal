@@ -94,7 +94,7 @@ name:numbers
 --
 .text[###Using the CoCoMo II cost estimation model we get:]
 
-<iframe src="math.html" style="border: 0; width: 30em; position:relative; left: 4em;"></iframe>
+<iframe src="math.html" style="border: 0; width: 40em; position:relative; left: -2em;"></iframe>
 
 ---
 
@@ -199,6 +199,8 @@ name:assumptions
 .text[###We do not explicitly handle event overlapping. Anyway, the UX clearly displays the number of events in a day.]
 --
 .text[###In the definition of "bad weather" is included every weather type different than sunny or cloudy weather.]
+--
+.text[###Javascript is enabled]
 ---
 
 template:light
@@ -294,7 +296,15 @@ name:recovery
 --
 .text[####The user loses her password]
 --
-.text[####...?]
+.text[####Sends her email in the password reset form]
+--
+.text[####A JWT token is generated and signed by the server, and sent as a link parameter to the users email (if the email exists)]
+--
+.text[####Once the user clicks on the link with the token parameter, she's redirected to the password reset form.]
+--
+.text[####Done!]
+--
+.text[####**(No DB involved)**]
 ---
 
 name:angular
