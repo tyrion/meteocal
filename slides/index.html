@@ -302,7 +302,7 @@ name:recovery
 --
 .text[####Once the user clicks on the link with the token parameter, she's redirected to the password reset form.]
 --
-.text[####Done!]
+.text[####<button class="btn btn-success btn-lg">Done!</button>]
 --
 .text[####**(No DB involved)**]
 ---
@@ -337,7 +337,17 @@ layout:false
 name:acceptance
 .title[##Acceptance Testing]
 --
-.text[###describe our testing here]
+.text[###We successfully deployed the others group application, following the Installation Manual]
+--
+.text[###Then we applied the provided Test Cases document]
+--
+.text[###<button class="btn btn-danger btn-lg">Failed</button>]
+--
+.text[####**Calendar Export:** we deployed the application on Linux, while the developers only tested it on OS X and Windows.]
+--
+.text[###<button class="btn btn-success btn-lg">Success!</button>]
+--
+.text[####**Everything else.**]
 ---
 
 template:light
@@ -374,7 +384,7 @@ layout:false
         var total = $('.remark-slide-number').html().split(" / ")[1]
         progbar.set(slide.getSlideIndex()/total*100);
       });
-      setTimeout(function(){ $(".landing").css('background-size', 'cover').css('background-position', '0 0'); }, 1000);
+      setTimeout(function(){ $(".landing").css('background-size', 'cover').css('background-position', '0 0'); }, 2000);
       $(".go-next").click(function(){ slideshow.gotoNextSlide(); });
     });
     </script>
