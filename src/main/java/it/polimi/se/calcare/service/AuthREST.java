@@ -86,14 +86,14 @@ public class AuthREST {
             em.persist(calendar);
         }
 
-        return Response.seeOther(new java.net.URI("..#/activated")).build();
+        return Response.seeOther(new java.net.URI("../..#/activated")).build();
     }
 
     @POST
     @Path("reset/request")
     public void requestReset(@Context UriInfo ui,
-            @FormParam("email") String email){
-        ArrayList<String> receiver=new ArrayList<String>();
+            @FormParam("email") String email) {
+        ArrayList<String> receiver = new ArrayList<String>();
         User user = em.createNamedQuery("User.findByEmail", User.class)
                 .setParameter("email", email).getSingleResult();
         String resetLink = ui.getBaseUri().resolve("..#/reset?token=")
