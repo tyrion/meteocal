@@ -109,7 +109,9 @@
         </iiop-listener>
       </iiop-service>
       <admin-service system-jmx-connector-name="system" type="das-and-server">
-        <jmx-connector address="0.0.0.0" port="8686" name="system" auth-realm-name="admin-realm" security-enabled="false"></jmx-connector>
+        <jmx-connector address="0.0.0.0" port="8686" name="system" auth-realm-name="admin-realm">
+          <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" client-auth="want" cert-nickname="s1as"></ssl>
+        </jmx-connector>
         <property name="adminConsoleContextRoot" value="/admin"></property>
         <property name="adminConsoleDownloadLocation" value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war"></property>
         <property name="ipsRoot" value="${com.sun.aas.installRoot}/.."></property>
@@ -284,11 +286,26 @@
               <file-cache></file-cache>
             </http>
           </protocol>
+          <protocol name="sec-admin-listener" security-enabled="true">
+            <http encoded-slash-enabled="true" default-virtual-server="__asadmin">
+              <file-cache></file-cache>
+            </http>
+            <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" client-auth="want" cert-nickname="s1as"></ssl>
+          </protocol>
+          <protocol name="admin-http-redirect">
+            <http-redirect secure="true"></http-redirect>
+          </protocol>
+          <protocol name="pu-protocol">
+            <port-unification>
+              <protocol-finder protocol="sec-admin-listener" classname="org.glassfish.grizzly.config.portunif.HttpProtocolFinder" name="http-finder"></protocol-finder>
+              <protocol-finder protocol="admin-http-redirect" classname="org.glassfish.grizzly.config.portunif.HttpProtocolFinder" name="admin-http-redirect"></protocol-finder>
+            </port-unification>
+          </protocol>
         </protocols>
         <network-listeners>
           <network-listener protocol="http-listener-1" port="8080" name="http-listener-1" thread-pool="http-thread-pool" transport="tcp"></network-listener>
           <network-listener protocol="http-listener-2" port="8181" name="http-listener-2" thread-pool="http-thread-pool" transport="tcp"></network-listener>
-          <network-listener protocol="admin-listener" port="4848" name="admin-listener" thread-pool="admin-thread-pool" transport="tcp"></network-listener>
+          <network-listener protocol="pu-protocol" port="4848" name="admin-listener" thread-pool="admin-thread-pool" transport="tcp"></network-listener>
         </network-listeners>
         <transports>
           <transport name="tcp"></transport>
@@ -326,7 +343,9 @@
         </iiop-listener>
       </iiop-service>
       <admin-service system-jmx-connector-name="system">
-        <jmx-connector address="0.0.0.0" port="${JMX_SYSTEM_CONNECTOR_PORT}" name="system" auth-realm-name="admin-realm" security-enabled="false"></jmx-connector>
+        <jmx-connector address="0.0.0.0" port="${JMX_SYSTEM_CONNECTOR_PORT}" name="system" auth-realm-name="admin-realm">
+          <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" client-auth="want" cert-nickname="glassfish-instance"></ssl>
+        </jmx-connector>
         <property name="adminConsoleDownloadLocation" value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war"></property>
         <das-config></das-config>
       </admin-service>
@@ -460,7 +479,7 @@
             <http encoded-slash-enabled="true" default-virtual-server="__asadmin">
               <file-cache></file-cache>
             </http>
-            <ssl ssl3-enabled="false" classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" client-auth="want" cert-nickname="glassfish-instance" renegotiate-on-client-auth-want="false"></ssl>
+            <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" client-auth="want" cert-nickname="glassfish-instance"></ssl>
           </protocol>
           <protocol name="admin-http-redirect">
             <http-redirect secure="true"></http-redirect>
@@ -505,7 +524,7 @@
     </config>
   </configs>
   <property name="administrative.domain.name" value="domain1"></property>
-  <secure-admin special-admin-indicator="718fe3ff-df18-49f8-84a0-3aeedb3250db">
+  <secure-admin special-admin-indicator="718fe3ff-df18-49f8-84a0-3aeedb3250db" enabled="true">
     <secure-admin-principal dn="CN=localhost,OU=GlassFish,O=Oracle Corporation,L=Santa Clara,ST=California,C=US"></secure-admin-principal>
     <secure-admin-principal dn="CN=localhost-instance,OU=GlassFish,O=Oracle Corporation,L=Santa Clara,ST=California,C=US"></secure-admin-principal>
   </secure-admin>
