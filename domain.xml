@@ -62,11 +62,11 @@
     <jdbc-connection-pool pool-resize-quantity="1" max-pool-size="4" datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" steady-pool-size="2" validation-table-name="DUAL" name="MySQLConnPool" is-connection-validation-required="true" res-type="javax.sql.DataSource">
       <property name="Password" value="root"></property>
       <property name="User" value="root"></property>
-      <property name="URL" value="jdbc:mysql://172.17.0.2:3306/meteocal?zeroDateTimeBehavior=convertToNull"></property>
+      <property name="URL" value="jdbc:mysql://db:3306/meteocal?zeroDateTimeBehavior=convertToNull"></property>
     </jdbc-connection-pool>
     <jdbc-resource pool-name="MySQLConnPool" jndi-name="jdbc/mysql"></jdbc-resource>
     <jdbc-connection-pool datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="Calendarium" validation-table-name="DUAL" is-connection-validation-required="true" res-type="javax.sql.DataSource">
-      <property name="URL" value="jdbc:mysql://172.17.0.2:3306/calendarium?zeroDateTimeBehavior=convertToNull"></property>
+      <property name="URL" value="jdbc:mysql://db:3306/calendarium?zeroDateTimeBehavior=convertToNull"></property>
       <property name="User" value="root"></property>
       <property name="Password" value="root"></property>
     </jdbc-connection-pool>
