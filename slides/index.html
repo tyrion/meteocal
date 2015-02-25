@@ -31,6 +31,10 @@
   position: relative;
   bottom: 2em;
 }
+ul {
+  float: left;
+  padding-left: 5em;
+}
 </style>
     <textarea id="source">
 name: landing
@@ -196,11 +200,24 @@ name:additional
 name:assumptions
 .title[##Assumptions]
 --
-.text[###We do not explicitly handle event overlapping. Anyway, the UX clearly displays the number of events in a day.]
+.text[###We decided not to forbid overlaping events. However the UX clearly displays the number of events in each day.]
 --
-.text[###In the definition of "bad weather" is included every weather type different than sunny or cloudy weather.]
+.text[###We decided to consider as "bad weather" all the weather conditions different than Sunny or Cloudy.]
 --
-.text[###Javascript is enabled]
+.text[###Our current frontend implementation requires JavaScript to be enabled.]
+--
+.text[###When an user A views the calendar C of an user B]
+--
+
++ Public events are always visible
++ Private events:
+<div>
+<ul style="padding-left: 2em">
+  <li>fully visible if user A is also invited
+  <li>partially visible if calendar C is public
+  <li>not visible if calendar C is private
+</ul>
+</div>
 ---
 
 template:light
@@ -209,29 +226,34 @@ layout:false
 ---
 
 name:design1
-.title[##Design Pt.1: Data persistence]
+.title[##Design: Data persistence]
 --
 <img src="img/dbmodel.svg" alt="dbmodel" style="width: 110%; position:relative; left:-1em; top: 2em;">
 ---
 
 name:design2
-.title[##Design Pt.2: Architecture]
+.title[##Design: Architecture]
 --
-.text[###We chose to implement a client-server architecture.]
+.text[###We implemented a client-server RESTful architecture.]
 --
-.text[###Through REST API endpoints. Advantages:]
+.text[###**Stateless:** The session state is held in the client (signed JWT)]
 --
-.text[####the frontend is totally decoupled from the backend, except for the data format]
+.text[####Scalability]
 --
-.text[####so, Separation of Concerns -> Modularity.]
+.text[###**Decoupled:** The frontend is totally decoupled from the backend (except for the data format)]
 --
-.text[####and probably less code, so less development time.]
+.text[####Separation of Concerns]
+--
+.text[####Modularity]
+--
+.text[####Less code, so less bugs and less development time.]
+--
+.text[####Super easy development of mobile application thanks to Apache Cordova.]
 ---
 
 name:design3
-.title[##Design Pt.3: UX]
---
-<img src="img/ux.svg" alt="ux" style="width: 110%; position:relative; left: -2em; top: 3em;">
+.title[##Design: UX]
+<img src="img/ux.svg" alt="ux" style="width: 115%; position:relative; left: -3em; top: 3em;">
 ---
 
 template:light
@@ -241,22 +263,7 @@ layout:false
 
 name:tools
 .title[##Technology: Tools]
---
-<style>
-.techimg{
-	position: absolute;
-}
-</style>
-<img src="img/maven.svg" alt="" class="techimg" style="width: 50%;">
-<img src="img/netbeans.svg" alt="" class="techimg" style="width: 50%;">
-<img src="img/git.svg" alt="" class="techimg" style="width: 40%;">
-<img src="img/angular.png" alt="" class="techimg" style="width: 40%;">
-<img src="img/ubuntu.svg" alt="" class="techimg" style="width: 10%;">
-<img src="img/cordova.png" alt="" class="techimg" style="width: 40%;">
-<img src="img/docker.png" alt="" class="techimg" style="width: 30%; top: 60%">
-<img src="img/htmlcss.svg" alt="" class="techimg" style="width: 30%; left: 70%;">
-<img src="img/java8.png" alt="" class="techimg" style="width: 20%; top: 70%;">
-<img src="img/jquery.png" alt="" class="techimg" style="width: 40%;">
+<img src="img/logos.png" alt="" style="width: 110%; margin-left: -1em;">
 ---
 
 name:tiers
@@ -269,7 +276,9 @@ name:jwt
 .title[##Code Focus: JWT auth & Security]
 .text[###What's JWT?]
 --
-.text[####**JSON Web Token** is a new token format, used in space-constrained environments such as HTTP Authorization headers. JWT is architected as a method for transferring security *claims-based* between parties.]
+.text[####JSON Web Token (JWT) is a compact URL-safe means of representing claims to be transferred between two parties. The claims in a JWT are encoded as a JSON object that is digitally signed using JSON Web Signature (JWS).]
+--
+.text[####IETF DRAFT ( draft-ietf-oauth-json-web-token-32 )]
 --
 .text[###Token based vs. Cookie based]
 <img src="img/cookie-token-auth.png" alt="cookie-token" style="width: 80%; position:relative; left: 4em;">
@@ -279,37 +288,37 @@ name:jwt2
 .title[##Code Focus: JWT auth & Security]
 .text[###What are the benefits of using a token-based approach?]
 --
-.text[####**Cross-domain / CORS**: cookies don't play well across different domains.]
+.text[####**CSRF**: no cookies, no forgery (impossible to generate a POST request and re-use the existing authentication cookie).]
 --
-.text[####**Stateless (a.k.a. Server side scalability)**: no need to keep a session store, as token is self-contanined]
+.text[####**Stateless (i.e. server side scalability)**: no need to keep a session store, as token is self-contanined]
 --
-.text[####**CDN**: server side just API.]
+.text[####**Cross-domain / CORS**: can make AJAX calls to any server] 
 --
 .text[####**Decoupling**: not tied to a particular authentication scheme.]
 --
-.text[####**Mobile ready**: on mobile cookies are not ideal when consuming a secure API.]
+.text[####**Performance**: No need to interact with DB to authenticate and authorize an user.]
 --
-.text[####**CSRF**: no cookies, no forgery.]
+.text[####**Mobile friendly**: on mobile cookies are not ideal when consuming a secure API (you have to deal with cookie containers]
 --
-.text[####**Performance**: no hard benchmarks, but finding a session in a database is likely to take more time than calculating an HMACSHA256.]
---
-.text[####**Standard-based**: this is a standard and there are multiple backend libraries and companies backing their infrastructure.]
+.text[####**Standard-based**: JWT is an IETF Standard draft and there are many implementations (Java, Javascript, Python, etc) and companies using it in production (e.g. Firebase, Google, Microsoft)]
 ---
 
 name:recovery
-.title[##Code Focus: Password reset]
+.title[##Code Focus: Password reset with JWT]
 --
-.text[###We implemented a *secure* password reset mechanism]
+.text[###We implemented a *secure* password reset mechanism using JWT]
 --
 .text[###How it works:]
 --
 .text[####The user loses her password]
 --
-.text[####Sends her email in the password reset form]
+.text[####The user fills the "Password Lost" form with her email]
 --
-.text[####A JWT token is generated and signed by the server, and sent as a link parameter to the users email (if the email exists)]
+.text[####A JWT token is generated and signed by the server, and sent by email to the user]
 --
-.text[####Once the user clicks on the link with the token parameter, she's redirected to the password reset form.]
+.text[####The user clicks on the Password Reset link]
+--
+.text[####The server checks the validity of the JWT and the user is redirected to the "Password Reset" form.]
 --
 .text[####<button class="btn btn-success btn-lg">Done!</button>]
 --
