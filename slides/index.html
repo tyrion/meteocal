@@ -94,7 +94,7 @@ name:numbers
 --
 .text[###Using the CoCoMo II cost estimation model we get:]
 
-<iframe src="math.html" style="border: 0; width: 30em; position:relative; left: 4em;"></iframe>
+<iframe src="math.html" style="border: 0; width: 40em; position:relative; left: -2em;"></iframe>
 
 ---
 
@@ -199,6 +199,8 @@ name:assumptions
 .text[###We do not explicitly handle event overlapping. Anyway, the UX clearly displays the number of events in a day.]
 --
 .text[###In the definition of "bad weather" is included every weather type different than sunny or cloudy weather.]
+--
+.text[###Javascript is enabled]
 ---
 
 template:light
@@ -209,7 +211,7 @@ layout:false
 name:design1
 .title[##Design Pt.1: Data persistence]
 --
-<img src="img/dbmodel.svg" alt="dbmodel" style="width: 110%; position:relative; left: 8em;">
+<img src="img/dbmodel.svg" alt="dbmodel" style="width: 110%; position:relative; left:-1em; top: 2em;">
 ---
 
 name:design2
@@ -294,7 +296,15 @@ name:recovery
 --
 .text[####The user loses her password]
 --
-.text[####...?]
+.text[####Sends her email in the password reset form]
+--
+.text[####A JWT token is generated and signed by the server, and sent as a link parameter to the users email (if the email exists)]
+--
+.text[####Once the user clicks on the link with the token parameter, she's redirected to the password reset form.]
+--
+.text[####<button class="btn btn-success btn-lg">Done!</button>]
+--
+.text[####**(No DB involved)**]
 ---
 
 name:angular
@@ -327,7 +337,17 @@ layout:false
 name:acceptance
 .title[##Acceptance Testing]
 --
-.text[###describe our testing here]
+.text[###We successfully deployed the others group application, following the Installation Manual]
+--
+.text[###Then we applied the provided Test Cases document]
+--
+.text[###<button class="btn btn-danger btn-lg">Failed</button>]
+--
+.text[####**Calendar Export:** we deployed the application on Linux, while the developers only tested it on OS X and Windows.]
+--
+.text[###<button class="btn btn-success btn-lg">Success!</button>]
+--
+.text[####**Everything else.**]
 ---
 
 template:light
@@ -364,7 +384,7 @@ layout:false
         var total = $('.remark-slide-number').html().split(" / ")[1]
         progbar.set(slide.getSlideIndex()/total*100);
       });
-      setTimeout(function(){ $(".landing").css('background-size', 'cover').css('background-position', '0 0'); }, 1000);
+      setTimeout(function(){ $(".landing").css('background-size', 'cover').css('background-position', '0 0'); }, 2000);
       $(".go-next").click(function(){ slideshow.gotoNextSlide(); });
     });
     </script>
